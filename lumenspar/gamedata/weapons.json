@@ -1,0 +1,1901 @@
+{
+  "generated": "2026-09-07T19:43:42+00:00",
+  "items": [
+    {
+      "key": "ATeaspoonOfTranscendence",
+      "name": "A Teaspoon of Transcendence",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "AThousandBlazingSuns",
+      "name": "A Thousand Blazing Suns",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "AThousandFloatingDreams",
+      "name": "A Thousand Floating Dreams",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ATouchOfFrostInScorchingSummer",
+      "name": "A Touch of Frost in Scorching Summer!",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": false
+    },
+    {
+      "key": "Absolution",
+      "name": "Absolution",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "Akuoumaru",
+      "name": "Akuoumaru",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "AlleyHunter",
+      "name": "Alley Hunter",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "AmenomaKageuchi",
+      "name": "Amenoma Kageuchi",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "AmosBow",
+      "name": "Amos' Bow",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "AngelosHeptades",
+      "name": "Angelos' Heptades",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ApprenticesNotes",
+      "name": "Apprentice's Notes",
+      "rarity": 1,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "AquaSimulacra",
+      "name": "Aqua Simulacra",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "AquilaFavonia",
+      "name": "Aquila Favonia",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "ArdentStorm",
+      "name": "Ardent Storm",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": false
+    },
+    {
+      "key": "ArdentStormSublimation",
+      "name": "Ardent Storm - Sublimation",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": false
+    },
+    {
+      "key": "AshGravenDrinkingHorn",
+      "name": "Ash-Graven Drinking Horn",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "AstralVulturesCrimsonPlumage",
+      "name": "Astral Vulture's Crimson Plumage",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "AthameArtis",
+      "name": "Athame Artis",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "Azurelight",
+      "name": "Azurelight",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "BalladOfTheBoundlessBlue",
+      "name": "Ballad of the Boundless Blue",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "BalladOfTheFjords",
+      "name": "Ballad of the Fjords",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "BeaconOfTheReedSea",
+      "name": "Beacon of the Reed Sea",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "BeginnersProtector",
+      "name": "Beginner's Protector",
+      "rarity": 1,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "BlackTassel",
+      "name": "Black Tassel",
+      "rarity": 3,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "BlackcliffAgate",
+      "name": "Blackcliff Agate",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "BlackcliffLongsword",
+      "name": "Blackcliff Longsword",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "BlackcliffPole",
+      "name": "Blackcliff Pole",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "BlackcliffSlasher",
+      "name": "Blackcliff Slasher",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "BlackcliffWarbow",
+      "name": "Blackcliff Warbow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "BlackmarrowLantern",
+      "name": "Blackmarrow Lantern",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "BladeOfAtonement",
+      "name": "Blade of Atonement",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "BloodsoakedRuins",
+      "name": "Bloodsoaked Ruins",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "BloodtaintedGreatsword",
+      "name": "Bloodtainted Greatsword",
+      "rarity": 3,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "CalamityOfEshu",
+      "name": "Calamity of Eshu",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "CalamityQueller",
+      "name": "Calamity Queller",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "CashflowSupervision",
+      "name": "Cashflow Supervision",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ChainBreaker",
+      "name": "Chain Breaker",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "CinnabarSpindle",
+      "name": "Cinnabar Spindle",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "ClashOfKings",
+      "name": "Clash of Kings",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "Cloudforged",
+      "name": "Cloudforged",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "CompoundBow",
+      "name": "Compound Bow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "CoolSteel",
+      "name": "Cool Steel",
+      "rarity": 3,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "CovenantOfFrostAndSnow",
+      "name": "Covenant of Frost and Snow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "CranesEchoingCall",
+      "name": "Crane's Echoing Call",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "CrescentPike",
+      "name": "Crescent Pike",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "CrimsonMoonsSemblance",
+      "name": "Crimson Moon's Semblance",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "DarkIronSword",
+      "name": "Dark Iron Sword",
+      "rarity": 3,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "DawningFrost",
+      "name": "Dawning Frost",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "DawnstarOfShahar",
+      "name": "Dawnstar of Shahar",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": false
+    },
+    {
+      "key": "DawnstarOfShaharSublimation",
+      "name": "Dawnstar of Shahar - Sublimation",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": false
+    },
+    {
+      "key": "Deathmatch",
+      "name": "Deathmatch",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "DebateClub",
+      "name": "Debate Club",
+      "rarity": 3,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "DialoguesOfTheDesertSages",
+      "name": "Dialogues of the Desert Sages",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "DisasterAndRemorse",
+      "name": "Disaster and Remorse",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "DodocoTales",
+      "name": "Dodoco Tales",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "DragonsBane",
+      "name": "Dragon's Bane",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "DragonspineSpear",
+      "name": "Dragonspine Spear",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "DullBlade",
+      "name": "Dull Blade",
+      "rarity": 1,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "EarthShaker",
+      "name": "Earth Shaker",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "EchoesOfTheHeart",
+      "name": "Echoes of the Heart",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ElegyForTheEnd",
+      "name": "Elegy for the End",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "Emberwell",
+      "name": "Emberwell",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "EmeraldOrb",
+      "name": "Emerald Orb",
+      "rarity": 3,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "EndOfTheLine",
+      "name": "End of the Line",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "EngulfingLightning",
+      "name": "Engulfing Lightning",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "EtherlightSpindlelute",
+      "name": "Etherlight Spindlelute",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "EverlastingMoonglow",
+      "name": "Everlasting Moonglow",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ExaiphanesBlade",
+      "name": "Exaiphanes Blade",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "EyeOfPerception",
+      "name": "Eye of Perception",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "FadingTwilight",
+      "name": "Fading Twilight",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "FangOfTheMountainKing",
+      "name": "Fang of the Mountain King",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "FavoniusCodex",
+      "name": "Favonius Codex",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "FavoniusGreatsword",
+      "name": "Favonius Greatsword",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "FavoniusLance",
+      "name": "Favonius Lance",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "FavoniusSword",
+      "name": "Favonius Sword",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "FavoniusWarbow",
+      "name": "Favonius Warbow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "FerrousShadow",
+      "name": "Ferrous Shadow",
+      "rarity": 3,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "FesteringDesire",
+      "name": "Festering Desire",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "FilletBlade",
+      "name": "Fillet Blade",
+      "rarity": 3,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "FinaleOfTheDeep",
+      "name": "Finale of the Deep",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "FlameForgedInsight",
+      "name": "Flame-Forged Insight",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "FleuveCendreFerryman",
+      "name": "Fleuve Cendre Ferryman",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "FlowerWreathedFeathers",
+      "name": "Flower-Wreathed Feathers",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "FlowingPurity",
+      "name": "Flowing Purity",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "FluteOfEzpitzal",
+      "name": "Flute of Ezpitzal",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "FootprintOfTheRainbow",
+      "name": "Footprint of the Rainbow",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "ForestRegalia",
+      "name": "Forest Regalia",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "ForgedByTheGoldenMelody",
+      "name": "Forged by the Golden Melody",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "FracturedHalo",
+      "name": "Fractured Halo",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "FreedomSworn",
+      "name": "Freedom-Sworn",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "Frostbearer",
+      "name": "Frostbearer",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "Frostbreath",
+      "name": "Frostbreath",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "FruitOfFulfillment",
+      "name": "Fruit of Fulfillment",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "FruitfulHook",
+      "name": "Fruitful Hook",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "GestOfTheMightyWolf",
+      "name": "Gest of the Mighty Wolf",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "GoldenBoughOfNemorensis",
+      "name": "Golden Bough of Nemorensis",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": false
+    },
+    {
+      "key": "GoldenBoughOfNemorensisSublimation",
+      "name": "Golden Bough of Nemorensis - Sublimation",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": false
+    },
+    {
+      "key": "GoldenFrostboundOath",
+      "name": "Golden Frostbound Oath",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "HakushinRing",
+      "name": "Hakushin Ring",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "Halberd",
+      "name": "Halberd",
+      "rarity": 3,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "HallowedFetters",
+      "name": "Hallowed Fetters",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": false
+    },
+    {
+      "key": "HallowedFettersSublimation",
+      "name": "Hallowed Fetters - Sublimation",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": false
+    },
+    {
+      "key": "Hamayumi",
+      "name": "Hamayumi",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "HaranGeppakuFutsu",
+      "name": "Haran Geppaku Futsu",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "HarbingerOfDawn",
+      "name": "Harbinger of Dawn",
+      "rarity": 3,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "HereticsMoltenBlade",
+      "name": "Heretic's Molten Blade",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "HuntersBow",
+      "name": "Hunter's Bow",
+      "rarity": 1,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "HuntersPath",
+      "name": "Hunter's Path",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "IbisPiercer",
+      "name": "Ibis Piercer",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "IronPoint",
+      "name": "Iron Point",
+      "rarity": 2,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "IronSting",
+      "name": "Iron Sting",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "JadeVista",
+      "name": "Jade Vista",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "JadefallsSplendor",
+      "name": "Jadefall's Splendor",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "KagotsurubeIsshin",
+      "name": "Kagotsurube Isshin",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "KagurasVerity",
+      "name": "Kagura's Verity",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "KatsuragikiriNagamasa",
+      "name": "Katsuragikiri Nagamasa",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "KeyOfKhajNisut",
+      "name": "Key of Khaj-Nisut",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "KingsSquire",
+      "name": "King's Squire",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "KitainCrossSpear",
+      "name": "Kitain Cross Spear",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "LightOfFoliarIncision",
+      "name": "Light of Foliar Incision",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "LightbearingMoonshard",
+      "name": "Lightbearing Moonshard",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "LionsRoar",
+      "name": "Lion's Roar",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "LithicBlade",
+      "name": "Lithic Blade",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "LithicSpear",
+      "name": "Lithic Spear",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "LostPrayerToTheSacredWinds",
+      "name": "Lost Prayer to the Sacred Winds",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "LumidouceElegy",
+      "name": "Lumidouce Elegy",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "LuxuriousSeaLord",
+      "name": "Luxurious Sea-Lord",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "MagicGuide",
+      "name": "Magic Guide",
+      "rarity": 3,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "MailedFlower",
+      "name": "Mailed Flower",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "MakhairaAquamarine",
+      "name": "Makhaira Aquamarine",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "MappaMare",
+      "name": "Mappa Mare",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "MasterKey",
+      "name": "Master Key",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "MemoryOfDust",
+      "name": "Memory of Dust",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "Messenger",
+      "name": "Messenger",
+      "rarity": 3,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "MissiveWindspear",
+      "name": "Missive Windspear",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "MistsplitterReforged",
+      "name": "Mistsplitter Reforged",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "MitternachtsWaltz",
+      "name": "Mitternachts Waltz",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "Moonpiercer",
+      "name": "Moonpiercer",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "MoonweaversDawn",
+      "name": "Moonweaver's Dawn",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "MountainBracingBolt",
+      "name": "Mountain-Bracing Bolt",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "MouunsMoon",
+      "name": "Mouun's Moon",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "NightweaversLookingGlass",
+      "name": "Nightweaver's Looking Glass",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "NocturnesCurtainCall",
+      "name": "Nocturne's Curtain Call",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "OathswornEye",
+      "name": "Oathsworn Eye",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "OldMercsPal",
+      "name": "Old Merc's Pal",
+      "rarity": 2,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "OtherworldlyStory",
+      "name": "Otherworldly Story",
+      "rarity": 3,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "PeakPatrolSong",
+      "name": "Peak Patrol Song",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "PhantasmalGiftStarOmen",
+      "name": "Phantasmal Gift: Star Omen",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": false
+    },
+    {
+      "key": "PocketGrimoire",
+      "name": "Pocket Grimoire",
+      "rarity": 2,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "PolarStar",
+      "name": "Polar Star",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "PortablePowerSaw",
+      "name": "Portable Power Saw",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "Predator",
+      "name": "Predator",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "PrimordialJadeCutter",
+      "name": "Primordial Jade Cutter",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "PrimordialJadeWingedSpear",
+      "name": "Primordial Jade Winged-Spear",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "ProspectorsDrill",
+      "name": "Prospector's Drill",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "ProspectorsShovel",
+      "name": "Prospector's Shovel",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "PrototypeAmber",
+      "name": "Prototype Amber",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "PrototypeArchaic",
+      "name": "Prototype Archaic",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "PrototypeCrescent",
+      "name": "Prototype Crescent",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "PrototypeRancour",
+      "name": "Prototype Rancour",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "PrototypeStarglitter",
+      "name": "Prototype Starglitter",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "QuantumCatalyst",
+      "name": "Quantum Catalyst",
+      "inGO": true,
+      "inAmber": false
+    },
+    {
+      "key": "RainbowSerpentsRainBow",
+      "name": "Rainbow Serpent's Rain Bow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "Rainslasher",
+      "name": "Rainslasher",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "RangeGauge",
+      "name": "Range Gauge",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "RavenBow",
+      "name": "Raven Bow",
+      "rarity": 3,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "RecurveBow",
+      "name": "Recurve Bow",
+      "rarity": 3,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "RedhornStonethresher",
+      "name": "Redhorn Stonethresher",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "ReliquaryOfTruth",
+      "name": "Reliquary of Truth",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "RightfulReward",
+      "name": "Rightful Reward",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "RingOfYaxche",
+      "name": "Ring of Yaxche",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "RoyalBow",
+      "name": "Royal Bow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "RoyalGreatsword",
+      "name": "Royal Greatsword",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "RoyalGrimoire",
+      "name": "Royal Grimoire",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "RoyalLongsword",
+      "name": "Royal Longsword",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "RoyalSpear",
+      "name": "Royal Spear",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "Rust",
+      "name": "Rust",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SacrificersStaff",
+      "name": "Sacrificer's Staff",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "SacrificialBow",
+      "name": "Sacrificial Bow",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SacrificialFragments",
+      "name": "Sacrificial Fragments",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "SacrificialGreatsword",
+      "name": "Sacrificial Greatsword",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "SacrificialJade",
+      "name": "Sacrificial Jade",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "SacrificialSword",
+      "name": "Sacrificial Sword",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SapwoodBlade",
+      "name": "Sapwood Blade",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "ScionOfTheBlazingSun",
+      "name": "Scion of the Blazing Sun",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SeasonedHuntersBow",
+      "name": "Seasoned Hunter's Bow",
+      "rarity": 2,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SequenceOfSolitude",
+      "name": "Sequence of Solitude",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SerenitysCall",
+      "name": "Serenity's Call",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SerpentDevourer",
+      "name": "Serpent Devourer",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": false
+    },
+    {
+      "key": "SerpentDevourerSublimation",
+      "name": "Serpent Devourer - Sublimation",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": false
+    },
+    {
+      "key": "SerpentSpine",
+      "name": "Serpent Spine",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "SharpshootersOath",
+      "name": "Sharpshooter's Oath",
+      "rarity": 3,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "ShatteredMoon",
+      "name": "Shattered Moon",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": false
+    },
+    {
+      "key": "ShatteredMoonSublimation",
+      "name": "Shattered Moon - Sublimation",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": false
+    },
+    {
+      "key": "SilverRadianceOfGradlon",
+      "name": "Silver Radiance of Gradlon",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": false
+    },
+    {
+      "key": "SilverRadianceOfGradlonSublimation",
+      "name": "Silver Radiance of Gradlon - Sublimation",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": false
+    },
+    {
+      "key": "SilverSword",
+      "name": "Silver Sword",
+      "rarity": 2,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SilvershowerHeartstrings",
+      "name": "Silvershower Heartstrings",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SkyriderGreatsword",
+      "name": "Skyrider Greatsword",
+      "rarity": 3,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "SkyriderSword",
+      "name": "Skyrider Sword",
+      "rarity": 3,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SkywardAtlas",
+      "name": "Skyward Atlas",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "SkywardBlade",
+      "name": "Skyward Blade",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SkywardHarp",
+      "name": "Skyward Harp",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SkywardPride",
+      "name": "Skyward Pride",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "SkywardSpine",
+      "name": "Skyward Spine",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "Slingshot",
+      "name": "Slingshot",
+      "rarity": 3,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SnareHook",
+      "name": "Snare Hook",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SnowTombedStarsilver",
+      "name": "Snow-Tombed Starsilver",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "SolarPearl",
+      "name": "Solar Pearl",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "SongOfBrokenPines",
+      "name": "Song of Broken Pines",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "SongOfStillness",
+      "name": "Song of Stillness",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "SongOfTheVigil",
+      "name": "Song of the Vigil",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "SplendorOfTranquilWaters",
+      "name": "Splendor of Tranquil Waters",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "StaffOfHoma",
+      "name": "Staff of Homa",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "StaffOfTheScarletSands",
+      "name": "Staff of the Scarlet Sands",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "StarcallersWatch",
+      "name": "Starcaller's Watch",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "StarlightOfFylkir",
+      "name": "Starlight of Fylkir",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": false
+    },
+    {
+      "key": "StarlightOfFylkirSublimation",
+      "name": "Starlight of Fylkir - Sublimation",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": false
+    },
+    {
+      "key": "Starpiercer",
+      "name": "Starpiercer",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": false
+    },
+    {
+      "key": "StarpiercerSublimation",
+      "name": "Starpiercer - Sublimation",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": false
+    },
+    {
+      "key": "SturdyBone",
+      "name": "Sturdy Bone",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SummitShaper",
+      "name": "Summit Shaper",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SunnyMorningSleepIn",
+      "name": "Sunny Morning Sleep-In",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "SuperAwesomeMagicKey",
+      "name": "Super Awesome Magic Key",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": false
+    },
+    {
+      "key": "SurfsUp",
+      "name": "Surf's Up",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "SwordOfDescension",
+      "name": "Sword of Descension",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SwordOfNarzissenkreuz",
+      "name": "Sword of Narzissenkreuz",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "SymphonistOfScents",
+      "name": "Symphonist of Scents",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "TalkingStick",
+      "name": "Talking Stick",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "TamayurateiNoOhanashi",
+      "name": "Tamayuratei no Ohanashi",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "TheAlleyFlash",
+      "name": "The Alley Flash",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "TheBell",
+      "name": "The Bell",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "TheBlackSword",
+      "name": "The Black Sword",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "TheCatch",
+      "name": "\"The Catch\"",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "TheDaybreakChronicles",
+      "name": "The Daybreak Chronicles",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "TheDockhandsAssistant",
+      "name": "The Dockhand's Assistant",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "TheFirstGreatMagic",
+      "name": "The First Great Magic",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "TheFlute",
+      "name": "The Flute",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "TheStringless",
+      "name": "The Stringless",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "TheUnforged",
+      "name": "The Unforged",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "TheViridescentHunt",
+      "name": "The Viridescent Hunt",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "TheWidsith",
+      "name": "The Widsith",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ThrillingTalesOfDragonSlayers",
+      "name": "Thrilling Tales of Dragon Slayers",
+      "rarity": 3,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ThunderingPulse",
+      "name": "Thundering Pulse",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "TidalShadow",
+      "name": "Tidal Shadow",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "TomeOfTheEternalFlow",
+      "name": "Tome of the Eternal Flow",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "ToukabouShigure",
+      "name": "Toukabou Shigure",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "TravelersHandySword",
+      "name": "Traveler's Handy Sword",
+      "rarity": 3,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "TulaytullahsRemembrance",
+      "name": "Tulaytullah's Remembrance",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "TwinNephrite",
+      "name": "Twin Nephrite",
+      "rarity": 3,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "UltimateOverlordsMegaMagicSword",
+      "name": "\"Ultimate Overlord's Mega Magic Sword\"",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "UnbreakableDurandarte",
+      "name": "Unbreakable: Durandarte",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": false
+    },
+    {
+      "key": "UrakuMisugiri",
+      "name": "Uraku Misugiri",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "Verdict",
+      "name": "Verdict",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "VividNotions",
+      "name": "Vivid Notions",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "VortexVanquisher",
+      "name": "Vortex Vanquisher",
+      "rarity": 5,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "WanderingEvenstar",
+      "name": "Wandering Evenstar",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "WasterGreatsword",
+      "name": "Waster Greatsword",
+      "rarity": 1,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "WavebreakersFin",
+      "name": "Wavebreaker's Fin",
+      "rarity": 4,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "WaveridingWhirl",
+      "name": "Waveriding Whirl",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "WhiteIronGreatsword",
+      "name": "White Iron Greatsword",
+      "rarity": 3,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "WhiteTassel",
+      "name": "White Tassel",
+      "rarity": 3,
+      "type": "polearm",
+      "inGO": true
+    },
+    {
+      "key": "Whiteblind",
+      "name": "Whiteblind",
+      "rarity": 4,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "WhitelakeFrostfeather",
+      "name": "Whitelake Frostfeather",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "WindblumeOde",
+      "name": "Windblume Ode",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": true
+    },
+    {
+      "key": "WineAndSong",
+      "name": "Wine and Song",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": true
+    },
+    {
+      "key": "WolfFang",
+      "name": "Wolf-Fang",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "WolfsGravestone",
+      "name": "Wolf's Gravestone",
+      "rarity": 5,
+      "type": "claymore",
+      "inGO": true
+    },
+    {
+      "key": "XiphosMoonlight",
+      "name": "Xiphos' Moonlight",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "Yayu",
+      "name": "Yayu",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": false
+    },
+    {
+      "key": "YayuSublimation",
+      "name": "Yayu - Sublimation",
+      "rarity": 5,
+      "type": "bow",
+      "inGO": false
+    }
+  ]
+}

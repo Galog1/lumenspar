@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Lumenspar
+GenericName=Genshin Inventory Scanner
+Comment=Scan your Genshin Impact inventory to a .GOOD file
+Exec=lumenspar
+Icon=lumenspar
+Terminal=false
+Categories=Utility;
+Keywords=genshin;artifact;scanner;GOOD;optimizer;
+StartupNotify=true

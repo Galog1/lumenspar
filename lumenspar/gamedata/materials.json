@@ -1,0 +1,4925 @@
+{
+  "generated": "2026-09-07T19:43:42+00:00",
+  "items": [
+    {
+      "key": "AFlowerYetToBloom",
+      "name": "A Flower Yet to Bloom",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AberrantCoreOfTheDeepShadow",
+      "name": "Aberrant Core of the Deep Shadow",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AccretedFragment",
+      "name": "Accreted Fragment",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AccretedGrowth",
+      "name": "Accreted Growth",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AccretedMass",
+      "name": "Accreted Mass",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AcquaintFate",
+      "name": "Acquaint Fate",
+      "rarity": 5,
+      "type": "wishingItem"
+    },
+    {
+      "key": "AdeptiSeekersStove",
+      "name": "Adepti Seeker's Stove",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "AdhigamaWood",
+      "name": "Adhigama Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "AdventureEXP",
+      "name": "Adventure EXP",
+      "rarity": 3,
+      "type": "systemAccess"
+    },
+    {
+      "key": "AdventurersExperience",
+      "name": "Adventurer's Experience",
+      "rarity": 3,
+      "type": "characterEXPMaterial"
+    },
+    {
+      "key": "AfterglowOfLongNightFlint",
+      "name": "Afterglow of Long Night Flint",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "AgentsSacrificialKnife",
+      "name": "Agent's Sacrificial Knife",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AgnidusAgateChunk",
+      "name": "Agnidus Agate Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "AgnidusAgateFragment",
+      "name": "Agnidus Agate Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "AgnidusAgateGemstone",
+      "name": "Agnidus Agate Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "AgnidusAgateSliver",
+      "name": "Agnidus Agate Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "AjilenakhNut",
+      "name": "Ajilenakh Nut",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "AlderWood",
+      "name": "Alder Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "AlienLifeCore",
+      "name": "Alien Life Core",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Almond",
+      "name": "Almond",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "AmakumoFruit",
+      "name": "Amakumo Fruit",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "AmethystLump",
+      "name": "Amethyst Lump",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "AncientAutoharmonicMusicBox",
+      "name": "Ancient Autoharmonic Music Box",
+      "rarity": 4,
+      "type": "questItem"
+    },
+    {
+      "key": "AnemoSigil",
+      "name": "Anemo Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "AnemoTreasureCompass",
+      "name": "Anemo Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Anemoculus",
+      "name": "Anemoculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "AnemoculusResonanceStone",
+      "name": "Anemoculus Resonance Stone",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "AraliaWood",
+      "name": "Aralia Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Aranyaka",
+      "name": "Aranyaka",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "AratakisGreatAndGloriousDrum",
+      "name": "Arataki's Great and Glorious Drum",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "ArtfulDeviceFragment",
+      "name": "Artful Device Fragment",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ArtfulDeviceInheritance",
+      "name": "Artful Device Inheritance",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ArtfulDeviceReplica",
+      "name": "Artful Device Replica",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ArtfulDeviceWish",
+      "name": "Artful Device Wish",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ArtifactTransmuter",
+      "name": "Artifact Transmuter",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "ArtificedDynamicGear",
+      "name": "Artificed Dynamic Gear",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ArtificedSpareClockworkComponentCoppelia",
+      "name": "Artificed Spare Clockwork Component — Coppelia",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ArtificedSpareClockworkComponentCoppelius",
+      "name": "Artificed Spare Clockwork Component — Coppelius",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "AscendedSampleKnight",
+      "name": "Ascended Sample: Knight",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "AscendedSampleQueen",
+      "name": "Ascended Sample: Queen",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "AscendedSampleRook",
+      "name": "Ascended Sample: Rook",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "AshWood",
+      "name": "Ash Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "AshenAratikuWood",
+      "name": "Ashen Aratiku Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "AshenHeart",
+      "name": "Ashen Heart",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "AthelWood",
+      "name": "Athel Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "AureateRadianceOfTheFarNorthScions",
+      "name": "Aureate Radiance of the Far-North Scions",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "AxisOfTheSecretSource",
+      "name": "Axis of the Secret Source",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Bacon",
+      "name": "Bacon",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "BambooSegment",
+      "name": "Bamboo Segment",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "BambooShoot",
+      "name": "Bamboo Shoot",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "BasaltPillar",
+      "name": "Basalt Pillar",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Berry",
+      "name": "Berry",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "BerylConch",
+      "name": "Beryl Conch",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "BewilderingBroadleaf",
+      "name": "Bewildering Broadleaf",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "BirchWood",
+      "name": "Birch Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "BirdEgg",
+      "name": "Bird Egg",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "BitOfAerosiderite",
+      "name": "Bit of Aerosiderite",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BlackBronzeHorn",
+      "name": "Black Bronze Horn",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "BlackCrystalHorn",
+      "name": "Black Crystal Horn",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "BlazeOfLongNightFlint",
+      "name": "Blaze of Long Night Flint",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BlazingPrismshell",
+      "name": "Blazing Prismshell",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "BlazingSacrificialHeartsHesitance",
+      "name": "Blazing Sacrificial Heart's Hesitance",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BlazingSacrificialHeartsResolve",
+      "name": "Blazing Sacrificial Heart's Resolve",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BlazingSacrificialHeartsSplendor",
+      "name": "Blazing Sacrificial Heart's Splendor",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BlazingSacrificialHeartsTerror",
+      "name": "Blazing Sacrificial Heart's Terror",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BloodjadeBranch",
+      "name": "Bloodjade Branch",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "BlueDye",
+      "name": "Blue Dye",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "BluebeechWood",
+      "name": "Bluebeech Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "BorderlandBowBillet",
+      "name": "Borderland Bow Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "BorderlandCatalystBillet",
+      "name": "Borderland Catalyst Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "BorderlandClaymoreBillet",
+      "name": "Borderland Claymore Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "BorderlandPolearmBillet",
+      "name": "Borderland Polearm Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "BorderlandSwordBillet",
+      "name": "Borderland Sword Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "BorealWolfsBrokenFang",
+      "name": "Boreal Wolf's Broken Fang",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BorealWolfsCrackedTooth",
+      "name": "Boreal Wolf's Cracked Tooth",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BorealWolfsMilkTooth",
+      "name": "Boreal Wolf's Milk Tooth",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "BorealWolfsNostalgia",
+      "name": "Boreal Wolf's Nostalgia",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Brightwood",
+      "name": "Brightwood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "BrilliantChrysanthemum",
+      "name": "Brilliant Chrysanthemum",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "BrilliantDiamondChunk",
+      "name": "Brilliant Diamond Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "BrilliantDiamondFragment",
+      "name": "Brilliant Diamond Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "BrilliantDiamondGemstone",
+      "name": "Brilliant Diamond Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "BrilliantDiamondSliver",
+      "name": "Brilliant Diamond Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "BrokenDriveShaft",
+      "name": "Broken Drive Shaft",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "BrokenGobletOfThePristineSea",
+      "name": "Broken Goblet of the Pristine Sea",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Butter",
+      "name": "Butter",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "ButterflyWings",
+      "name": "Butterfly Wings",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Cabbage",
+      "name": "Cabbage",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "Cacahuatl",
+      "name": "Cacahuatl",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "CallaLily",
+      "name": "Calla Lily",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "Carrot",
+      "name": "Carrot",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "CasketOfTomes",
+      "name": "Casket of Tomes",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Cecilia",
+      "name": "Cecilia",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "ChainsOfTheDandelionGladiator",
+      "name": "Chains of the Dandelion Gladiator",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ChaosAxis",
+      "name": "Chaos Axis",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosBolt",
+      "name": "Chaos Bolt",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosCircuit",
+      "name": "Chaos Circuit",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosCore",
+      "name": "Chaos Core",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosDevice",
+      "name": "Chaos Device",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosGear",
+      "name": "Chaos Gear",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosModule",
+      "name": "Chaos Module",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosOculus",
+      "name": "Chaos Oculus",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChaosStorage",
+      "name": "Chaos Storage",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChapterOfAnAncientChord",
+      "name": "Chapter of an Ancient Chord",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ChasmlightFin",
+      "name": "Chasmlight Fin",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Cheese",
+      "name": "Cheese",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "ChenyuAdeptea",
+      "name": "Chenyu Adeptea",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "ChilledMeat",
+      "name": "Chilled Meat",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "ChimericCore",
+      "name": "Chimeric Core",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ChunkOfAerosiderite",
+      "name": "Chunk of Aerosiderite",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ClarionOfThePaleStarArmy",
+      "name": "Clarion of the Pale Star Army",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "CleansingHeart",
+      "name": "Cleansing Heart",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ClearwaterJade",
+      "name": "Clearwater Jade",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "CloudRetainersDamaskedDevice",
+      "name": "Cloud Retainer's Damasked Device",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "CloudseamScale",
+      "name": "Cloudseam Scale",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "CoffeeBeans",
+      "name": "Coffee Beans",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "CoiledCoreOfLife",
+      "name": "Coiled Core of Life",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ColdCrackedShellshard",
+      "name": "Cold-Cracked Shellshard",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "CompanionshipEXP",
+      "name": "Companionship EXP",
+      "rarity": 3,
+      "type": "increasesFriendship"
+    },
+    {
+      "key": "ConcealedClaw",
+      "name": "Concealed Claw",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ConcealedTalon",
+      "name": "Concealed Talon",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ConcealedUnguis",
+      "name": "Concealed Unguis",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "CondensedResin",
+      "name": "Condensed Resin",
+      "rarity": 4,
+      "type": "consumable"
+    },
+    {
+      "key": "CondessenceCrystal",
+      "name": "Condessence Crystal",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "CopperTalismanOfTheForestDew",
+      "name": "Copper Talisman of the Forest Dew",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "CorLapis",
+      "name": "Cor Lapis",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "CoralBranchOfADistantSea",
+      "name": "Coral Branch of a Distant Sea",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "CounterfeitResin",
+      "name": "Counterfeit Resin",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Crab",
+      "name": "Crab",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "CrabRoe",
+      "name": "Crab Roe",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "Cream",
+      "name": "Cream",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "CrimsonAgate",
+      "name": "Crimson Agate",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "CrownOfInsight",
+      "name": "Crown of Insight",
+      "rarity": 5,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "CryoSigil",
+      "name": "Cryo Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "CryoTreasureCompass",
+      "name": "Cryo Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "CrystalChunk",
+      "name": "Crystal Chunk",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "CrystalCore",
+      "name": "Crystal Core",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "CrystalMarrow",
+      "name": "Crystal Marrow",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "CrystalPrism",
+      "name": "Crystal Prism",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "CrystalflyTrap",
+      "name": "Crystalfly Trap",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "CrystallineBloom",
+      "name": "Crystalline Bloom",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "CrystallineCystDust",
+      "name": "Crystalline Cyst Dust",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "CuihuaWood",
+      "name": "Cuihua Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "CyclicMilitaryKuuvahkiCore",
+      "name": "Cyclic Military Kuuvahki Core",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "CypressWood",
+      "name": "Cypress Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "DakasBell",
+      "name": "Daka's Bell",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DamagedMask",
+      "name": "Damaged Mask",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DamagedPrism",
+      "name": "Damaged Prism",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DandelionSeed",
+      "name": "Dandelion Seed",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "DarkStatuette",
+      "name": "Dark Statuette",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DeadLeyLineBranch",
+      "name": "Dead Ley Line Branch",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DeadLeyLineLeaves",
+      "name": "Dead Ley Line Leaves",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DeathlyStatuette",
+      "name": "Deathly Statuette",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DebrisOfDecarabiansCity",
+      "name": "Debris of Decarabian's City",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DeliriousDecadenceOfTheSacredLord",
+      "name": "Delirious Decadence of the Sacred Lord",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DeliriousDemeanorOfTheSacredLord",
+      "name": "Delirious Demeanor of the Sacred Lord",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DeliriousDesolationOfTheSacredLord",
+      "name": "Delirious Desolation of the Sacred Lord",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DeliriousDivinityOfTheSacredLord",
+      "name": "Delirious Divinity of the Sacred Lord",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DendroSigil",
+      "name": "Dendro Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "DendroTreasureCompass",
+      "name": "Dendro Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Dendrobium",
+      "name": "Dendrobium",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "DendrocidePotion",
+      "name": "Dendrocide Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "Dendroculus",
+      "name": "Dendroculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "DendroculusResonanceStone",
+      "name": "Dendroculus Resonance Stone",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "DenialAndJudgment",
+      "name": "Denial and Judgment",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DepletedLunarIron",
+      "name": "Depleted Lunar Iron",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DesiccantPotion",
+      "name": "Desiccant Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "DesiccatedShell",
+      "name": "Desiccated Shell",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DewOfRepudiation",
+      "name": "Dew of Repudiation",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DismalPrism",
+      "name": "Dismal Prism",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DivineBodyFromGuyun",
+      "name": "Divine Body from Guyun",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DiviningScroll",
+      "name": "Divining Scroll",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DjemDjemDrum",
+      "name": "Djem Djem Drum",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "DormantFungalNucleus",
+      "name": "Dormant Fungal Nucleus",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Dracolite",
+      "name": "Dracolite",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "DragonLordsCrown",
+      "name": "Dragon Lord's Crown",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DragonheirsFalseFin",
+      "name": "Dragonheir's False Fin",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DreamOfScorchingMight",
+      "name": "Dream of Scorching Might",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DreamOfTheDandelionGladiator",
+      "name": "Dream of the Dandelion Gladiator",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DreamSolvent",
+      "name": "Dream Solvent",
+      "rarity": 4,
+      "type": "consumable"
+    },
+    {
+      "key": "DropOfTaintedWater",
+      "name": "Drop of Tainted Water",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "DrossOfPureSacredDewdrop",
+      "name": "Dross of Pure Sacred Dewdrop",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "DustOfAzoth",
+      "name": "Dust of Azoth",
+      "rarity": 2,
+      "type": "consumable"
+    },
+    {
+      "key": "DustproofPotion",
+      "name": "Dustproof Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "DvalinsClaw",
+      "name": "Dvalin's Claw",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DvalinsPlume",
+      "name": "Dvalin's Plume",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "DvalinsSigh",
+      "name": "Dvalin's Sigh",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "EchoOfAnAncientChord",
+      "name": "Echo of an Ancient Chord",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "EchoOfScorchingMight",
+      "name": "Echo of Scorching Might",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "EelMeat",
+      "name": "Eel Meat",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "ElectroCrystal",
+      "name": "Electro Crystal",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "ElectroSigil",
+      "name": "Electro Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "ElectroTreasureCompass",
+      "name": "Electro Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Electroculus",
+      "name": "Electroculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "ElectroculusResonanceStone",
+      "name": "Electroculus Resonance Stone",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "ElixirOfTheHeretic",
+      "name": "Elixir of the Heretic",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "EmberOfLongNightFlint",
+      "name": "Ember of Long Night Flint",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "EmbercoreFlower",
+      "name": "Embercore Flower",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "EmperorsResolution",
+      "name": "Emperor's Resolution",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "EmpoweredDragontooth",
+      "name": "Empowered Dragontooth",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Endora",
+      "name": "Endora",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "EnergyNectar",
+      "name": "Energy Nectar",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "EnhancementOre",
+      "name": "Enhancement Ore",
+      "rarity": 1,
+      "type": "weaponEnhancementMaterial"
+    },
+    {
+      "key": "EnsnaringGaze",
+      "name": "Ensnaring Gaze",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ErodedHorn",
+      "name": "Eroded Horn",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ErodedScaleFeather",
+      "name": "Eroded Scale-Feather",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ErodedSunfire",
+      "name": "Eroded Sunfire",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "EssenceOfPureSacredDewdrop",
+      "name": "Essence of Pure Sacred Dewdrop",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "EtherealCrystal",
+      "name": "Ethereal Crystal",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "EtherealCrystalscaleStone",
+      "name": "Ethereal Crystalscale Stone",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "EtherealGlimmershard",
+      "name": "Ethereal Glimmershard",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "EtherwingMoth",
+      "name": "Etherwing Moth",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "Everamber",
+      "name": "Everamber",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "EverflameSeed",
+      "name": "Everflame Seed",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "EvergloomRing",
+      "name": "Evergloom Ring",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ExhilarationOfTheCellaredSpiritualNectar",
+      "name": "Exhilaration of the Cellared Spiritual Nectar",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "EyeOfGraeae",
+      "name": "Eye of Graeae",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Fabric",
+      "name": "Fabric",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "FadedFlamingHilt",
+      "name": "Faded Flaming Hilt",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FadedRedSatin",
+      "name": "Faded Red Satin",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FadingCandle",
+      "name": "Fading Candle",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "FamedHandguard",
+      "name": "Famed Handguard",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Fateometer",
+      "name": "\"Fateometer\"",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "FeatheryFin",
+      "name": "Feathery Fin",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FermentedJuice",
+      "name": "Fermented Juice",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "FestiveDrum",
+      "name": "Festive Drum",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "FettersOfTheDandelionGladiator",
+      "name": "Fetters of the Dandelion Gladiator",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "FineEnhancementOre",
+      "name": "Fine Enhancement Ore",
+      "rarity": 2,
+      "type": "weaponEnhancementMaterial"
+    },
+    {
+      "key": "FirWood",
+      "name": "Fir Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "FirmArrowhead",
+      "name": "Firm Arrowhead",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FirstbornFiresprite",
+      "name": "Firstborn Firesprite",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Fish",
+      "name": "Fish",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "FishingLineStabilizer",
+      "name": "Fishing Line Stabilizer",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "FlamingEssentialOil",
+      "name": "Flaming Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "FlamingFlowerStamen",
+      "name": "Flaming Flower Stamen",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "FlammabombWood",
+      "name": "Flammabomb Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "FlareOfLongNightFlint",
+      "name": "Flare of Long Night Flint",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Flockingweed",
+      "name": "Flockingweed",
+      "rarity": 1,
+      "type": "localSpecialtySnezhnaya"
+    },
+    {
+      "key": "FloralZither",
+      "name": "Floral Zither",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Flour",
+      "name": "Flour",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "FluorescentFungus",
+      "name": "Fluorescent Fungus",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "FontemerUnihorn",
+      "name": "Fontemer Unihorn",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ForbiddenCurseScroll",
+      "name": "Forbidden Curse Scroll",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ForeignSynapse",
+      "name": "Foreign Synapse",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ForestEssentialOil",
+      "name": "Forest Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "FossilizedBoneShard",
+      "name": "Fossilized Bone Shard",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Fowl",
+      "name": "Fowl",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "FracturedEyeOfTheDeepShadow",
+      "name": "Fractured Eye of the Deep Shadow",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FracturedFlamingHilt",
+      "name": "Fractured Flaming Hilt",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FracturedLunarIron",
+      "name": "Fractured Lunar Iron",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FragileBoneShard",
+      "name": "Fragile Bone Shard",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FragileResin",
+      "name": "Fragile Resin",
+      "rarity": 4,
+      "type": "consumable"
+    },
+    {
+      "key": "FragmentOfAGoldenMelody",
+      "name": "Fragment of a Golden Melody",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "FragmentOfAnAncientChord",
+      "name": "Fragment of an Ancient Chord",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "FragmentOfDecarabiansEpic",
+      "name": "Fragment of Decarabian's Epic",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "FragrantCedarWood",
+      "name": "Fragrant Cedar Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Frog",
+      "name": "Frog",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "FrostEtchedWarrant",
+      "name": "Frost-Etched Warrant",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FrostfairyFlower",
+      "name": "Frostfairy Flower",
+      "rarity": 1,
+      "type": "localSpecialtySnezhnaya"
+    },
+    {
+      "key": "FrostingEssentialOil",
+      "name": "Frosting Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "FrostlampFlower",
+      "name": "Frostlamp Flower",
+      "rarity": 1,
+      "type": "localSpecialtyNodKrai"
+    },
+    {
+      "key": "FrostnightsGlimmer",
+      "name": "Frostnight's Glimmer",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FrostnightsGlory",
+      "name": "Frostnight's Glory",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FrostnightsGlow",
+      "name": "Frostnight's Glow",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "FrostshieldPotion",
+      "name": "Frostshield Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "FuneraryMask",
+      "name": "Funerary Mask",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "FungalSpores",
+      "name": "Fungal Spores",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "GenesisCrystal",
+      "name": "Genesis Crystal",
+      "rarity": 5,
+      "type": "specialCurrency"
+    },
+    {
+      "key": "GeoSigil",
+      "name": "Geo Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "GeoTreasureCompass",
+      "name": "Geo Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Geoculus",
+      "name": "Geoculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "GeoculusResonanceStone",
+      "name": "Geoculus Resonance Stone",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "GildedScale",
+      "name": "Gilded Scale",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "GlabrousBeans",
+      "name": "Glabrous Beans",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "Glaciafruit",
+      "name": "Glaciafruit",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "GlazeLily",
+      "name": "Glaze Lily",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "GloomyStatuette",
+      "name": "Gloomy Statuette",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "GlowingHornshroom",
+      "name": "Glowing Hornshroom",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "GlowingRemains",
+      "name": "Glowing Remains",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "GoldInscribedSecretSourceCore",
+      "name": "Gold-Inscribed Secret Source Core",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "GoldenBranchOfADistantSea",
+      "name": "Golden Branch of a Distant Sea",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "GoldenFern",
+      "name": "Golden Fern",
+      "rarity": 1,
+      "type": "localSpecialtySnezhnaya"
+    },
+    {
+      "key": "GoldenGobletOfThePristineSea",
+      "name": "Golden Goblet of the Pristine Sea",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "GoldenRavenInsignia",
+      "name": "Golden Raven Insignia",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "GoldenTalismanOfTheForestDew",
+      "name": "Golden Talisman of the Forest Dew",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "GrainOfAerosiderite",
+      "name": "Grain of Aerosiderite",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Grainfruit",
+      "name": "Grainfruit",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "GuideToAdmonition",
+      "name": "Guide to Admonition",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToBallad",
+      "name": "Guide to Ballad",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToCharity",
+      "name": "Guide to Charity",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToConflict",
+      "name": "Guide to Conflict",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToContention",
+      "name": "Guide to Contention",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToDiligence",
+      "name": "Guide to Diligence",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToElegance",
+      "name": "Guide to Elegance",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToElysium",
+      "name": "Guide to Elysium",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToEquity",
+      "name": "Guide to Equity",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToFortitude",
+      "name": "Guide to Fortitude",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToFreedom",
+      "name": "Guide to Freedom",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToGlory",
+      "name": "Guide to Glory",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToGold",
+      "name": "Guide to Gold",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToIngenuity",
+      "name": "Guide to Ingenuity",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToJustice",
+      "name": "Guide to Justice",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToKindling",
+      "name": "Guide to Kindling",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToLight",
+      "name": "Guide to Light",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToMoonlight",
+      "name": "Guide to Moonlight",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToOrder",
+      "name": "Guide to Order",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToPraxis",
+      "name": "Guide to Praxis",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToProsperity",
+      "name": "Guide to Prosperity",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToResistance",
+      "name": "Guide to Resistance",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToTransience",
+      "name": "Guide to Transience",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GuideToVagrancy",
+      "name": "Guide to Vagrancy",
+      "rarity": 3,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "GushingEssentialOil",
+      "name": "Gushing Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "Ham",
+      "name": "Ham",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "HarmonicKeys",
+      "name": "Harmonic Keys",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "HarraFruit",
+      "name": "Harra Fruit",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "HazelnutWood",
+      "name": "Hazelnut Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "HeartOfTheSecretSource",
+      "name": "Heart of the Secret Source",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "HeatshieldPotion",
+      "name": "Heatshield Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "HeavyHorn",
+      "name": "Heavy Horn",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "HellfireButterfly",
+      "name": "Hellfire Butterfly",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "HennaBerry",
+      "name": "Henna Berry",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "HerosWit",
+      "name": "Hero's Wit",
+      "rarity": 4,
+      "type": "characterEXPMaterial"
+    },
+    {
+      "key": "HoarfrostCore",
+      "name": "Hoarfrost Core",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "HollowRootOfLife",
+      "name": "Hollow Root of Life",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Honey",
+      "name": "Honey",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "HookedBeakOfTheDeepShadow",
+      "name": "Hooked Beak of the Deep Shadow",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Horsetail",
+      "name": "Horsetail",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "HuntersSacrificialKnife",
+      "name": "Hunter's Sacrificial Knife",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "HurricaneSeed",
+      "name": "Hurricane Seed",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "HydroSigil",
+      "name": "Hydro Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "HydroTreasureCompass",
+      "name": "Hydro Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Hydroculus",
+      "name": "Hydroculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "HydroculusResonanceStone",
+      "name": "Hydroculus Resonance Stone",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "IcyPebble",
+      "name": "Icy Pebble",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "IgnitedSeedOfLife",
+      "name": "Ignited Seed of Life",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "IgnitedSeeingEye",
+      "name": "Ignited Seeing Eye",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "IgnitedStone",
+      "name": "Ignited Stone",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "IllusoryLeafcoil",
+      "name": "Illusory Leafcoil",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ImmaculateWarrant",
+      "name": "Immaculate Warrant",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "InactivatedFungalNucleus",
+      "name": "Inactivated Fungal Nucleus",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "InspectorsSacrificialKnife",
+      "name": "Inspector's Sacrificial Knife",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "InsulationPotion",
+      "name": "Insulation Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "IntertwinedFate",
+      "name": "Intertwined Fate",
+      "rarity": 5,
+      "type": "limitedWishingItem"
+    },
+    {
+      "key": "IntoxicationOfTheCellaredSpiritualNectar",
+      "name": "Intoxication of the Cellared Spiritual Nectar",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "IronChunk",
+      "name": "Iron Chunk",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "IronTalismanOfTheForestDew",
+      "name": "Iron Talisman of the Forest Dew",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "IttyBittyOctobaby",
+      "name": "Itty Bitty Octobaby",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "JadeBranchOfADistantSea",
+      "name": "Jade Branch of a Distant Sea",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "JadelightCanopy",
+      "name": "Jadelight Canopy",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Jam",
+      "name": "Jam",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "JeweledBranchOfADistantSea",
+      "name": "Jeweled Branch of a Distant Sea",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "JeweledFlamingHilt",
+      "name": "Jeweled Flaming Hilt",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "JinniInTheMagicBottleLiloupar",
+      "name": "Jinni in the Magic Bottle — Liloupar",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "JueyunChili",
+      "name": "Jueyun Chili",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "JumpyDumptyPartyPopper",
+      "name": "Jumpy Dumpty Party Popper",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "JuvenileFang",
+      "name": "Juvenile Fang",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "JuvenileJade",
+      "name": "Juvenile Jade",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "KaboomBox",
+      "name": "Kaboom Box",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "KageuchiHandguard",
+      "name": "Kageuchi Handguard",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "KalpalataLotus",
+      "name": "Kalpalata Lotus",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "Kamera",
+      "name": "Kamera",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "KarmaphalaWood",
+      "name": "Karmaphala Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LakelightLily",
+      "name": "Lakelight Lily",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "Lakkaberry",
+      "name": "Lakkaberry",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "LarchWood",
+      "name": "Larch Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LaunchTube",
+      "name": "Launch Tube",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LavenderMelon",
+      "name": "Lavender Melon",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "LeapingSpiritPiano",
+      "name": "Leaping Spirit Piano",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LeyLineSprout",
+      "name": "Ley Line Sprout",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "LieutenantsInsignia",
+      "name": "Lieutenant's Insignia",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "LightGuidingTetrahedron",
+      "name": "Light Guiding Tetrahedron",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "LightbearingScaleFeather",
+      "name": "Lightbearing Scale-Feather",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "LightlessBone",
+      "name": "Lightless Bone",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "LightlessEyeOfTheMaelstrom",
+      "name": "Lightless Eye of the Maelstrom",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "LightlessMass",
+      "name": "Lightless Mass",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "LightlessSilkString",
+      "name": "Lightless Silk String",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "LightningPrism",
+      "name": "Lightning Prism",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "LindenWood",
+      "name": "Linden Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LingeringEuphonia",
+      "name": "\"Lingering Euphonia\"",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LinneasNaturalistArchive",
+      "name": "Linnea's Naturalist Archive",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LizardTail",
+      "name": "Lizard Tail",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LoachPearl",
+      "name": "Loach Pearl",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LocusOfAClearWill",
+      "name": "Locus of a Clear Will",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "LotusHead",
+      "name": "Lotus Head",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "LumenstoneAdjuvant",
+      "name": "Lumenstone Adjuvant",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LumidouceBell",
+      "name": "Lumidouce Bell",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "Lumifluorite",
+      "name": "Lumifluorite",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LuminescentPollen",
+      "name": "Luminescent Pollen",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "LuminescentSpine",
+      "name": "Luminescent Spine",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "LuminousSandsFromGuyun",
+      "name": "Luminous Sands from Guyun",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Lumitoile",
+      "name": "Lumitoile",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "LunaTreasureCompass",
+      "name": "Luna Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LunarArcanaCase",
+      "name": "Lunar Arcana Case",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "LunarFin",
+      "name": "Lunar Fin",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Lunoculus",
+      "name": "Lunoculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "LustrousStoneFromGuyun",
+      "name": "Lustrous Stone from Guyun",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MadmansRestraint",
+      "name": "Madman's Restraint",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MagicalCrystalChunk",
+      "name": "Magical Crystal Chunk",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "MajesticHookedBeak",
+      "name": "Majestic Hooked Beak",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MallowWood",
+      "name": "Mallow Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "MapleWood",
+      "name": "Maple Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Marcotte",
+      "name": "Marcotte",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "MarionetteCore",
+      "name": "Marionette Core",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MarkOfTheBindingBlessing",
+      "name": "Mark of the Binding Blessing",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MarkedShell",
+      "name": "Marked Shell",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MaskOfTheKijin",
+      "name": "Mask of the Kijin",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MaskOfTheOneHorned",
+      "name": "Mask of the One-Horned",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MaskOfTheTigersBite",
+      "name": "Mask of the Tiger's Bite",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MaskOfTheVirtuousDoctor",
+      "name": "Mask of the Virtuous Doctor",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MaskOfTheWickedLieutenant",
+      "name": "Mask of the Wicked Lieutenant",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MasterlessStardust",
+      "name": "Masterless Stardust",
+      "rarity": 4,
+      "type": "commonVoucher"
+    },
+    {
+      "key": "MasterlessStarglitter",
+      "name": "Masterless Starglitter",
+      "rarity": 5,
+      "type": "superiorVoucher"
+    },
+    {
+      "key": "Matsutake",
+      "name": "Matsutake",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "MeasuredPourOfTheCellaredSpiritualNectar",
+      "name": "Measured Pour of the Cellared Spiritual Nectar",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MechanicalSpurGear",
+      "name": "Mechanical Spur Gear",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MementoLens",
+      "name": "Memento Lens",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "MeshingGear",
+      "name": "Meshing Gear",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MidlanderBowBillet",
+      "name": "Midlander Bow Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "MidlanderCatalystBillet",
+      "name": "Midlander Catalyst Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "MidlanderClaymoreBillet",
+      "name": "Midlander Claymore Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "MidlanderPolearmBillet",
+      "name": "Midlander Polearm Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "MidlanderSwordBillet",
+      "name": "Midlander Sword Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "MidsommarBerry",
+      "name": "Midsommar Berry",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "Milk",
+      "name": "Milk",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "MiniSeelieBrilliance",
+      "name": "Mini Seelie: Brilliance",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "MiniSeelieCurcuma",
+      "name": "Mini Seelie: Curcuma",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "MiniSeelieDayflower",
+      "name": "Mini Seelie: Dayflower",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "MiniSeelieMoss",
+      "name": "Mini Seelie: Moss",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "MiniSeelieRos",
+      "name": "Mini Seelie: Rosé",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "MiniSeelieViola",
+      "name": "Mini Seelie: Viola",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Mint",
+      "name": "Mint",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "MirrorOfMushin",
+      "name": "Mirror of Mushin",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MistFlowerCorolla",
+      "name": "Mist Flower Corolla",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "MistGrass",
+      "name": "Mist Grass",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MistGrassPollen",
+      "name": "Mist Grass Pollen",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MistGrassWick",
+      "name": "Mist Grass Wick",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MistVeiledGoldElixir",
+      "name": "Mist Veiled Gold Elixir",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MistVeiledLeadElixir",
+      "name": "Mist Veiled Lead Elixir",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MistVeiledMercuryElixir",
+      "name": "Mist Veiled Mercury Elixir",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MistVeiledPrimoElixir",
+      "name": "Mist Veiled Primo Elixir",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MistshroudHelmet",
+      "name": "Mistshroud Helmet",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MistshroudManifestation",
+      "name": "Mistshroud Manifestation",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MistshroudPlate",
+      "name": "Mistshroud Plate",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "MoltenMoment",
+      "name": "Molten Moment",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "MonolithFragment",
+      "name": "Monolith Fragment",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "MoonPrayerBlossomFromColumbina",
+      "name": "Moon-Prayer Blossom From Columbina",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "MoonfallSilver",
+      "name": "Moonfall Silver",
+      "rarity": 1,
+      "type": "localSpecialtyNodKrai"
+    },
+    {
+      "key": "Mora",
+      "name": "Mora",
+      "rarity": 3,
+      "type": "commonCurrency"
+    },
+    {
+      "key": "MountainDateWood",
+      "name": "Mountain Date Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "MourningFlower",
+      "name": "Mourning Flower",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "MovementOfAnAncientChord",
+      "name": "Movement of an Ancient Chord",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MudraOfTheMaleficGeneral",
+      "name": "Mudra of the Malefic General",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Mushroom",
+      "name": "Mushroom",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "MusterOfThePaleStarArmy",
+      "name": "Muster of the Pale Star Army",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "MysteriousMeat",
+      "name": "Mysterious Meat",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "MysticEnhancementOre",
+      "name": "Mystic Enhancement Ore",
+      "rarity": 3,
+      "type": "weaponEnhancementMaterial"
+    },
+    {
+      "key": "NREMenu30",
+      "name": "NRE (Menu 30)",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "NagadusEmeraldChunk",
+      "name": "Nagadus Emerald Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "NagadusEmeraldFragment",
+      "name": "Nagadus Emerald Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "NagadusEmeraldGemstone",
+      "name": "Nagadus Emerald Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "NagadusEmeraldSliver",
+      "name": "Nagadus Emerald Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "NakuWeed",
+      "name": "Naku Weed",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "NarukamisAffection",
+      "name": "Narukami's Affection",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NarukamisJoy",
+      "name": "Narukami's Joy",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NarukamisValor",
+      "name": "Narukami's Valor",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NarukamisWisdom",
+      "name": "Narukami's Wisdom",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NeoTerminalFloatingLeafModel",
+      "name": "Neo Terminal: Floating Leaf Model",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "NewbornTaintedHydroPhantasm",
+      "name": "Newborn Tainted Hydro Phantasm",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "NightWindsMysticAugury",
+      "name": "Night-Wind's Mystic Augury",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NightWindsMysticConsideration",
+      "name": "Night-Wind's Mystic Consideration",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NightWindsMysticPremonition",
+      "name": "Night-Wind's Mystic Premonition",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NightWindsMysticRevelation",
+      "name": "Night-Wind's Mystic Revelation",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "NightwindHorn",
+      "name": "Nightwind Horn",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "NilotpalaLotus",
+      "name": "Nilotpala Lotus",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "NoctilucousJade",
+      "name": "Noctilucous Jade",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "NocturnalBlossom",
+      "name": "Nocturnal Blossom",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "NorthlanderBowBillet",
+      "name": "Northlander Bow Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "NorthlanderCatalystBillet",
+      "name": "Northlander Catalyst Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "NorthlanderClaymoreBillet",
+      "name": "Northlander Claymore Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "NorthlanderPolearmBillet",
+      "name": "Northlander Polearm Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "NorthlanderSwordBillet",
+      "name": "Northlander Sword Billet",
+      "rarity": 4,
+      "type": "material"
+    },
+    {
+      "key": "OasisGardensKindness",
+      "name": "Oasis Garden's Kindness",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "OasisGardensMourning",
+      "name": "Oasis Garden's Mourning",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "OasisGardensReminiscence",
+      "name": "Oasis Garden's Reminiscence",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "OasisGardensTruth",
+      "name": "Oasis Garden's Truth",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "OblationOfTheFarNorthScions",
+      "name": "Oblation of the Far-North Scions",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ObsidianAncientName",
+      "name": "Obsidian Ancient Name",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "OldHandguard",
+      "name": "Old Handguard",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "OldOperativesPocketWatch",
+      "name": "Old Operative's Pocket Watch",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "OldenDaysOfScorchingMight",
+      "name": "Olden Days of Scorching Might",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "OminousMask",
+      "name": "Ominous Mask",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "OmniUbiquityNet",
+      "name": "Omni-Ubiquity Net",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "Onikabuto",
+      "name": "Onikabuto",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "Onion",
+      "name": "Onion",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "OperativesConstancy",
+      "name": "Operative's Constancy",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "OperativesStandardPocketWatch",
+      "name": "Operative's Standard Pocket Watch",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "OriginalResin",
+      "name": "Original Resin",
+      "rarity": 3,
+      "type": "challengeResultItem"
+    },
+    {
+      "key": "OtogiWood",
+      "name": "Otogi Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "OverripeFlamegranate",
+      "name": "Overripe Flamegranate",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Padisarah",
+      "name": "Padisarah",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "ParametricTransformer",
+      "name": "Parametric Transformer",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "PeachPalmWood",
+      "name": "Peach Palm Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "PeculiarPinion",
+      "name": "Peculiar Pinion",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "PedunculateOakWood",
+      "name": "Pedunculate Oak Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Pepper",
+      "name": "Pepper",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "PerpetualCaliber",
+      "name": "Perpetual Caliber",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PerpetualHeart",
+      "name": "Perpetual Heart",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PhilanemoMushroom",
+      "name": "Philanemo Mushroom",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "PhilosophiesOfAdmonition",
+      "name": "Philosophies of Admonition",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfBallad",
+      "name": "Philosophies of Ballad",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfCharity",
+      "name": "Philosophies of Charity",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfConflict",
+      "name": "Philosophies of Conflict",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfContention",
+      "name": "Philosophies of Contention",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfDiligence",
+      "name": "Philosophies of Diligence",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfElegance",
+      "name": "Philosophies of Elegance",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfElysium",
+      "name": "Philosophies of Elysium",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfEquity",
+      "name": "Philosophies of Equity",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfFortitude",
+      "name": "Philosophies of Fortitude",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfFreedom",
+      "name": "Philosophies of Freedom",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfGlory",
+      "name": "Philosophies of Glory",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfGold",
+      "name": "Philosophies of Gold",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfIngenuity",
+      "name": "Philosophies of Ingenuity",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfJustice",
+      "name": "Philosophies of Justice",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfKindling",
+      "name": "Philosophies of Kindling",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfLight",
+      "name": "Philosophies of Light",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfMoonlight",
+      "name": "Philosophies of Moonlight",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfOrder",
+      "name": "Philosophies of Order",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfPraxis",
+      "name": "Philosophies of Praxis",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfProsperity",
+      "name": "Philosophies of Prosperity",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfResistance",
+      "name": "Philosophies of Resistance",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfTransience",
+      "name": "Philosophies of Transience",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PhilosophiesOfVagrancy",
+      "name": "Philosophies of Vagrancy",
+      "rarity": 4,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "PieceOfAerosiderite",
+      "name": "Piece of Aerosiderite",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "PilgrimsChronicle",
+      "name": "Pilgrim's Chronicle",
+      "rarity": 4,
+      "type": "questItem"
+    },
+    {
+      "key": "PineAmber",
+      "name": "Pine Amber",
+      "rarity": 1,
+      "type": "localSpecialtyNodKrai"
+    },
+    {
+      "key": "PineWood",
+      "name": "Pine Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "Pinecone",
+      "name": "Pinecone",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "PluieLotus",
+      "name": "Pluie Lotus",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "PlumeOfTheFallenWatcher",
+      "name": "Plume of the Fallen Watcher",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PolarizingPrism",
+      "name": "Polarizing Prism",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "PortableAerodynamicGelatinousBubbleGenerator",
+      "name": "Portable Aerodynamic Gelatinous Bubble Generator",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "PortableBearing",
+      "name": "Portable Bearing",
+      "rarity": 1,
+      "type": "localSpecialtyNodKrai"
+    },
+    {
+      "key": "PortableWaypoint",
+      "name": "Portable Waypoint",
+      "rarity": 4,
+      "type": "consumable"
+    },
+    {
+      "key": "Potato",
+      "name": "Potato",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "PrecisionDriveShaft",
+      "name": "Precision Drive Shaft",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "PrecisionKuuvahkiStampingDie",
+      "name": "Precision Kuuvahki Stamping Die",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PrimeChimericNexus",
+      "name": "Prime Chimeric Nexus",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Primogem",
+      "name": "Primogem",
+      "rarity": 5,
+      "type": "specialCurrency"
+    },
+    {
+      "key": "PrimordialGreenbloom",
+      "name": "Primordial Greenbloom",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PrismaticSeveredTail",
+      "name": "Prismatic Severed Tail",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PrithivaTopazChunk",
+      "name": "Prithiva Topaz Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "PrithivaTopazFragment",
+      "name": "Prithiva Topaz Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "PrithivaTopazGemstone",
+      "name": "Prithiva Topaz Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "PrithivaTopazSliver",
+      "name": "Prithiva Topaz Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "ProfanedSprout",
+      "name": "Profaned Sprout",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PseudoStamens",
+      "name": "Pseudo-Stamens",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PuppetStrings",
+      "name": "Puppet Strings",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "PyroSigil",
+      "name": "Pyro Sigil",
+      "rarity": 3,
+      "type": "cityStatesSigil"
+    },
+    {
+      "key": "PyroTreasureCompass",
+      "name": "Pyro Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Pyroculus",
+      "name": "Pyroculus",
+      "rarity": 1,
+      "type": "adventureItem"
+    },
+    {
+      "key": "PyroculusResonanceStone",
+      "name": "Pyroculus Resonance Stone",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "Qingxin",
+      "name": "Qingxin",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "QuelledCreeper",
+      "name": "Quelled Creeper",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "QuenepaBerry",
+      "name": "Quenepa Berry",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "RadiantAntler",
+      "name": "Radiant Antler",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "RadiantExoskeleton",
+      "name": "Radiant Exoskeleton",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RadiantPrism",
+      "name": "Radiant Prism",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Radish",
+      "name": "Radish",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RainbowRose",
+      "name": "Rainbow Rose",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "RainbowdropCrystal",
+      "name": "Rainbowdrop Crystal",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "RawMeat",
+      "name": "Raw Meat",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RealmCurrency",
+      "name": "Realm Currency",
+      "rarity": 3,
+      "type": "specialCurrency"
+    },
+    {
+      "key": "RecruitsInsignia",
+      "name": "Recruit's Insignia",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RedBeet",
+      "name": "Red Beet",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RedBerryshroom",
+      "name": "Red Berryshroom",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RedDye",
+      "name": "Red Dye",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "RedFeatherFan",
+      "name": "Red Feather Fan",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "RefractiveBud",
+      "name": "Refractive Bud",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ReinforcedDriveShaft",
+      "name": "Reinforced Drive Shaft",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RelicFromGuyun",
+      "name": "Relic from Guyun",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "RemnantGlowOfScorchingMight",
+      "name": "Remnant Glow of Scorching Might",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "RemnantOfTheDreadwing",
+      "name": "Remnant of the Dreadwing",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "RepertoireOfMyriadMelodies",
+      "name": "Repertoire of Myriad Melodies",
+      "rarity": 5,
+      "type": "gadget"
+    },
+    {
+      "key": "RevelryOfTheCellaredSpiritualNectar",
+      "name": "Revelry of the Cellared Spiritual Nectar",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Rice",
+      "name": "Rice",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RichRedBrocade",
+      "name": "Rich Red Brocade",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RiftCore",
+      "name": "Rift Core",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RiftbornRegalia",
+      "name": "Riftborn Regalia",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Rimecurrant",
+      "name": "Rimecurrant",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RingOfBoreas",
+      "name": "Ring of Boreas",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "RiseOfThePaleStarArmy",
+      "name": "Rise of the Pale Star Army",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "RobustFungalNucleus",
+      "name": "Robust Fungal Nucleus",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RomaritimeFlower",
+      "name": "Romaritime Flower",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "RotorHoveringDaybed",
+      "name": "Rotor Hovering Daybed",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "RuinedHilt",
+      "name": "Ruined Hilt",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "RukkhashavaMushrooms",
+      "name": "Rukkhashava Mushrooms",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "RunicFang",
+      "name": "Runic Fang",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Rye",
+      "name": "Rye",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "RyeFlour",
+      "name": "Rye Flour",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SakuraBloom",
+      "name": "Sakura Bloom",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "Salt",
+      "name": "Salt",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SandGreasePupa",
+      "name": "Sand Grease Pupa",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "SandbearerWood",
+      "name": "Sandbearer Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "SandronesPortableTeaTable",
+      "name": "Sandrone's Portable Tea Table",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "SangoPearl",
+      "name": "Sango Pearl",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "SaurianClawSucculent",
+      "name": "Saurian Claw Succulent",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "SaurianCrownedWarriorsGoldenWhistle",
+      "name": "Saurian-Crowned Warrior's Golden Whistle",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Sausage",
+      "name": "Sausage",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "Scarab",
+      "name": "Scarab",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "ScarletSandSlate",
+      "name": "Scarlet Sand Slate",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "ScatteredPieceOfDecarabiansDream",
+      "name": "Scattered Piece of Decarabian's Dream",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ScoopOfTaintedWater",
+      "name": "Scoop of Tainted Water",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SeaGanoderma",
+      "name": "Sea Ganoderma",
+      "rarity": 1,
+      "type": "localSpecialtyInazuma"
+    },
+    {
+      "key": "Seagrass",
+      "name": "Seagrass",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SealedScroll",
+      "name": "Sealed Scroll",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SeasonedFang",
+      "name": "Seasoned Fang",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SecretSourceAirflowAccumulator",
+      "name": "Secret Source Airflow Accumulator",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "SeedDispensary",
+      "name": "Seed Dispensary",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "SegmentDomainTreasureCompass",
+      "name": "Segment-Domain Treasure Compass",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "SentrysWoodenWhistle",
+      "name": "Sentry's Wooden Whistle",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SereniteaPot",
+      "name": "Serenitea Pot",
+      "rarity": 5,
+      "type": "gadget"
+    },
+    {
+      "key": "SergeantsInsignia",
+      "name": "Sergeant's Insignia",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SeveredTailOfTheSkyRoamer",
+      "name": "Severed Tail of the Sky-Roamer",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ShacklesOfTheDandelionGladiator",
+      "name": "Shackles of the Dandelion Gladiator",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "ShadowOfTheWarrior",
+      "name": "Shadow of the Warrior",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ShardOfAFoulLegacy",
+      "name": "Shard of a Foul Legacy",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ShardOfAShatteredWill",
+      "name": "Shard of a Shattered Will",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SharpArrowhead",
+      "name": "Sharp Arrowhead",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SheathOfTheSecretSource",
+      "name": "Sheath of the Secret Source",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ShikiKoshou",
+      "name": "Shiki Koshou",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "ShimmeringNectar",
+      "name": "Shimmering Nectar",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "ShivadaJadeChunk",
+      "name": "Shivada Jade Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "ShivadaJadeFragment",
+      "name": "Shivada Jade Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "ShivadaJadeGemstone",
+      "name": "Shivada Jade Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "ShivadaJadeSliver",
+      "name": "Shivada Jade Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "ShockingEssentialOil",
+      "name": "Shocking Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "ShrimpMeat",
+      "name": "Shrimp Meat",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SigilOfAStridingWill",
+      "name": "Sigil of a Striding Will",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SilkFlower",
+      "name": "Silk Flower",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "SilkenFeather",
+      "name": "Silken Feather",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "SilverFirWood",
+      "name": "Silver Fir Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "SilverGobletOfThePristineSea",
+      "name": "Silver Goblet of the Pristine Sea",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "SilverRavenInsignia",
+      "name": "Silver Raven Insignia",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SilverTalismanOfTheForestDew",
+      "name": "Silver Talisman of the Forest Dew",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "SilverTwig",
+      "name": "Silver Twig",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "SkysplitGembloom",
+      "name": "Skysplit Gembloom",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "SlimeConcentrate",
+      "name": "Slime Concentrate",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SlimeCondensate",
+      "name": "Slime Condensate",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SlimeSecretions",
+      "name": "Slime Secretions",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SmallLampGrass",
+      "name": "Small Lamp Grass",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "Smetana",
+      "name": "Smetana",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SmokedFowl",
+      "name": "Smoked Fowl",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SmolderingPearl",
+      "name": "Smoldering Pearl",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Snapdragon",
+      "name": "Snapdragon",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SnowPoplarWood",
+      "name": "Snow Poplar Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "SnowballFlower",
+      "name": "Snowball Flower",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SparklessStatueCore",
+      "name": "Sparkless Statue Core",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "SpecialAnalysisZoomLens",
+      "name": "\"Special Analysis Zoom Lens\"",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "SpecialKamera",
+      "name": "Special Kamera",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "SpectralHeart",
+      "name": "Spectral Heart",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SpectralHusk",
+      "name": "Spectral Husk",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SpectralNucleus",
+      "name": "Spectral Nucleus",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Spice",
+      "name": "Spice",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SpinelFruit",
+      "name": "Spinel Fruit",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SpiritLocketOfBoreas",
+      "name": "Spirit Locket of Boreas",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "SplinteredHilt",
+      "name": "Splintered Hilt",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SprayfeatherGill",
+      "name": "Sprayfeather Gill",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "SpringOfPureSacredDewdrop",
+      "name": "Spring of Pure Sacred Dewdrop",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "SpringOfTheFirstDewdrop",
+      "name": "Spring of the First Dewdrop",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "SproutNodeOfLife",
+      "name": "Sprout Node of Life",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "StainedMask",
+      "name": "Stained Mask",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Starconch",
+      "name": "Starconch",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "Starsilver",
+      "name": "Starsilver",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "StillSmolderingHilt",
+      "name": "Still-Smoldering Hilt",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "StormBeads",
+      "name": "Storm Beads",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "StrangeTooth",
+      "name": "Strange Tooth",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "StreamingEssentialOil",
+      "name": "Streaming Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "SturdyBoneShard",
+      "name": "Sturdy Bone Shard",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SturdyShell",
+      "name": "Sturdy Shell",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "SubdetectionUnit",
+      "name": "Subdetection Unit",
+      "rarity": 1,
+      "type": "localSpecialtyFontaine"
+    },
+    {
+      "key": "SublimationOfPureSacredDewdrop",
+      "name": "Sublimation of Pure Sacred Dewdrop",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Sugar",
+      "name": "Sugar",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SumeruRose",
+      "name": "Sumeru Rose",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SunderedGloryOfTheFarNorthScions",
+      "name": "Sundered Glory of the Far-North Scions",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "SweetFlower",
+      "name": "Sweet Flower",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "SymbioticChimericNucleus",
+      "name": "Symbiotic Chimeric Nucleus",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TailOfBoreas",
+      "name": "Tail of Boreas",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TaintedBlood",
+      "name": "Tainted Blood",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "TalismanOfTheEnigmaticLand",
+      "name": "Talisman of the Enigmatic Land",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TatteredWarrant",
+      "name": "Tattered Warrant",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TeachingsOfAdmonition",
+      "name": "Teachings of Admonition",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfBallad",
+      "name": "Teachings of Ballad",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfCharity",
+      "name": "Teachings of Charity",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfConflict",
+      "name": "Teachings of Conflict",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfContention",
+      "name": "Teachings of Contention",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfDiligence",
+      "name": "Teachings of Diligence",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfElegance",
+      "name": "Teachings of Elegance",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfElysium",
+      "name": "Teachings of Elysium",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfEquity",
+      "name": "Teachings of Equity",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfFortitude",
+      "name": "Teachings of Fortitude",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfFreedom",
+      "name": "Teachings of Freedom",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfGlory",
+      "name": "Teachings of Glory",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfGold",
+      "name": "Teachings of Gold",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfIngenuity",
+      "name": "Teachings of Ingenuity",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfJustice",
+      "name": "Teachings of Justice",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfKindling",
+      "name": "Teachings of Kindling",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfLight",
+      "name": "Teachings of Light",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfMoonlight",
+      "name": "Teachings of Moonlight",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfOrder",
+      "name": "Teachings of Order",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfPraxis",
+      "name": "Teachings of Praxis",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfProsperity",
+      "name": "Teachings of Prosperity",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfResistance",
+      "name": "Teachings of Resistance",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfTransience",
+      "name": "Teachings of Transience",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeachingsOfVagrancy",
+      "name": "Teachings of Vagrancy",
+      "rarity": 2,
+      "type": "characterTalentMaterial"
+    },
+    {
+      "key": "TeardropOfTheMoon",
+      "name": "Teardrop of the Moon",
+      "rarity": 1,
+      "type": "localSpecialtyNodKrai"
+    },
+    {
+      "key": "TearsAmongTheStars",
+      "name": "Tears Among the Stars",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "TearsOfTheCalamitousGod",
+      "name": "Tears of the Calamitous God",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TheBoonOfTheElderTree",
+      "name": "\"The Boon of the Elder Tree\"",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "TheCornerstoneOfStarsAndFlames",
+      "name": "The Cornerstone of Stars and Flames",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TheFrostEmperorsCeremony",
+      "name": "The Frost Emperor's Ceremony",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "TheFrostEmperorsFarewell",
+      "name": "The Frost Emperor's Farewell",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "TheFrostEmperorsLament",
+      "name": "The Frost Emperor's Lament",
+      "rarity": 4,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "TheFrostEmperorsRevival",
+      "name": "The Frost Emperor's Revival",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "TheLittleWitchsDictionary",
+      "name": "The Little Witch's Dictionary",
+      "rarity": 5,
+      "type": "gadget"
+    },
+    {
+      "key": "TheMeaningOfAeons",
+      "name": "The Meaning of Aeons",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "ThunderclapFruitcore",
+      "name": "Thunderclap Fruitcore",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "Tidalga",
+      "name": "Tidalga",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "TileOfDecarabiansTower",
+      "name": "Tile of Decarabian's Tower",
+      "rarity": 2,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "Tofu",
+      "name": "Tofu",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "Tomato",
+      "name": "Tomato",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "TorchWood",
+      "name": "Torch Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "TourbillonDevice",
+      "name": "\"Tourbillon Device\"",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TransientResin",
+      "name": "Transient Resin",
+      "rarity": 4,
+      "type": "consumable"
+    },
+    {
+      "key": "TransoceanicChunk",
+      "name": "Transoceanic Chunk",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TransoceanicPearl",
+      "name": "Transoceanic Pearl",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TravelAccounts",
+      "name": "Travel Accounts",
+      "rarity": 5,
+      "type": "gadget"
+    },
+    {
+      "key": "TreasureHoarderInsignia",
+      "name": "Treasure Hoarder Insignia",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TreasuredFlower",
+      "name": "Treasured Flower",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TrimmedRedSilk",
+      "name": "Trimmed Red Silk",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Trishiraite",
+      "name": "Trishiraite",
+      "rarity": 1,
+      "type": "localSpecialtySumeru"
+    },
+    {
+      "key": "TriumphOfThePaleStarArmy",
+      "name": "Triumph of the Pale Star Army",
+      "rarity": 5,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "TurbidPrism",
+      "name": "Turbid Prism",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "TuskOfMonocerosCaeli",
+      "name": "Tusk of Monoceros Caeli",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TwistedWitheredBranch",
+      "name": "Twisted Withered Branch",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "TyrantsFang",
+      "name": "Tyrant's Fang",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "UjolaCat",
+      "name": "Ujola Cat",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Ukulele",
+      "name": "Ukulele",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "UltraHotBurnerLampTestModel",
+      "name": "Ultra-Hot Burner Lamp Test Model",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "UnblemishedLunarIron",
+      "name": "Unblemished Lunar Iron",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "UnmovingEssentialOil",
+      "name": "Unmoving Essential Oil",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "UnscorchedBlossomBranch",
+      "name": "Unscorched Blossom Branch",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "UnyieldingDelusionOfTheFarNorthScions",
+      "name": "Unyielding Delusion of the Far-North Scions",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "VajradaAmethystChunk",
+      "name": "Vajrada Amethyst Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VajradaAmethystFragment",
+      "name": "Vajrada Amethyst Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VajradaAmethystGemstone",
+      "name": "Vajrada Amethyst Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VajradaAmethystSliver",
+      "name": "Vajrada Amethyst Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "Valberry",
+      "name": "Valberry",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "VarunadaLazuriteChunk",
+      "name": "Varunada Lazurite Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VarunadaLazuriteFragment",
+      "name": "Varunada Lazurite Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VarunadaLazuriteGemstone",
+      "name": "Varunada Lazurite Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VarunadaLazuriteSliver",
+      "name": "Varunada Lazurite Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VayudaTurquoiseChunk",
+      "name": "Vayuda Turquoise Chunk",
+      "rarity": 4,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VayudaTurquoiseFragment",
+      "name": "Vayuda Turquoise Fragment",
+      "rarity": 3,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VayudaTurquoiseGemstone",
+      "name": "Vayuda Turquoise Gemstone",
+      "rarity": 5,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VayudaTurquoiseSliver",
+      "name": "Vayuda Turquoise Sliver",
+      "rarity": 2,
+      "type": "characterAscensionMaterial"
+    },
+    {
+      "key": "VintageLyre",
+      "name": "Vintage Lyre",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "Violetgrass",
+      "name": "Violetgrass",
+      "rarity": 1,
+      "type": "localSpecialtyLiyue"
+    },
+    {
+      "key": "Viparyas",
+      "name": "Viparyas",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "WanderersAdvice",
+      "name": "Wanderer's Advice",
+      "rarity": 2,
+      "type": "characterEXPMaterial"
+    },
+    {
+      "key": "WanderersBloomingFlower",
+      "name": "Wanderer's Blooming Flower",
+      "rarity": 4,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "WarmBackShell",
+      "name": "Warm Back-Shell",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "WarmingBottle",
+      "name": "Warming Bottle",
+      "rarity": 3,
+      "type": "consumable"
+    },
+    {
+      "key": "WarriorsMetalWhistle",
+      "name": "Warrior's Metal Whistle",
+      "rarity": 2,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "WaterThatFailedToTranscend",
+      "name": "Water That Failed To Transcend",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "WaveriderRepairToolbox",
+      "name": "Waverider Repair Toolbox",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "WeatheredArrowhead",
+      "name": "Weathered Arrowhead",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "Wheat",
+      "name": "Wheat",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "WhiteBirchWood",
+      "name": "White Birch Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "WhiteChestnutOakWood",
+      "name": "White Chestnut Oak Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "WhiteIronChunk",
+      "name": "White Iron Chunk",
+      "rarity": 1,
+      "type": "forgingOre"
+    },
+    {
+      "key": "WhopperflowerNectar",
+      "name": "Whopperflower Nectar",
+      "rarity": 1,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "WindBlessedHarpastum",
+      "name": "Wind-Blessed Harpastum",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "WindCatcher",
+      "name": "Wind Catcher",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "WindPoweredWindGenerator",
+      "name": "Wind-Powered Wind Generator",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "WindbarrierPotion",
+      "name": "Windbarrier Potion",
+      "rarity": 3,
+      "type": "potion"
+    },
+    {
+      "key": "WindblumeFestivalCommemorativeBalloon",
+      "name": "Windblume Festival Commemorative Balloon",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "WindrestFlower",
+      "name": "Windrest Flower",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    },
+    {
+      "key": "WindsongLyre",
+      "name": "Windsong Lyre",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "WindwheelAster",
+      "name": "Windwheel Aster",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "WineGobletOfThePristineSea",
+      "name": "Wine Goblet of the Pristine Sea",
+      "rarity": 3,
+      "type": "weaponAscensionMaterial"
+    },
+    {
+      "key": "WingsOfAzureWind",
+      "name": "Wings of Azure Wind",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfCompanionship",
+      "name": "Wings of Companionship",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfConcealingSnow",
+      "name": "Wings of Concealing Snow",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfDelicacies",
+      "name": "Wings of Delicacies",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfDescension",
+      "name": "Wings of Descension",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfFatesCourseIntertwined",
+      "name": "Wings of Fate's Course Intertwined",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfFeasting",
+      "name": "Wings of Feasting",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfFirstFlight",
+      "name": "Wings of First Flight",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfGoldenFlight",
+      "name": "Wings of Golden Flight",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfLeisurelyMoments",
+      "name": "Wings of Leisurely Moments",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfMercifulWrathfulWaters",
+      "name": "Wings of Merciful, Wrathful Waters",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfShimmeringGalaxy",
+      "name": "Wings of Shimmering Galaxy",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfSoaringFlame",
+      "name": "Wings of Soaring Flame",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfTheForest",
+      "name": "Wings of the Forest",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfTheSilentMoon",
+      "name": "Wings of the Silent Moon",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfTheStarlitFeast",
+      "name": "Wings of the Starlit Feast",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfTheStormstrider",
+      "name": "Wings of the Stormstrider",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfTransientDreams",
+      "name": "Wings of Transient Dreams",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WinterIcelea",
+      "name": "Winter Icelea",
+      "rarity": 1,
+      "type": "localSpecialtyNodKrai"
+    },
+    {
+      "key": "WitchsRevelationCase",
+      "name": "Witch's Revelation Case",
+      "rarity": 5,
+      "type": "gadget"
+    },
+    {
+      "key": "WitheredKusava",
+      "name": "Withered Kusava",
+      "rarity": 1,
+      "type": "questItem"
+    },
+    {
+      "key": "WitheringPurpurbloom",
+      "name": "Withering Purpurbloom",
+      "rarity": 1,
+      "type": "localSpecialtyNatlan"
+    },
+    {
+      "key": "Wolfhook",
+      "name": "Wolfhook",
+      "rarity": 1,
+      "type": "localSpecialtyMondstadt"
+    },
+    {
+      "key": "WonderlandCosmosphere",
+      "name": "Wonderland Cosmosphere",
+      "rarity": 5,
+      "type": "questItem"
+    },
+    {
+      "key": "WorldspanFern",
+      "name": "Worldspan Fern",
+      "rarity": 5,
+      "type": "characterLevelUpMaterial"
+    },
+    {
+      "key": "XenochromaticCrystal",
+      "name": "Xenochromatic Crystal",
+      "rarity": 3,
+      "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "XiaoLanternFlightManual",
+      "name": "Xiao Lantern Flight Manual",
+      "rarity": 4,
+      "type": "gadget"
+    },
+    {
+      "key": "YellowDye",
+      "name": "Yellow Dye",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "YumemiruWood",
+      "name": "Yumemiru Wood",
+      "rarity": 1,
+      "type": "material"
+    },
+    {
+      "key": "ZaytunPeach",
+      "name": "Zaytun Peach",
+      "rarity": 1,
+      "type": "cookingIngredient"
+    }
+  ]
+}

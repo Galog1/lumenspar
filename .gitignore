@@ -1,0 +1,15 @@
+# xdg-desktop-portal ScreenCast restore token. It identifies one machine's
+# capture session, is regenerated on first run, and is meaningless elsewhere.
+.restore_token
+
+# Python bytecode / local environments
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Scan output and failure dumps default to ~/Documents/Lumenspar, but keep
+# them out of the tree in case the export directory is pointed here.
+/failures/
+/lumenspar.good.json

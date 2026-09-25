@@ -1,0 +1,115 @@
+{
+  "format": "GOOD",
+  "version": 2,
+  "source": "Lumenspar",
+  "artifacts": [
+    {
+      "setKey": "FragmentOfHarmonicWhimsy",
+      "slotKey": "sands",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "atk_",
+      "location": "Arlecchino",
+      "lock": true,
+      "substats": [
+        {
+          "key": "critRate_",
+          "value": 8.6
+        },
+        {
+          "key": "critDMG_",
+          "value": 20.2
+        },
+        {
+          "key": "def",
+          "value": 23.0
+        },
+        {
+          "key": "enerRech_",
+          "value": 9.1
+        }
+      ]
+    },
+    {
+      "setKey": "DisenchantmentInDeepShadow",
+      "slotKey": "plume",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "atk",
+      "location": "",
+      "lock": true,
+      "substats": [
+        {
+          "key": "critRate_",
+          "value": 6.2
+        },
+        {
+          "key": "critDMG_",
+          "value": 14.8
+        },
+        {
+          "key": "atk_",
+          "value": 4.7
+        },
+        {
+          "key": "eleMas",
+          "value": 51.0
+        }
+      ]
+    },
+    {
+      "setKey": "FragmentOfHarmonicWhimsy",
+      "slotKey": "flower",
+      "level": 20,
+      "rarity": 5,
+      "mainStatKey": "hp",
+      "location": "Arlecchino",
+      "lock": true,
+      "substats": [
+        {
+          "key": "critRate_",
+          "value": 6.6
+        },
+        {
+          "key": "eleMas",
+          "value": 37.0
+        },
+        {
+          "key": "atk",
+          "value": 16.0
+        },
+        {
+          "key": "critDMG_",
+          "value": 17.1
+        }
+      ]
+    },
+    {
+      "setKey": "CelestialGift",
+      "slotKey": "flower",
+      "level": 0,
+      "rarity": 5,
+      "mainStatKey": "hp",
+      "location": "",
+      "lock": true,
+      "substats": [
+        {
+          "key": "critDMG_",
+          "value": 7.0
+        },
+        {
+          "key": "critRate_",
+          "value": 2.7
+        },
+        {
+          "key": "atk_",
+          "value": 4.7
+        },
+        {
+          "key": "hp_",
+          "value": 4.1
+        }
+      ]
+    }
+  ]
+}
