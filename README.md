@@ -94,3 +94,18 @@ Several entries on the character screen carry a *player-chosen* name -- the
 Traveler, a renamed Wanderer, and the Manekins -- so they cannot be matched
 against the shipped vocabulary. These are reported by name rather than guessed
 at; set `traveler_name` in the settings so the Traveler can be keyed.
+
+## License
+
+[MIT](LICENSE) -- use it, fork it, ship it, sell it. The one condition is that
+the copyright notice stays with the code, so credit travels with it.
+
+That covers the source in this repository. Two things in the tree are not mine
+to license:
+
+- `calib/` holds screenshots of Genshin Impact. The game and its assets are
+  © HoYoverse; the screenshots are here only as the measurement reference the
+  screen regions were derived from.
+- `lumenspar/gamedata/` is generated, not authored -- `tools/update_gamedata.py`
+  builds it by joining Genshin Optimizer's key vocabulary with Project Amber's
+  English names. Check those projects' own terms before redistributing it.
