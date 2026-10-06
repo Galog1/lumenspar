@@ -239,7 +239,8 @@ class ArtifactScanner:
         """Return (item, problems) for the currently selected item."""
         panel = read_panel(frame)
         parsed = build_artifact(panel, min_score=self.s.min_match_score,
-                                traveler_name=self.s.traveler_name)
+                                traveler_name=self.s.traveler_name,
+                                wanderer_name=self.s.wanderer_name)
         return parsed.artifact, parsed.problems
 
     def _attempt(self, result: ScanResult):
@@ -481,7 +482,8 @@ class WeaponScanner(ArtifactScanner):
 
         panel = read_weapon_panel(frame)
         return build_weapon(panel, min_score=self.s.min_match_score,
-                            traveler_name=self.s.traveler_name)
+                            traveler_name=self.s.traveler_name,
+                            wanderer_name=self.s.wanderer_name)
 
 
 class MaterialScanner(ArtifactScanner):
@@ -749,7 +751,8 @@ class CharacterScanner:
                                        description=description)
             char, notes = build_character(panel,
                                           min_score=self.s.min_match_score,
-                                          traveler_name=self.s.traveler_name)
+                                          traveler_name=self.s.traveler_name,
+                                          wanderer_name=self.s.wanderer_name)
             crashes = ocr.take_crashes()
             if crashes:
                 # Say so explicitly. Left to speak for itself this arrives as

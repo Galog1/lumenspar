@@ -158,7 +158,8 @@ class ParseResult:
 
 
 def build_artifact(pt: PanelText, *, min_score: float = 78.0,
-                   traveler_name: str = "") -> ParseResult:
+                   traveler_name: str = "",
+                  wanderer_name: str = "") -> ParseResult:
     """Assemble a GOOD Artifact, refusing rather than guessing on bad reads."""
     from ..good import Artifact
     from ..ocr import match as vocab
@@ -206,6 +207,8 @@ def build_artifact(pt: PanelText, *, min_score: float = 78.0,
         who = parse_equipped(pt.equipped) or pt.equipped
         if traveler_name and vocab.normalise(who) == vocab.normalise(traveler_name):
             location = "Traveler"
+        elif wanderer_name and vocab.normalise(who) == vocab.normalise(wanderer_name):
+            location = "Wanderer"
         else:
             m = vocab.locations().match(who, floor=min_score)
             if m.ok:
@@ -213,7 +216,7 @@ def build_artifact(pt: PanelText, *, min_score: float = 78.0,
             else:
                 problems.append(
                     f"equipped {who!r} matched {m.key or '—'} at {m.score:.0f}"
-                    " (if this is your Traveler, set its name in settings)"
+                    " (if this is your Traveler or a renamed Wanderer, set its name in settings)"
                 )
 
     if problems:

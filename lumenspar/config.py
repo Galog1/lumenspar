@@ -69,6 +69,9 @@ class Settings:
     # so it can never be matched from the shipped vocabulary. GOOD expects the
     # location "Traveler" regardless of what the game shows.
     traveler_name: str = ""
+    # The Wanderer can be renamed in-game too, after which it reads back as
+    # whatever the player chose. Blank means it still shows as "Wanderer".
+    wanderer_name: str = ""
 
     # capture
     restore_token: str = ""

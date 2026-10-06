@@ -116,6 +116,7 @@ class Backend(QObject):
     keyInventory = _mk("key_inventory", str, settingsChanged)
     keyCharacter = _mk("key_character", str, settingsChanged)
     travelerName = _mk("traveler_name", str, settingsChanged)
+    wandererName = _mk("wanderer_name", str, settingsChanged)
     keyTabLeft = _mk("key_tab_left", str, settingsChanged)
     keyTabRight = _mk("key_tab_right", str, settingsChanged)
     minMatchScore = _mk("min_match_score", float, settingsChanged)

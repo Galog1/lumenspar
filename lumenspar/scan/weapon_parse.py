@@ -64,7 +64,8 @@ def parse_refinement(text: str) -> int | None:
 
 
 def build_weapon(pt: WeaponPanelText, *, min_score: float = 78.0,
-                 traveler_name: str = ""):
+                 traveler_name: str = "",
+                 wanderer_name: str = ""):
     """Assemble a GOOD Weapon, refusing rather than guessing."""
     from ..good import Weapon
     from ..ocr import match as vocab
@@ -88,6 +89,8 @@ def build_weapon(pt: WeaponPanelText, *, min_score: float = 78.0,
         who = pt.equipped.split(":", 1)[-1].strip() if ":" in pt.equipped else pt.equipped
         if traveler_name and vocab.normalise(who) == vocab.normalise(traveler_name):
             location = "Traveler"
+        elif wanderer_name and vocab.normalise(who) == vocab.normalise(wanderer_name):
+            location = "Wanderer"
         else:
             lm = vocab.locations().match(who, floor=min_score)
             if lm.ok:
@@ -95,7 +98,7 @@ def build_weapon(pt: WeaponPanelText, *, min_score: float = 78.0,
             else:
                 problems.append(
                     f"equipped {who!r} matched {lm.key or '—'} at {lm.score:.0f}"
-                    " (if this is your Traveler, set its name in settings)"
+                    " (if this is your Traveler or a renamed Wanderer, set its name in settings)"
                 )
 
     if problems:

@@ -280,7 +280,7 @@ ApplicationWindow {
                         Layout.topMargin: 4
                     }
                     Text {
-                        text: "The Traveler is the only character you name yourself, so it can't be recognised from a list. Leave blank if you never equip gear on them."
+                        text: "You name the Traveler yourself, so it can't be recognised from a list. Leave blank if you never equip gear on them."
                         color: Theme.textDim
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
@@ -297,6 +297,35 @@ ApplicationWindow {
                         background: Rectangle {
                             radius: 8; color: Theme.bgAlt
                             border.color: travName.activeFocus ? Theme.accent : Theme.border
+                            border.width: 1
+                        }
+                    }
+
+                    Text {
+                        text: "Your Wanderer's name"
+                        color: Theme.text
+                        font.pixelSize: 13
+                        font.weight: Font.DemiBold
+                        Layout.topMargin: 4
+                    }
+                    Text {
+                        text: "Only needed if you renamed the Wanderer in-game. Leave blank if it still shows as \"Wanderer\"."
+                        color: Theme.textDim
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+                    TextField {
+                        id: wandName
+                        text: backend.wandererName
+                        placeholderText: "e.g. whatever you renamed them to"
+                        Layout.fillWidth: true
+                        color: Theme.text
+                        font.pixelSize: 13
+                        onEditingFinished: backend.wandererName = text.trim()
+                        background: Rectangle {
+                            radius: 8; color: Theme.bgAlt
+                            border.color: wandName.activeFocus ? Theme.accent : Theme.border
                             border.width: 1
                         }
                     }

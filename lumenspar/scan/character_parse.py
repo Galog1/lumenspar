@@ -133,11 +133,13 @@ def _unmatched_name(pt: CharacterPanelText, m) -> str:
     return (f"character {pt.name!r} is not a known character name "
             f"(closest was {m.key or '—'} at {m.score:.0f}). Characters whose "
             f"name you can change -- the Traveler, a renamed Wanderer, a "
-            f"Manekin -- read back as whatever you called them")
+            f"Manekin -- read back as whatever you called them. Set the Traveler's "
+            f"and Wanderer's names in settings so they can be recognised")
 
 
 def build_character(pt: CharacterPanelText, *, min_score: float = 78.0,
-                    traveler_name: str = ""):
+                    traveler_name: str = "",
+                    wanderer_name: str = ""):
     """Assemble a GOOD Character, refusing rather than guessing."""
     from ..good import Character
     from ..ocr import match as vocab
@@ -152,6 +154,9 @@ def build_character(pt: CharacterPanelText, *, min_score: float = 78.0,
             problems.append("Traveler's element could not be read, so its key "
                             "(TravelerAnemo, TravelerGeo, ...) is unknown")
             key = ""
+    elif wanderer_name and vocab.normalise(pt.name) == vocab.normalise(wanderer_name):
+        # Unlike the Traveler, the Wanderer has one key whatever it is called.
+        key = "Wanderer"
     else:
         m = vocab.characters().match(pt.name, floor=min_score)
         if not m.ok:
