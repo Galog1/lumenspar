@@ -34,6 +34,11 @@ GO_BASE = (
     "https://raw.githubusercontent.com/frzyc/genshin-optimizer/master/libs/gi/consts/src"
 )
 AMBER_BASE = "https://gi.yatta.moe/api/v2/en"
+# Enka.Network's own id tables. store/gi/avatars.json is the maintained one;
+# the older store/characters.json stopped gaining new characters.
+ENKA_AVATARS = (
+    "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/gi/avatars.json"
+)
 GO_ARTIFACT_STATS = (
     "https://raw.githubusercontent.com/frzyc/genshin-optimizer/master"
     "/libs/gi/stats/Data/Artifacts"
@@ -132,6 +137,50 @@ def artifact_stats() -> dict:
         "main_stats": {r: {k: pct(k, v) for k, v in s.items()} for r, s in main.items()},
         "display_corrections": corr,
     }
+
+
+_SKILL_KIND = {"A": "auto", "S": "skill", "E": "burst"}
+
+
+def enka_map(avatars: dict) -> tuple[dict, list[str]]:
+    """Enka avatar id -> GOOD key and the skill ids behind auto/skill/burst.
+
+    An Enka showcase identifies characters by numeric id, and talents by
+    skill id. Names come from Amber (Enka's table has none), joined on the
+    same id. The Traveler is keyed per element as "avatarId-skillDepotId".
+
+    Skills are classified by their icon (Skill_A / Skill_S / Skill_E: normal
+    attack, elemental skill, burst), not by SkillOrder: SkillOrder lists the
+    Cryo and Dendro Travelers' burst before their skill, and trusting it would
+    swap those two talent levels.
+    """
+    store = json.loads(fetch(ENKA_AVATARS))
+    names = {str(a["id"]): a["name"] for a in avatars.values()}
+    out: dict[str, dict] = {}
+    skipped: list[str] = []
+    for eid, e in store.items():
+        kinds: dict[str, str] = {}
+        for sid in e.get("SkillOrder") or []:
+            m = re.search(r"Skill_([ASE])_", e.get("Skills", {}).get(str(sid)) or "")
+            if m:
+                kinds[_SKILL_KIND[m.group(1)]] = str(sid)
+        if sorted(kinds) != ["auto", "burst", "skill"]:
+            skipped.append(eid)      # element-less Traveler/Manekin variants
+            continue
+        base = eid.split("-")[0]
+        if base in ("10000005", "10000007"):
+            element = ELEMENTS.get(e.get("Element") or "")
+            if not element:
+                skipped.append(eid)
+                continue
+            key = "Traveler" + element.capitalize()
+        elif base in names:
+            key = to_key(names[base])
+        else:
+            skipped.append(eid)
+            continue
+        out[eid] = {"key": key, **kinds}
+    return out, skipped
 
 
 def main() -> int:
@@ -244,6 +293,13 @@ def main() -> int:
             json.dumps({"generated": stamp, "items": items}, indent=2, ensure_ascii=False)
         )
         print(f"  wrote {fname}: {len(items)} entries")
+
+    enka, enka_skipped = enka_map(avatars)
+    (OUT / "enka.json").write_text(
+        json.dumps({"generated": stamp, "avatars": enka}, indent=2))
+    print(f"  wrote enka.json: {len(enka)} avatars")
+    if enka_skipped:
+        notes.append(f"enka: {len(enka_skipped)} ids without usable skills (kept out): {enka_skipped}")
 
     stats = artifact_stats()
     (OUT / "artifact_stats.json").write_text(

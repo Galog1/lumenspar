@@ -73,6 +73,11 @@ class Settings:
     # whatever the player chose. Blank means it still shows as "Wanderer".
     wanderer_name: str = ""
 
+    # Enka.Network character import: the player's UID, whose profile
+    # showcase is read. Optional -- blank means characters come only from
+    # the screen scan.
+    uid: str = ""
+
     # capture
     restore_token: str = ""
     capture_backend: str = "portal"   # portal | x11

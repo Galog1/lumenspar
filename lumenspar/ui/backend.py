@@ -7,14 +7,16 @@ thread; only signals cross back to the GUI thread.
 
 from __future__ import annotations
 
+import json
 import shutil
 import traceback
 from pathlib import Path
 
 from PySide6.QtCore import (
-    Property, QObject, QThread, Signal, Slot, QStandardPaths,
+    Property, QObject, QThread, QTimer, Signal, Slot, QStandardPaths,
 )
 
+from .. import enka
 from ..config import CATEGORIES, Settings
 from ..ocr import engine as ocr_engine
 from ..ocr import match as ocr_match
@@ -46,6 +48,7 @@ class Backend(QObject):
     statusChanged = Signal()
     logAppended = Signal(str)
     scanningChanged = Signal()
+    rosterChanged = Signal()
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -57,6 +60,11 @@ class Backend(QObject):
         self._inject = None
         self._stop_requested = False
         self._esc = None
+        self._roster = enka.Roster()
+        # Re-fetches the showcase while the player rotates it in-game.
+        self._watch = QTimer(self)
+        self._watch.setInterval((enka.DEFAULT_TTL + 5) * 1000)
+        self._watch.timeout.connect(self._watch_tick)
 
     # -- categories ------------------------------------------------------
 
@@ -117,6 +125,7 @@ class Backend(QObject):
     keyCharacter = _mk("key_character", str, settingsChanged)
     travelerName = _mk("traveler_name", str, settingsChanged)
     wandererName = _mk("wanderer_name", str, settingsChanged)
+    uid = _mk("uid", str, settingsChanged)
     keyTabLeft = _mk("key_tab_left", str, settingsChanged)
     keyTabRight = _mk("key_tab_right", str, settingsChanged)
     minMatchScore = _mk("min_match_score", float, settingsChanged)
@@ -125,6 +134,108 @@ class Backend(QObject):
     @Property(str, notify=settingsChanged)
     def exportPath(self) -> str:
         return str(self._s.export_path)
+
+    # -- Enka.Network ----------------------------------------------------
+
+    @Property(int, notify=rosterChanged)
+    def rosterCount(self) -> int:
+        return len(self._roster)
+
+    @Property(bool, notify=rosterChanged)
+    def watching(self) -> bool:
+        return self._watch.isActive()
+
+    @Slot()
+    def fetchShowcase(self) -> None:
+        self._fetch_showcase(quiet=False)
+
+    def _fetch_showcase(self, quiet: bool) -> None:
+        if self._scanning:
+            return
+        uid = self._s.uid.strip()
+        wait = self._roster.wait_remaining(uid)
+        if wait > 0:
+            if not quiet:
+                self._set_status(f"Enka.Network is still serving the last showcase; "
+                                 f"try again in {wait:.0f}s")
+            return
+        self._s.save()      # keep the UID that was just used
+        self._run(lambda log: self._enka_job(log, uid, quiet), "Showcase fetch",
+                  announce=not quiet)
+
+    def _enka_job(self, log, uid: str, quiet: bool) -> None:
+        data, ttl = enka.fetch(uid)
+        chars, problems = enka.parse(data)
+        new, changed = self._roster.merge(uid, chars, ttl)
+        self.rosterChanged.emit()
+        if quiet and not (new or changed or problems):
+            return
+        if quiet:
+            log("── Showcase fetch ──")
+        if new:
+            log(f"+{len(new)} new: {', '.join(new)}")
+        if changed:
+            log(f"updated: {', '.join(changed)}")
+        if chars and not (new or changed):
+            log("No new characters -- rotate your showcase, then exit to the title "
+                "screen and back so the game publishes it.")
+        for p in problems:
+            log(f"  {p}")
+        log(f"{len(self._roster)} characters collected.")
+
+    @Slot(bool)
+    def setWatching(self, on: bool) -> None:
+        if on and not self._s.uid.strip():
+            self._set_status("Enter your UID first")
+            on = False
+        if on:
+            self._watch.start()
+            self._fetch_showcase(quiet=False)
+            self._set_status("Watching your showcase -- rotate characters in-game")
+        else:
+            self._watch.stop()
+        self.rosterChanged.emit()
+
+    def _watch_tick(self) -> None:
+        self._fetch_showcase(quiet=True)
+
+    @Slot()
+    def clearRoster(self) -> None:
+        self._roster.clear()
+        self.rosterChanged.emit()
+        self._set_status("Collected characters cleared")
+
+    @Slot()
+    def exportRoster(self) -> None:
+        """Write the collected characters into the export file.
+
+        Everything else already in the file (artifacts, weapons, materials,
+        characters Enka has not seen) is kept, so no game scan is needed just
+        to bring in characters.
+        """
+        if not len(self._roster):
+            self._set_status("No characters collected yet")
+            return
+        path = self._s.export_path
+        try:
+            doc = json.loads(path.read_text()) if path.exists() else {}
+        except (OSError, ValueError) as exc:
+            self._set_status(f"Could not read {path.name}: {exc}")
+            return
+        if not doc:
+            from ..good import GoodExport
+            doc = GoodExport().to_dict()
+        roster = {c["key"]: {k: v for k, v in c.items() if k != "fetched_at"}
+                  for c in self._roster.characters.values()}
+        kept = [c for c in doc.get("characters", []) if c.get("key") not in roster]
+        doc["characters"] = sorted([*roster.values(), *kept], key=lambda c: c["key"])
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(doc, indent=2, ensure_ascii=False))
+        msg = (f"Wrote {len(roster)} characters from Enka.Network"
+               + (f" (kept {len(kept)} others already in the file)" if kept else "")
+               + f" to {path}")
+        self.logAppended.emit(msg)
+        self._set_status(f"Wrote {len(roster)} characters to {path.name}")
 
     # -- status ----------------------------------------------------------
 
@@ -437,6 +548,13 @@ class Backend(QObject):
                 self._esc.stop()
                 self._esc = None
 
+        if len(self._roster):
+            # Showcase readings are exact game data; a screen reading of the
+            # same character can only be as good or worse.
+            export.characters, kept = enka.merge_characters(
+                export.characters, self._roster.to_characters())
+            log(f"Characters: {len(self._roster)} from Enka.Network, "
+                f"{kept} from the screen scan.")
         if not len(export):
             log("Nothing was read; no file was written.")
             return
@@ -451,11 +569,12 @@ class Backend(QObject):
                 log(f"  - {p}")
             log(f"Full details and screenshots: {failures}")
 
-    def _run(self, job, label: str) -> None:
+    def _run(self, job, label: str, announce: bool = True) -> None:
         self._scanning = True
         self.scanningChanged.emit()
         self._set_status(f"{label} running…")
-        self.logAppended.emit(f"── {label} ──")
+        if announce:
+            self.logAppended.emit(f"── {label} ──")
 
         w = _Worker(job, self)
         w.line.connect(self.logAppended)

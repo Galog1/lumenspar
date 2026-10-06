@@ -50,6 +50,24 @@ Press **Run self-test** first: it confirms Tesseract, the matcher and the
 capture stream, and reports the resolution and aspect ratio actually being
 captured.
 
+## Characters from Enka.Network
+
+Character data can come from your in-game profile showcase via
+[Enka.Network](https://enka.network) instead of the screen: exact level,
+ascension, constellation and talent levels, with no OCR involved. Enter your
+UID in the *Characters from Enka.Network* card and turn on **Show Character
+Details** in your profile.
+
+The showcase only holds a handful of characters, so rotate them through it:
+after each change, exit to the title screen and back so the game publishes it.
+*Watch showcase* re-fetches every minute (Enka serves cached data for that
+long), and the characters collected so far are kept between runs. They replace
+screen-scanned readings of the same characters in every export, or can be
+written straight into the existing export file without a scan.
+
+Manekins cannot be imported this way: their talents depend on the element you
+gave them, which Enka's tables do not cover.
+
 ## Notes on resolution
 
 Lumenspar always works in *native* pixels. A scaled display reports a smaller

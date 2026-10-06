@@ -112,6 +112,61 @@ ApplicationWindow {
                 }
 
                 Card {
+                    title: "Characters from Enka.Network"
+                    subtitle: "Exact character data from your in-game profile showcase, instead of reading it off the screen. Turn on \"Show Character Details\" in your profile. To collect everyone, rotate characters through the showcase: after each change, exit to the title screen and back so the game publishes it."
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        TextField {
+                            id: uidField
+                            text: backend.uid
+                            placeholderText: "Your UID"
+                            Layout.preferredWidth: 150
+                            color: Theme.text
+                            font.pixelSize: 13
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            onEditingFinished: backend.uid = text.trim()
+                            background: Rectangle {
+                                radius: 8; color: Theme.bgAlt
+                                border.color: uidField.activeFocus ? Theme.accent : Theme.border
+                                border.width: 1
+                            }
+                        }
+                        GhostButton {
+                            label: "Fetch showcase"
+                            enabledState: !backend.scanning
+                            onClicked: { backend.uid = uidField.text.trim(); backend.fetchShowcase() }
+                        }
+                        GhostButton {
+                            label: backend.watching ? "Stop watching" : "Watch showcase"
+                            onClicked: { backend.uid = uidField.text.trim(); backend.setWatching(!backend.watching) }
+                        }
+                        Item { Layout.fillWidth: true }
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        Text {
+                            text: backend.rosterCount === 1 ? "1 character collected"
+                                                             : backend.rosterCount + " characters collected"
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                        }
+                        Item { Layout.fillWidth: true }
+                        GhostButton {
+                            label: "Write to export file"
+                            enabledState: backend.rosterCount > 0 && !backend.scanning
+                            onClicked: backend.exportRoster()
+                        }
+                        GhostButton {
+                            label: "Clear"
+                            enabledState: backend.rosterCount > 0 && !backend.scanning
+                            onClicked: backend.clearRoster()
+                        }
+                    }
+                }
+
+                Card {
                     title: "Minimum rarity"
                     subtitle: "Anything below these thresholds is skipped, which shortens the scan considerably."
                     GridLayout {
