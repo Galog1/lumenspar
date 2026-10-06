@@ -34,6 +34,10 @@ GO_BASE = (
     "https://raw.githubusercontent.com/frzyc/genshin-optimizer/master/libs/gi/consts/src"
 )
 AMBER_BASE = "https://gi.yatta.moe/api/v2/en"
+GO_ARTIFACT_STATS = (
+    "https://raw.githubusercontent.com/frzyc/genshin-optimizer/master"
+    "/libs/gi/stats/Data/Artifacts"
+)
 
 ELEMENTS = {
     "Ice": "cryo", "Wind": "anemo", "Rock": "geo", "Electric": "electro",
@@ -106,6 +110,28 @@ def amber(endpoint: str) -> dict:
 def decamel(key: str) -> str:
     """Approximate a display name from a GOOD key, for GO-only entries."""
     return re.sub(r"(?<!^)(?=[A-Z])", " ", key).replace("  ", " ").strip()
+
+
+def artifact_stats() -> dict:
+    """Per-roll substat values and per-level main stats, in display units.
+
+    These let the scanner tell a misread number from a real one: a substat is
+    a sum of 1-6 of four fixed roll values, and a main stat is fixed outright
+    by rarity and level. Percent stats are stored x100 to match how GOOD (and
+    the game) write them -- 46.6, not 0.466. The correction table lists the
+    handful of totals the game rounds differently from a plain sum.
+    """
+    def pct(key: str, vals: list[float]) -> list[float]:
+        return [round(v * 100, 4) for v in vals] if key.endswith("_") else vals
+
+    sub = json.loads(fetch(f"{GO_ARTIFACT_STATS}/artifact_sub.json"))
+    main = json.loads(fetch(f"{GO_ARTIFACT_STATS}/artifact_main.json"))
+    corr = json.loads(fetch(f"{GO_ARTIFACT_STATS}/artifact_sub_rolls_correction.json"))
+    return {
+        "substat_rolls": {r: {k: pct(k, v) for k, v in s.items()} for r, s in sub.items()},
+        "main_stats": {r: {k: pct(k, v) for k, v in s.items()} for r, s in main.items()},
+        "display_corrections": corr,
+    }
 
 
 def main() -> int:
@@ -218,6 +244,11 @@ def main() -> int:
             json.dumps({"generated": stamp, "items": items}, indent=2, ensure_ascii=False)
         )
         print(f"  wrote {fname}: {len(items)} entries")
+
+    stats = artifact_stats()
+    (OUT / "artifact_stats.json").write_text(
+        json.dumps({"generated": stamp, **stats}, indent=2))
+    print(f"  wrote artifact_stats.json: rarities {sorted(stats['substat_rolls'])}")
 
     if notes:
         print("\nsource drift (expected between patches, not an error):")

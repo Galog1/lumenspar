@@ -6,8 +6,13 @@ against real captions without a running game.
 
 from __future__ import annotations
 
+import json
+import math
 import re
 from dataclasses import dataclass
+from functools import lru_cache
+from itertools import combinations_with_replacement
+from pathlib import Path
 
 from ..good import SLOT_BY_CAPTION, STAT_KEYS, SubStat
 
@@ -21,7 +26,14 @@ except ImportError:
 # Anchored on the trailing number rather than on a literal '+': the separator
 # is small and frequently misread ("CRIT DMGH17.1%"), and demanding it would
 # throw away an otherwise perfect line.
-_SUB_TAIL = re.compile(r"(?P<value>\d[\d.,]*)\s*(?P<pct>%?)\s*$")
+#
+# The value may open with a glyph Tesseract confuses with "1" and contain an
+# "O" for "0". Without those in the pattern the match simply starts at the
+# first real digit, so "DEF+I7" exported DEF 7 instead of 17 -- a wrong number
+# rather than a refusal. They are folded to digits below, and anything the
+# folding gets wrong is caught by the roll-table check in build_artifact.
+_SUB_TAIL = re.compile(r"(?P<value>[Il|!]?\d[\dOo.,]*)\s*(?P<pct>%?)\s*$")
+_DIGIT_FOLD = str.maketrans({"I": "1", "l": "1", "|": "1", "!": "1", "O": "0", "o": "0"})
 _LEVEL_RE = re.compile(r"\+\s*(\d{1,2})")
 
 # Leading bullets/noise Tesseract emits for the "·" list marker.
@@ -76,10 +88,88 @@ def parse_substat(line: str) -> SubStat | None:
     if key is None:
         return None
     try:
-        value = float(m.group("value").replace(",", ""))
+        value = float(m.group("value").translate(_DIGIT_FOLD).replace(",", ""))
     except ValueError:
         return None
     return SubStat(key, value)
+
+
+# -- roll-table validation ------------------------------------------------
+#
+# A substat is never an arbitrary number: it is the sum of one to six rolls,
+# each one of four fixed values for that stat and rarity. Only a few dozen
+# totals are reachable per stat, so a misread digit usually lands on a number
+# the game cannot produce. (The idea comes from AdeptiScanner, which snaps each
+# line to the nearest legal value; here an illegal value is refused instead,
+# which makes the scanner retry the frame rather than export a guess.)
+
+_STATS_PATH = Path(__file__).resolve().parent.parent / "gamedata" / "artifact_stats.json"
+
+# Most substats an artifact can start with, by rarity. Each upgrade every four
+# levels adds exactly one roll, so an artifact can never hold more than this
+# plus level // 4 rolls in total.
+MAX_INITIAL_SUBSTATS = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4}
+
+
+def _display(value: float, percent: bool) -> float:
+    """Round half-up to what the panel shows: one decimal for %, whole otherwise."""
+    step = 10 if percent else 1
+    return math.floor(value * step + 0.5) / step
+
+
+@lru_cache(maxsize=None)
+def _substat_table() -> dict[tuple[int, str], dict[float, int]]:
+    """(rarity, key) -> {displayed value: fewest rolls that can produce it}.
+
+    The source table stores each roll rounded to two decimals, while the game
+    sums the exact values, so a total of n rolls may be off by up to 0.005*n.
+    When that puts a sum near a rounding boundary, both neighbours are
+    accepted: rejecting a real artifact is worse than letting through one
+    extra value, since an illegal read is only a backstop, not the reader.
+    """
+    raw = json.loads(_STATS_PATH.read_text())
+    corrections = raw.get("display_corrections", {})
+    table: dict[tuple[int, str], dict[float, int]] = {}
+    for rarity, stats in raw["substat_rolls"].items():
+        for key, rolls in stats.items():
+            percent = key.endswith("_")
+            fewest: dict[float, int] = {}
+            for n in range(1, 7):
+                slack = 0.005 * n
+                for combo in combinations_with_replacement(rolls, n):
+                    total = sum(combo)
+                    for shown in {_display(total - slack, percent),
+                                  _display(total + slack, percent)}:
+                        fewest[shown] = min(fewest.get(shown, n), n)
+            for computed, shown in corrections.get(rarity, {}).get(key, {}).items():
+                n = fewest.get(float(computed))
+                if n is not None:
+                    fewest[float(shown)] = min(fewest.get(float(shown), n), n)
+            table[(int(rarity), key)] = fewest
+    return table
+
+
+def substat_problems(subs: list[SubStat], rarity: int, level: int | None) -> list[str]:
+    """Reasons these substats cannot be what the panel really shows."""
+    table = _substat_table()
+    problems: list[str] = []
+    rolls = 0
+    for s in subs:
+        legal = table.get((rarity, s.key))
+        if legal is None:
+            continue
+        n = legal.get(_display(s.value, s.key.endswith("_")))
+        if n is None:
+            problems.append(f"substat {s.key} {s.value:g} is not a value a "
+                            f"{rarity}-star artifact can roll (misread)")
+        else:
+            rolls += n
+    if level is not None and not problems and rarity in MAX_INITIAL_SUBSTATS:
+        most = MAX_INITIAL_SUBSTATS[rarity] + level // 4
+        if rolls > most:
+            problems.append(f"substats need at least {rolls} rolls, but a "
+                            f"{rarity}-star +{level} holds at most {most} (misread)")
+    return problems
 
 
 def parse_main_stat(label: str, value: str) -> tuple[str, float] | None:
@@ -159,7 +249,7 @@ class ParseResult:
 
 def build_artifact(pt: PanelText, *, min_score: float = 78.0,
                    traveler_name: str = "",
-                  wanderer_name: str = "") -> ParseResult:
+                   wanderer_name: str = "") -> ParseResult:
     """Assemble a GOOD Artifact, refusing rather than guessing on bad reads."""
     from ..good import Artifact
     from ..ocr import match as vocab
@@ -201,6 +291,13 @@ def build_artifact(pt: PanelText, *, min_score: float = 78.0,
             problems.append(f"unreadable substat {line!r}")
         else:
             subs.append(s)
+
+    # None means no equipped bar was drawn; an empty read means the bar is
+    # there but its name came back blank. Treating the second as "unequipped"
+    # silently strips the artifact off its character, so it is refused instead.
+    if pt.equipped is not None and not pt.equipped.strip():
+        problems.append("the equipped bar is shown but its name could not be read")
+    problems.extend(substat_problems(subs, pt.rarity, level))
 
     location = ""
     if pt.equipped:

@@ -84,6 +84,11 @@ def build_weapon(pt: WeaponPanelText, *, min_score: float = 78.0,
     if ref is None:
         problems.append(f"unreadable refinement {pt.refinement!r}")
 
+    # None means no equipped bar was drawn; an empty read means the bar is
+    # there but its name came back blank. Treating the second as "unequipped"
+    # silently strips the weapon off its character, so it is refused instead.
+    if pt.equipped is not None and not pt.equipped.strip():
+        problems.append("the equipped bar is shown but its name could not be read")
     location = ""
     if pt.equipped:
         who = pt.equipped.split(":", 1)[-1].strip() if ":" in pt.equipped else pt.equipped

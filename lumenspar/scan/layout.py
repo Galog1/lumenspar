@@ -38,6 +38,13 @@ H_MAIN_LABEL = (0.308, 0.358)
 H_MAIN_VALUE = (0.366, 0.464)   # generous below: clipped glyphs lose digits
 H_STARS = (0.490, 0.546)
 H_TEXT_W = 0.62          # right of this the artifact icon overlaps the header
+# The equipped bar opens with the character's round portrait. It must be left
+# out when looking for the bar's text rows, not just trimmed off afterwards: a
+# dark portrait (Nilou's hair, Arlecchino's) fills every row of the bar, the
+# text band then spans the whole bar and drags in the description text that
+# bleeds through its top edge, and Tesseract reads the two rows as nothing --
+# which the parser takes as "not equipped".
+EQUIP_PORTRAIT_W = 0.155  # of panel width
 
 
 @dataclass(slots=True)
@@ -213,14 +220,16 @@ def analyse_panel(frame: np.ndarray) -> PanelLayout:
         fy1 = min(frame.shape[0], fy1)
         # Narrow to the rows that actually carry dark glyphs. Doing this by
         # content rather than by a fixed inset keeps it resolution-independent.
-        inner = rgb[fy0:fy1, px:qx]
+        text_x0 = panel.x0 + int((panel.x1 - panel.x0) * EQUIP_PORTRAIT_W)
+        inner = rgb[fy0:fy1, text_x0:qx]
         rows = np.where((inner.max(2) < 150).mean(1) > 0.012)[0]
         if len(rows):
             ty0 = fy0 + int(rows.min()) - 5
             ty1 = fy0 + int(rows.max()) + 6
         else:
             ty0, ty1 = fy0, fy1
-        equipped = Region(panel.x0, max(0, ty0), panel.x1, min(frame.shape[0], ty1))
+        equipped = Region(text_x0, max(0, ty0), panel.x1 - int((panel.x1 - panel.x0) * 0.02),
+                          min(frame.shape[0], ty1))
 
     # Level badge: a dark pill just under the header, whose position follows
     # the elixir band. Measured at body_top + 0.045..0.098 of panel width.
@@ -242,11 +251,6 @@ def analyse_panel(frame: np.ndarray) -> PanelLayout:
     main_label = hband(H_MAIN_LABEL)
     main_value = hband(H_MAIN_VALUE)
     stars = hband(H_STARS)
-
-    if equipped is not None:
-        # Skip the round character portrait on the left.
-        equipped = Region(equipped.x0 + int(Wp0 * 0.155), equipped.y0,
-                          equipped.x1 - int(Wp0 * 0.02), equipped.y1)
 
     return PanelLayout(
         panel=panel, title=title, slot=slot,
@@ -315,13 +319,14 @@ def analyse_weapon_panel(frame: np.ndarray) -> WeaponLayout:
     if footer:
         fy0, fy1 = footer[-1]
         fy1 = min(frame.shape[0], fy1)
-        inner = rgb[fy0:fy1, px:qx]
+        text_x0 = panel.x0 + int(Wp * EQUIP_PORTRAIT_W)
+        inner = rgb[fy0:fy1, text_x0:qx]
         rows = np.where((inner.max(2) < 150).mean(1) > 0.012)[0]
         if len(rows):
             ty0, ty1 = fy0 + int(rows.min()) - 5, fy0 + int(rows.max()) + 6
         else:
             ty0, ty1 = fy0, fy1
-        equipped = Region(panel.x0 + int(Wp * 0.155), max(0, ty0),
+        equipped = Region(text_x0, max(0, ty0),
                           panel.x1 - int(Wp * 0.02), min(frame.shape[0], ty1))
 
     def band(anchor: int, spec, x_frac: float) -> Region:
