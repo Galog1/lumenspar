@@ -281,12 +281,19 @@ def main() -> int:
         "artifact sets",
     )
 
+    # Equipped-by names. Genshin Optimizer's list lags new characters just as
+    # its character list does, and a character missing here makes every piece
+    # of gear they hold fail to match -- so, as for characters, anything Amber
+    # knows is kept. The Traveler's location is plain "Traveler" in GOOD.
+    locations = sorted(set(go["locations"]) | {
+        c["key"] for c in chars if not c["key"].startswith("Traveler")})
+
     stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
     for fname, items in (
         ("characters.json", chars),
         ("weapons.json", weps),
         ("artifact_sets.json", sets),
-        ("locations.json", sorted(go["locations"])),
+        ("locations.json", locations),
         ("materials.json", materials),
     ):
         (OUT / fname).write_text(

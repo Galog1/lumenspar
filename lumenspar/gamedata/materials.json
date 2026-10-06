@@ -1,11 +1,17 @@
 {
-  "generated": "2026-09-07T19:43:42+00:00",
+  "generated": "2026-10-06T15:10:52+00:00",
   "items": [
     {
       "key": "AFlowerYetToBloom",
       "name": "A Flower Yet to Bloom",
       "rarity": 2,
       "type": "characterandWeaponEnhancementMaterial"
+    },
+    {
+      "key": "AMiniTrolleyProblem",
+      "name": "A Mini Trolley Problem",
+      "rarity": 4,
+      "type": "gadget"
     },
     {
       "key": "AberrantCoreOfTheDeepShadow",
@@ -744,6 +750,12 @@
       "name": "Condessence Crystal",
       "rarity": 1,
       "type": "forgingOre"
+    },
+    {
+      "key": "ConductorOfTheYaho",
+      "name": "Conductor of the \"Ya-ho\"",
+      "rarity": 4,
+      "type": "gadget"
     },
     {
       "key": "CopperTalismanOfTheForestDew",
@@ -4514,6 +4526,12 @@
       "type": "weaponAscensionMaterial"
     },
     {
+      "key": "VagabondsCrackedArmor",
+      "name": "Vagabond's Cracked Armor",
+      "rarity": 4,
+      "type": "characterLevelUpMaterial"
+    },
+    {
       "key": "VajradaAmethystChunk",
       "name": "Vajrada Amethyst Chunk",
       "rarity": 4,
@@ -4816,6 +4834,12 @@
     {
       "key": "WingsOfSoaringFlame",
       "name": "Wings of Soaring Flame",
+      "rarity": 4,
+      "type": "windGlider"
+    },
+    {
+      "key": "WingsOfStarryWinterfrost",
+      "name": "Wings of Starry Winterfrost",
       "rarity": 4,
       "type": "windGlider"
     },

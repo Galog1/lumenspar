@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-07T19:43:42+00:00",
+  "generated": "2026-10-06T15:10:52+00:00",
   "items": [
     {
       "key": "ATeaspoonOfTranscendence",
@@ -163,6 +163,13 @@
       "inGO": true
     },
     {
+      "key": "BeyondTheChrysalis",
+      "name": "Beyond the Chrysalis",
+      "rarity": 5,
+      "type": "sword",
+      "inGO": false
+    },
+    {
       "key": "BlackTassel",
       "name": "Black Tassel",
       "rarity": 3,
@@ -231,6 +238,13 @@
       "rarity": 3,
       "type": "claymore",
       "inGO": true
+    },
+    {
+      "key": "BreezeborneRefrain",
+      "name": "Breezeborne Refrain",
+      "rarity": 4,
+      "type": "bow",
+      "inGO": false
     },
     {
       "key": "CalamityOfEshu",
@@ -474,6 +488,20 @@
       "key": "ExaiphanesBlade",
       "name": "Exaiphanes Blade",
       "rarity": 5,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "ExaiphanesBlade",
+      "name": "Exaiphanes Blade",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": true
+    },
+    {
+      "key": "ExaiphanesBlade",
+      "name": "Exaiphanes Blade",
+      "rarity": 4,
       "type": "sword",
       "inGO": true
     },
@@ -758,6 +786,13 @@
       "inGO": true
     },
     {
+      "key": "HymnOfTheMaelstrom",
+      "name": "Hymn of the Maelstrom",
+      "rarity": 5,
+      "type": "catalyst",
+      "inGO": false
+    },
+    {
       "key": "IbisPiercer",
       "name": "Ibis Piercer",
       "rarity": 4,
@@ -987,6 +1022,13 @@
       "rarity": 4,
       "type": "bow",
       "inGO": true
+    },
+    {
+      "key": "NewBough",
+      "name": "New Bough",
+      "rarity": 4,
+      "type": "sword",
+      "inGO": false
     },
     {
       "key": "NightweaversLookingGlass",
@@ -1356,6 +1398,13 @@
       "name": "Shattered Moon - Sublimation",
       "rarity": 5,
       "type": "polearm",
+      "inGO": false
+    },
+    {
+      "key": "SilverLight",
+      "name": "Silver Light",
+      "rarity": 4,
+      "type": "sword",
       "inGO": false
     },
     {
@@ -1861,6 +1910,13 @@
       "rarity": 4,
       "type": "catalyst",
       "inGO": true
+    },
+    {
+      "key": "WintersHeavyHeart",
+      "name": "Winter's Heavy Heart",
+      "rarity": 4,
+      "type": "catalyst",
+      "inGO": false
     },
     {
       "key": "WolfFang",
