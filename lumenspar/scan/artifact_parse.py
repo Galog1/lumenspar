@@ -88,7 +88,10 @@ def parse_substat(line: str) -> SubStat | None:
     if key is None:
         return None
     try:
-        value = float(m.group("value").translate(_DIGIT_FOLD).replace(",", ""))
+        # A doubled decimal point ("14..2%") is a real misread; the roll-table
+        # check in build_artifact still has to accept whatever this produces.
+        raw = re.sub(r"\.{2,}", ".", m.group("value").translate(_DIGIT_FOLD))
+        value = float(raw.replace(",", ""))
     except ValueError:
         return None
     return SubStat(key, value)

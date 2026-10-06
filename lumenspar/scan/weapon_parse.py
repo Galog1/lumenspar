@@ -20,6 +20,11 @@ CAP_TO_ASCENSION: dict[int, int] = {20: 0, 40: 1, 50: 2, 60: 3, 70: 4, 80: 5, 90
 MAX_LEVEL_BY_RARITY: dict[int, int] = {1: 70, 2: 70, 3: 90, 4: 90, 5: 90}
 
 _LEVEL_RE = re.compile(r"(\d{1,2})\s*[/1lI|]\s*(\d{2})")
+# Tesseract reads the diagonal of a "7" as a slash often enough that a real
+# scan refused eleven weapons at "Lv. 7/0/70" (the pill says 70/70). Tried only
+# when the strict pattern yields nothing valid, so a genuine separator always
+# wins; the result is still checked against the real level caps.
+_LEVEL_RE_SPLIT = re.compile(r"(\d)\s*[/|]\s*(\d)\s*[/1lI|]\s*(\d{2})")
 _REFINE_RE = re.compile(r"(?:rank|R)\s*([1-5])", re.IGNORECASE)
 
 
@@ -36,16 +41,17 @@ class WeaponPanelText:
 def parse_level(text: str) -> tuple[int, int] | None:
     """'Lv. 80/90' -> (80, 5). Returns (level, ascension)."""
     cleaned = text.replace("O", "0").replace("o", "0").replace("S", "5")
-    m = _LEVEL_RE.search(cleaned)
-    if not m:
-        return None
-    level, cap = int(m.group(1)), int(m.group(2))
-    if cap not in CAP_TO_ASCENSION or not 1 <= level <= 90 or level > cap:
-        return None
-    asc = CAP_TO_ASCENSION[cap]
-    # A weapon sitting exactly on its cap may already be ascended past it; the
-    # game shows the *next* cap once ascended, so cap alone is unambiguous.
-    return level, asc
+    candidates = [(m.group(1), m.group(2)) for m in _LEVEL_RE.finditer(cleaned)]
+    candidates += [(m.group(1) + m.group(2), m.group(3))
+                   for m in _LEVEL_RE_SPLIT.finditer(cleaned)]
+    for level_s, cap_s in candidates:
+        level, cap = int(level_s), int(cap_s)
+        if cap in CAP_TO_ASCENSION and 1 <= level <= 90 and level <= cap:
+            # A weapon sitting exactly on its cap may already be ascended past
+            # it; the game shows the *next* cap once ascended, so cap alone is
+            # unambiguous.
+            return level, CAP_TO_ASCENSION[cap]
+    return None
 
 
 def parse_refinement(text: str) -> int | None:

@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import bisect
 import hashlib
+import re
+from datetime import datetime
 from dataclasses import dataclass, field
 from typing import Callable, Protocol
 
@@ -173,6 +175,28 @@ def row_signature(frame: np.ndarray, tiles: list[Tile]) -> bytes:
     return hashlib.blake2b(joined, digest_size=16).digest()
 
 
+def _next_failure_stamp(scanner) -> str:
+    """Claim the next dump number in the failure folder, never reusing one.
+
+    Numbering used to restart at 0001 for every scanner, so the weapon pass of
+    a scan overwrote the artifact pass's screenshots wherever a number and a
+    tile coincided (fail_0001_tile_r0c0.png was both), and every new run did
+    the same to the last. Counting on from the highest number already in the
+    folder keeps every dump. The first failure of each scanner also writes a
+    header to failures.txt, so one run's entries can be told from another's.
+    """
+    d = scanner.failure_dir
+    d.mkdir(parents=True, exist_ok=True)
+    taken = [int(m.group(1)) for f in d.glob("fail_*")
+             if (m := re.match(r"fail_(\d+)_", f.name))]
+    seq = max(taken, default=0) + 1
+    if not scanner._fail_seq:
+        with (d / "failures.txt").open("a") as fh:
+            fh.write(f"── {datetime.now():%Y-%m-%d %H:%M} {scanner.item_label} scan ──\n")
+    scanner._fail_seq = seq
+    return f"{seq:04d}"
+
+
 class ArtifactScanner:
     def __init__(
         self,
@@ -286,9 +310,7 @@ class ArtifactScanner:
         try:
             from PIL import Image
 
-            self.failure_dir.mkdir(parents=True, exist_ok=True)
-            self._fail_seq += 1
-            stamp = f"{self._fail_seq:04d}"
+            stamp = _next_failure_stamp(self)
             Image.fromarray(frame[:, :, ::-1]).save(
                 self.failure_dir / f"fail_{stamp}_{where.replace(' ', '_')}.png"
             )
@@ -585,9 +607,7 @@ class CharacterScanner:
         try:
             from PIL import Image
 
-            self.failure_dir.mkdir(parents=True, exist_ok=True)
-            self._fail_seq += 1
-            stamp = f"{self._fail_seq:04d}"
+            stamp = _next_failure_stamp(self)
             for page, frame in frames.items():
                 Image.fromarray(frame[:, :, ::-1]).save(
                     self.failure_dir /
