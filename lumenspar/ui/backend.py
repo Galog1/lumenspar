@@ -37,8 +37,9 @@ class _Worker(QThread):
         try:
             self._fn(self.line.emit)
         except Exception as exc:  # surfaced in the UI log, never a silent stop
-            self.line.emit(f"error: {exc}")
-            self.done.emit(False, str(exc))
+            msg = str(exc) or type(exc).__name__
+            self.line.emit(f"error: {msg}")
+            self.done.emit(False, msg)
             traceback.print_exc()
             return
         self.done.emit(True, "")
@@ -636,7 +637,7 @@ class Backend(QObject):
             # errors to abort the scan. Log it and end the job cleanly, the
             # same way every other failure surfaces in this function -- never
             # an uncaught exception in the worker thread.
-            log(f"error: {exc}")
+            log(f"error: {str(exc) or type(exc).__name__}")
             return
         finally:
             inject.stop()

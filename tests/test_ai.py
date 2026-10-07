@@ -484,3 +484,16 @@ def test_local_mode_never_builds_a_gemini_client(monkeypatch):
     monkeypatch.setattr(gemini_mod, "Gemini", forbidden)
     scanner = ArtifactScanner(FakeDriver(_frame()), Settings(reader_mode="local"))
     assert not hasattr(scanner, "_gemini")
+
+
+def test_artifact_scanner_ai_read_uses_the_artifact_reader(monkeypatch):
+    import lumenspar.ai.reader as reader
+
+    calls = []
+    monkeypatch.setattr(reader, "read_artifacts",
+                        lambda gem, frames: calls.append(len(frames)) or [None] * len(frames))
+    scanner = ArtifactScanner(FakeDriver(_frame()),
+                              Settings(reader_mode="ai", gemini_api_key="k"))
+    out = scanner._ai_read([("t", _frame(), None), ("u", _frame(), None)])
+    assert calls == [2]
+    assert [item for item, _ in out] == [None, None]

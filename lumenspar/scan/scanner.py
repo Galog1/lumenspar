@@ -286,6 +286,11 @@ class ArtifactScanner:
         return parsed.artifact, parsed.problems
 
     def _ai_read(self, entries: list[tuple[str, np.ndarray, Tile]]):
+        """Read one batch of panels -> [(item, problems)] per entry.
+
+        Subclasses override this: weapons build from WeaponPanelText,
+        materials from (name, count) via the vocabulary.
+        """
         from ..ai.reader import read_artifacts
 
         # Same build_artifact validation as `_parse_frame`, fed with the
@@ -360,14 +365,6 @@ class ArtifactScanner:
         self._pending.append((where, frame, tile))
         if len(self._pending) >= self.s.ai_batch_size:
             self._flush(result)
-
-    def _ai_read(self, entries: list[tuple[str, np.ndarray, Tile]]):
-        """Read one batch of panels -> [(item, problems)] per entry.
-
-        Overridden per subclass: artifacts build from PanelText, weapons from
-        WeaponPanelText, materials from (name, count) via the vocabulary.
-        """
-        raise NotImplementedError
 
     def _flush(self, result: ScanResult) -> None:
         """Send a full batch of panels to Gemini and account for the outcome.
