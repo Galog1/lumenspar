@@ -71,7 +71,8 @@ def parse_refinement(text: str) -> int | None:
 
 def build_weapon(pt: WeaponPanelText, *, min_score: float = 78.0,
                  traveler_name: str = "",
-                 wanderer_name: str = ""):
+                 wanderer_name: str = "",
+                 other_names: str = ""):
     """Assemble a GOOD Weapon, refusing rather than guessing."""
     from ..good import Weapon
     from ..ocr import match as vocab
@@ -98,10 +99,21 @@ def build_weapon(pt: WeaponPanelText, *, min_score: float = 78.0,
     location = ""
     if pt.equipped:
         who = pt.equipped.split(":", 1)[-1].strip() if ":" in pt.equipped else pt.equipped
-        if traveler_name and vocab.normalise(who) == vocab.normalise(traveler_name):
+        role, ambiguous = vocab.custom_name(who, traveler_name, wanderer_name,
+                                            other_names)
+        if ambiguous:
+            problems.append(ambiguous)
+        elif role == "Traveler":
             location = "Traveler"
-        elif wanderer_name and vocab.normalise(who) == vocab.normalise(wanderer_name):
+        elif role == "Wanderer":
             location = "Wanderer"
+        elif role == "other":
+            # Recognised as a player-named character, but GOOD has no key for
+            # Manekin gear; refusing beats exporting it under a wrong owner.
+            problems.append(
+                f"equipped {who!r} is one of the renamed characters listed "
+                f"in settings (a Manekin); GOOD has no way to express gear "
+                f"equipped on it")
         else:
             lm = vocab.locations().match(who, floor=min_score)
             if lm.ok:

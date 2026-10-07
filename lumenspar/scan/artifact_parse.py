@@ -252,7 +252,8 @@ class ParseResult:
 
 def build_artifact(pt: PanelText, *, min_score: float = 78.0,
                    traveler_name: str = "",
-                   wanderer_name: str = "") -> ParseResult:
+                   wanderer_name: str = "",
+                   other_names: str = "") -> ParseResult:
     """Assemble a GOOD Artifact, refusing rather than guessing on bad reads."""
     from ..good import Artifact
     from ..ocr import match as vocab
@@ -305,10 +306,21 @@ def build_artifact(pt: PanelText, *, min_score: float = 78.0,
     location = ""
     if pt.equipped:
         who = parse_equipped(pt.equipped) or pt.equipped
-        if traveler_name and vocab.normalise(who) == vocab.normalise(traveler_name):
+        role, ambiguous = vocab.custom_name(who, traveler_name, wanderer_name,
+                                            other_names)
+        if ambiguous:
+            problems.append(ambiguous)
+        elif role == "Traveler":
             location = "Traveler"
-        elif wanderer_name and vocab.normalise(who) == vocab.normalise(wanderer_name):
+        elif role == "Wanderer":
             location = "Wanderer"
+        elif role == "other":
+            # Recognised as a player-named character, but GOOD has no key for
+            # Manekin gear; refusing beats exporting it under a wrong owner.
+            problems.append(
+                f"equipped {who!r} is one of the renamed characters listed "
+                f"in settings (a Manekin); GOOD has no way to express gear "
+                f"equipped on it")
         else:
             m = vocab.locations().match(who, floor=min_score)
             if m.ok:

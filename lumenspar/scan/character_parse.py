@@ -139,14 +139,22 @@ def _unmatched_name(pt: CharacterPanelText, m) -> str:
 
 def build_character(pt: CharacterPanelText, *, min_score: float = 78.0,
                     traveler_name: str = "",
-                    wanderer_name: str = ""):
+                    wanderer_name: str = "",
+                    other_names: str = ""):
     """Assemble a GOOD Character, refusing rather than guessing."""
     from ..good import Character
     from ..ocr import match as vocab
 
     problems: list[str] = []
 
-    if traveler_name and vocab.normalise(pt.name) == vocab.normalise(traveler_name):
+    role, ambiguous = vocab.custom_name(pt.name, traveler_name, wanderer_name,
+                                        other_names)
+    if ambiguous:
+        # A read that could be two player-named characters is a refusal, never
+        # a guess -- that is the whole point of the near-miss guard.
+        problems.append(ambiguous)
+        key = ""
+    elif role == "Traveler":
         # The Traveler's key is element-suffixed and cannot come from the name.
         if pt.element:
             key = "Traveler" + pt.element.capitalize()
@@ -154,10 +162,13 @@ def build_character(pt: CharacterPanelText, *, min_score: float = 78.0,
             problems.append("Traveler's element could not be read, so its key "
                             "(TravelerAnemo, TravelerGeo, ...) is unknown")
             key = ""
-    elif wanderer_name and vocab.normalise(pt.name) == vocab.normalise(wanderer_name):
+    elif role == "Wanderer":
         # Unlike the Traveler, the Wanderer has one key whatever it is called.
         key = "Wanderer"
     else:
+        # role "other" (a Manekin) also falls through here, so
+        # _unmatched_name -- which recognises Manekins by their fixed
+        # description -- explains it rather than blaming the OCR.
         m = vocab.characters().match(pt.name, floor=min_score)
         if not m.ok:
             problems.append(_unmatched_name(pt, m))

@@ -13,3 +13,6 @@ venv/
 # them out of the tree in case the export directory is pointed here.
 /failures/
 /lumenspar.good.json
+
+# Test cache
+.pytest_cache/

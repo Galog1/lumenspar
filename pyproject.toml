@@ -1,0 +1,37 @@
+[project]
+name = "lumenspar"
+version = "0.1.0"
+description = "Linux inventory scanner for Genshin Impact: screen -> OCR -> .GOOD JSON"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+# Versions are the ones the scanner was developed and verified against; older
+# ones may well work. Tesseract (with English data), GStreamer with its
+# Python bindings (gi), python-dbus and python-evdev come from the system
+# package manager, not from here -- see README "Requirements".
+dependencies = [
+    "PySide6>=6.7",
+    "numpy>=1.26",
+    "Pillow>=10",
+    "pytesseract>=0.3.10",
+    "rapidfuzz>=3.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+lumenspar = "lumenspar.ui.app:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["lumenspar*"]
+
+[tool.setuptools.package-data]
+lumenspar = ["gamedata/*.json", "ui/qml/**/*.qml", "ui/qml/**/qmldir"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
