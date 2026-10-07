@@ -15,6 +15,14 @@ QtObject {
     readonly property color danger:    "#E8686B"
     readonly property color ok:        "#5AD6A0"
 
+    // extra tokens for the luminous-crystal look
+    readonly property color accentGlow:   Qt.rgba(0.31, 0.847, 0.91, 0.35)   // accent at ~35% alpha
+    readonly property color surfaceGlass: Qt.rgba(0.082, 0.106, 0.153, 0.80) // surface at ~80% alpha
+    readonly property color gradientA:    accent
+    readonly property color gradientB:    accent2
+    readonly property color glow:         "#8E9AFF"   // soft luminous indigo (accent2's glow)
+    readonly property int ease:           160         // ms
+
     readonly property int radius: 14
     readonly property int pad: 18
     readonly property int gap: 14

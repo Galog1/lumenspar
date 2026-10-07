@@ -6,13 +6,14 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QUrl
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 
 from .backend import Backend
 
 QML_DIR = Path(__file__).resolve().parent / "qml"
+ICON = Path(__file__).resolve().parents[2] / "install" / "lumenspar.svg"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -21,6 +22,7 @@ def main(argv: list[str] | None = None) -> int:
     QQuickStyle.setStyle("Basic")
 
     app = QGuiApplication(argv)
+    app.setWindowIcon(QIcon(str(ICON)))
     app.setApplicationName("Lumenspar")
     app.setOrganizationName("Lumenspar")
 
