@@ -576,8 +576,8 @@ class Backend(QObject):
             if self._s.reader_mode == "ai" and not ocr_engine.available():
                 from ..ai.gemini import Gemini, Usage
                 from ..ai.reader import line_reader
-                log("Tesseract not found: Gemini also reads the inventory "
-                    "header and tab titles (a few extra requests).")
+                log("Gemini also reads the inventory header and tab titles "
+                    "(a few extra requests).")
                 read_text = line_reader(Gemini(self._s.gemini_key(), self._s.gemini_model,
                                                log=log, usage=Usage()))
             # Make sure the inventory is actually open before driving tabs.
