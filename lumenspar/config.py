@@ -132,7 +132,7 @@ class Settings:
 
     def gemini_key(self) -> str:
         """The Gemini API key: the LUMENSPAR_GEMINI_KEY env var wins over settings."""
-        return os.environ.get("LUMENSPAR_GEMINI_KEY") or self.gemini_api_key
+        return (os.environ.get("LUMENSPAR_GEMINI_KEY") or self.gemini_api_key).strip()
 
     # -- persistence -----------------------------------------------------
 

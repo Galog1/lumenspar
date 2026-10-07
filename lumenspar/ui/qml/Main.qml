@@ -254,6 +254,7 @@ ApplicationWindow {
                                     enabled: !backend.geminiKeyFromEnv
                                     color: Theme.text
                                     font.pixelSize: 13
+                                    onTextEdited: backend.geminiApiKey = text
                                     onEditingFinished: backend.geminiApiKey = text.trim()
                                     background: Rectangle {
                                         radius: 8; color: Theme.bgAlt
@@ -300,6 +301,7 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 color: Theme.text
                                 font.pixelSize: 13
+                                onTextEdited: backend.geminiModel = text
                                 onEditingFinished: backend.geminiModel = text.trim()
                                 background: Rectangle {
                                     radius: 8; color: Theme.bgAlt
@@ -374,6 +376,7 @@ ApplicationWindow {
                             color: Theme.text
                             font.pixelSize: 13
                             inputMethodHints: Qt.ImhDigitsOnly
+                            onTextEdited: backend.uid = text
                             onEditingFinished: backend.uid = text.trim()
                             background: Rectangle {
                                 radius: 8; color: Theme.bgAlt
@@ -555,6 +558,7 @@ ApplicationWindow {
                             color: Theme.text
                             font.pixelSize: 13
                             horizontalAlignment: Text.AlignHCenter
+                            onTextEdited: backend.keyInventory = text
                             onEditingFinished: backend.keyInventory = text.toLowerCase()
                             background: Rectangle {
                                 radius: 8; color: Theme.bgAlt
@@ -580,6 +584,7 @@ ApplicationWindow {
                             color: Theme.text
                             font.pixelSize: 13
                             horizontalAlignment: Text.AlignHCenter
+                            onTextEdited: backend.keyCharacter = text
                             onEditingFinished: backend.keyCharacter = text.toLowerCase()
                             background: Rectangle {
                                 radius: 8; color: Theme.bgAlt
@@ -629,6 +634,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         color: Theme.text
                         font.pixelSize: 13
+                        onTextEdited: backend.travelerName = text
                         onEditingFinished: backend.travelerName = text.trim()
                         background: Rectangle {
                             radius: 8; color: Theme.bgAlt
@@ -667,6 +673,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         color: Theme.text
                         font.pixelSize: 13
+                        onTextEdited: backend.wandererName = text
                         onEditingFinished: backend.wandererName = text.trim()
                         background: Rectangle {
                             radius: 8; color: Theme.bgAlt
@@ -705,6 +712,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         color: Theme.text
                         font.pixelSize: 13
+                        onTextEdited: backend.otherNames = text
                         onEditingFinished: backend.otherNames = text.trim()
                         background: Rectangle {
                             radius: 8; color: Theme.bgAlt
