@@ -478,6 +478,9 @@ def test_env_var_wins_over_settings(monkeypatch):
 
 def test_local_mode_never_builds_a_gemini_client(monkeypatch):
     import lumenspar.ai.gemini as gemini_mod
+    from lumenspar import hostos
+
+    monkeypatch.setattr(hostos, "is_windows", lambda: False)
 
     def forbidden(*args, **kwargs):
         raise AssertionError("Gemini must not be instantiated in local mode")

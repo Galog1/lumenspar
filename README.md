@@ -72,12 +72,19 @@ Windows is supported with the AI reader only; Tesseract is not used or needed.
 Screen capture goes through `mss` and input through `SendInput`, so none of the
 Linux packages (GStreamer, D-Bus, evdev, `/dev/uinput`) are required.
 
+Install into a virtual environment inside the checkout. PySide6 has very deep
+file paths, and installing it under Microsoft Store Python's own folder can
+exceed Windows' 260-character path limit and leave it half-installed:
+
 ```bat
-py -3 -m pip install PySide6 numpy Pillow rapidfuzz mss
-py -3 -m lumenspar
+cd lumenspar
+python -m venv .venv
+.venv\Scripts\python -m pip install PySide6 numpy Pillow rapidfuzz mss tzdata
+.venv\Scripts\python -m lumenspar
 ```
 
-or double-click `install\lumenspar.bat`. Then:
+or right-click `install\lumenspar.bat` and choose **Run as administrator**; it
+uses `.venv` when present. Then:
 
 - **Run it as administrator.** Genshin runs elevated, and Windows silently
   drops input sent to it by a non-elevated program. Lumenspar refuses to start
@@ -88,8 +95,9 @@ or double-click `install\lumenspar.bat`. Then:
   `%APPDATA%\lumenspar`.
 - Press **Escape** to stop a scan.
 
-The Windows backend has been unit-tested but **not yet run on a real Windows
-machine**; expect to report issues from the first live scan.
+Checked on Windows 11 (3840x2160 at 150% scaling, two monitors): the test
+suite, the window, screen capture and mouse placement. A full live scan on
+Windows has not been run yet.
 
 ## AI reader (optional)
 

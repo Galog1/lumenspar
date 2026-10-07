@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
+import PySide6
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 
+from .. import hostos
 from .backend import Backend
 
 QML_DIR = Path(__file__).resolve().parent / "qml"
@@ -18,6 +21,11 @@ ICON = Path(__file__).resolve().parents[2] / "install" / "lumenspar.svg"
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv)
+    if hostos.is_windows():
+        # Microsoft Store Python ignores PATH when resolving DLL dependencies,
+        # so Qt's QML plugins cannot find the Qt DLLs beside PySide6 and the
+        # window fails to load ('Cannot load library ...plugin.dll').
+        os.add_dll_directory(str(Path(PySide6.__file__).parent))
     # Basic is the only style that lets us restyle controls wholesale.
     QQuickStyle.setStyle("Basic")
 

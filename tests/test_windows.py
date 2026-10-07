@@ -213,7 +213,8 @@ def test_settings_coerces_reader_mode_on_windows(monkeypatch):
     assert Settings.from_dict({"reader_mode": "local"}).reader_mode == "ai"
 
 
-def test_settings_keeps_reader_mode_off_windows():
+def test_settings_keeps_reader_mode_off_windows(monkeypatch):
+    monkeypatch.setattr(hostos, "is_windows", lambda: False)
     s = Settings()
     assert s.reader_mode in ("local", "ai")
     s.reader_mode = "local"

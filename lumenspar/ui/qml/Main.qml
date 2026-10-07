@@ -844,7 +844,8 @@ ApplicationWindow {
                             anchors.horizontalCenter: parent.horizontalCenter
                         }
                         Text {
-                            text: "Run a self-test to check\ncapture and OCR."
+                            text: backend.aiOnly ? "Run a self-test to check\ncapture and your Gemini key."
+                                                  : "Run a self-test to check\ncapture and OCR."
                             horizontalAlignment: Text.AlignHCenter
                             color: Theme.textDim
                             font.pixelSize: 12

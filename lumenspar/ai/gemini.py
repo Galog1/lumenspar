@@ -16,10 +16,10 @@ import json
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from ..config import CONFIG_DIR
 
@@ -28,7 +28,13 @@ MODEL_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}"
 USER_AGENT = "Lumenspar (+https://github.com/Galog1/lumenspar)"
 MAX_BODY = 19 * 1024 * 1024        # Google's documented 20 MB request cap, minus slack
 RETRY_WAITS = (4.0, 8.0, 16.0, 32.0)
-PACIFIC = ZoneInfo("America/Los_Angeles")   # Google's quota resets at midnight Pacific
+# Google's quota resets at midnight Pacific. Windows ships no tz database, so
+# without the tzdata package fall back to a fixed UTC-8 (an hour off in DST,
+# which only shifts when the request counter rolls over).
+try:
+    PACIFIC = ZoneInfo("America/Los_Angeles")
+except ZoneInfoNotFoundError:
+    PACIFIC = timezone(timedelta(hours=-8), "PST")
 
 _STATUS = {
     400: "Gemini rejected the request (bad API key or malformed request)",
