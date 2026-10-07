@@ -63,7 +63,7 @@ def _refinement_badge(frame: np.ndarray, L: WeaponLayout) -> np.ndarray | None:
 def read_refinement_badge(frame: np.ndarray, L: WeaponLayout) -> int | None:
     """The rank digit in the badge, or None when it cannot be read with confidence."""
     badge = _refinement_badge(frame, L)
-    if badge is None:
+    if badge is None or not ocr.available():
         return None
     h, w = badge.shape[:2]
     m = max(2, int(min(h, w) * 0.12))          # step inside the rounded border

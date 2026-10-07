@@ -61,7 +61,12 @@ class ScanResult:
     stats: ScanStats = field(default_factory=ScanStats)
 
 
-def read_tab_title(frame: np.ndarray) -> str:
+# Reads the text in a cropped strip of UI. Tesseract by default; in AI mode
+# without Tesseract (always the case on Windows) Gemini stands in.
+TextReader = Callable[[np.ndarray], str]
+
+
+def read_tab_title(frame: np.ndarray, read_text: TextReader | None = None) -> str:
     """Read the tab name from the top-left, e.g. "Character Development Items".
 
     More useful than the top-right counter: the materials tabs both show
@@ -70,12 +75,15 @@ def read_tab_title(frame: np.ndarray) -> str:
     """
     h, w = frame.shape[:2]
     box = Region(int(w * 0.055), int(h * 0.012), int(w * 0.245), int(h * 0.080))
+    if read_text is not None:
+        return " ".join(read_text(box.crop(frame)).split())
     txt = ocr.read(pp.prep_text(box.crop(frame), dark_text=False, target_height=64),
                    psm=ocr.PSM_BLOCK)
     return " ".join(txt.split())
 
 
-def read_inventory_header(frame: np.ndarray) -> tuple[str, int | None]:
+def read_inventory_header(frame: np.ndarray,
+                          read_text: TextReader | None = None) -> tuple[str, int | None]:
     """Read the header, e.g. "Artifacts 385/2700" -> ("artifacts", 385).
 
     The label matters as much as the count: it is the only cheap way to notice
@@ -85,8 +93,11 @@ def read_inventory_header(frame: np.ndarray) -> tuple[str, int | None]:
     # The count is gold on a dark bar -- too saturated for the neutral-glyph
     # path used on the detail header, so threshold on luminance instead.
     box = Region(int(w * 0.80), int(h * 0.026), int(w * 0.945), int(h * 0.062))
-    txt = ocr.read(pp.prep_text(box.crop(frame), dark_text=False, target_height=70),
-                   psm=ocr.PSM_LINE)
+    if read_text is not None:
+        txt = read_text(box.crop(frame))
+    else:
+        txt = ocr.read(pp.prep_text(box.crop(frame), dark_text=False, target_height=70),
+                       psm=ocr.PSM_LINE)
     label = "".join(c for c in txt if c.isalpha()).lower()
     digits = "".join(c if c.isdigit() else " " for c in txt).split()
     owned = None
@@ -219,6 +230,7 @@ class ArtifactScanner:
         self.failure_dir = failure_dir
         self._fail_seq = 0
         self._pitch_y = 0     # cached from the loop; re-detecting per tile is slow
+        self._read_text: TextReader | None = None
 
         # AI reader mode: panels' text is batched to Gemini, pixels still own
         # rarity/locked/elixir/refinement. The scanner only collects frames
@@ -230,6 +242,9 @@ class ArtifactScanner:
                 raise RuntimeError("AI reader selected but no Gemini API key is set")
             self._gemini = Gemini(self.s.gemini_key(), self.s.gemini_model,
                                   log=self.log, usage=Usage())
+            if not ocr.available():
+                from ..ai.reader import line_reader
+                self._read_text = line_reader(self._gemini)
             self._pending: list[tuple[str, np.ndarray, Tile]] = []
             self._ai_abort = False
 
@@ -422,7 +437,7 @@ class ArtifactScanner:
         st = result.stats
 
         frame = self.d.grab()
-        label, st.total_expected = read_inventory_header(frame)
+        label, st.total_expected = read_inventory_header(frame, self._read_text)
         # Materials tabs report "Inventory capacity N/M", which names no
         # category; goto_tab has already confirmed the tab by its title.
         if self.item_label != "material" and label and self.item_label not in label:

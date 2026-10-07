@@ -447,7 +447,7 @@ def test_scanner_scan_aborts_on_auth_error(monkeypatch):
                  min_artifact_rarity=1)
     scanner = ArtifactScanner(driver, s)
     scanner._settled_frame = lambda: frame
-    monkeypatch.setattr(scn, "read_inventory_header", lambda f: ("artifacts", 8))
+    monkeypatch.setattr(scn, "read_inventory_header", lambda f, rt=None: ("artifacts", 8))
     monkeypatch.setattr(scn, "find_grid", lambda f: Grid(
         tiles=_tiles(2), cols=2, rows=1, pitch_x=50, pitch_y=50,
         region=Region(0, 0, 100, 60)))
@@ -500,3 +500,63 @@ def test_artifact_scanner_ai_read_uses_the_artifact_reader(monkeypatch):
     out = scanner._ai_read([("t", _frame(), None), ("u", _frame(), None)])
     assert calls == [2]
     assert [item for item, _ in out] == [None, None]
+
+
+class _LineGemini:
+    def __init__(self, text):
+        self.text, self.calls = text, 0
+
+    def generate_json(self, prompt, images, schema):
+        self.calls += 1
+        assert len(images) == 1 and schema["properties"]["text"]["type"] == "STRING"
+        return {"text": self.text}
+
+
+def test_line_reader_returns_the_model_text():
+    from lumenspar.ai.reader import line_reader
+
+    gem = _LineGemini("Artifacts 385/2700")
+    assert line_reader(gem)(_frame()[:40, :200]) == "Artifacts 385/2700"
+    assert gem.calls == 1
+
+
+def test_navigation_reads_use_the_text_reader_not_tesseract(monkeypatch):
+    from lumenspar.ocr import engine
+    from lumenspar.scan.scanner import read_inventory_header, read_tab_title
+
+    def no_tesseract(*a, **k):
+        raise AssertionError("Tesseract must not be called")
+    monkeypatch.setattr(engine, "read", no_tesseract)
+    assert read_inventory_header(_frame(), lambda img: "Artifacts 385/2700") == ("artifacts", 385)
+    assert read_tab_title(_frame(), lambda img: "  Character  Development Items ") == \
+        "Character Development Items"
+
+
+def test_ai_scanner_without_tesseract_reads_navigation_with_gemini(monkeypatch):
+    from lumenspar.ocr import engine
+
+    monkeypatch.setattr(engine, "available", lambda: False)
+    scanner = ArtifactScanner(FakeDriver(_frame()),
+                              Settings(reader_mode="ai", gemini_api_key="k"))
+    assert scanner._read_text is not None
+    monkeypatch.setattr(engine, "available", lambda: True)
+    scanner = ArtifactScanner(FakeDriver(_frame()),
+                              Settings(reader_mode="ai", gemini_api_key="k"))
+    assert scanner._read_text is None
+
+
+def test_refinement_badge_defers_to_the_model_without_tesseract(monkeypatch):
+    from lumenspar.ocr import engine
+    from lumenspar.scan import weapons
+
+    monkeypatch.setattr(engine, "available", lambda: False)
+    monkeypatch.setattr(weapons, "_refinement_badge", lambda frame, L: np.zeros((20, 20, 3), np.uint8))
+    assert weapons.read_refinement_badge(_frame(), None) is None
+
+
+def test_usage_counts_from_two_clients_add_up(tmp_path):
+    from lumenspar.ai.gemini import Usage
+
+    a, b = Usage(tmp_path / "u.json"), Usage(tmp_path / "u.json")
+    a.add(); b.add(); a.add()
+    assert Usage(tmp_path / "u.json").today() == 3

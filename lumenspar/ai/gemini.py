@@ -227,6 +227,7 @@ class Usage:
             pass
 
     def add(self, n: int = 1) -> None:
+        self._load()      # another client in this process may have counted since
         now = self._clock().date().isoformat()
         if now != self._today:
             self._today, self._count = now, 0

@@ -144,6 +144,19 @@ def _str(v, default: str = "") -> str:
     return v if isinstance(v, str) else default
 
 
+LINE_PROMPT = "The image is a short strip of Genshin Impact UI text. Transcribe EXACTLY what is printed, as a single line; never correct, infer or translate. Use an empty string if there is no text."
+LINE_SCHEMA = {"type": "OBJECT", "properties": {"text": _STRING}, "required": ["text"]}
+
+
+def line_reader(gemini: Gemini):
+    """A TextReader backed by Gemini, for the few navigation reads (inventory
+    header, tab title) that would otherwise need Tesseract. One request each."""
+    def read(img: np.ndarray) -> str:
+        raw = gemini.generate_json(LINE_PROMPT, [encode_jpeg(img)], LINE_SCHEMA)
+        return _str(raw.get("text")) if isinstance(raw, dict) else ""
+    return read
+
+
 def _artifact_panel_box(frame: np.ndarray, L) -> tuple[int, int, int, int]:
     """The whole detail panel: header top to equipped bar, panel width.
 

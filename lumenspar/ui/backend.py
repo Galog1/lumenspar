@@ -572,8 +572,16 @@ class Backend(QObject):
             failures = Path(self._s.export_dir).expanduser() / "failures"
             export = GoodExport()
             problems: list[str] = []
+            read_text = None
+            if self._s.reader_mode == "ai" and not ocr_engine.available():
+                from ..ai.gemini import Gemini, Usage
+                from ..ai.reader import line_reader
+                log("Tesseract not found: Gemini also reads the inventory "
+                    "header and tab titles (a few extra requests).")
+                read_text = line_reader(Gemini(self._s.gemini_key(), self._s.gemini_model,
+                                               log=log, usage=Usage()))
             # Make sure the inventory is actually open before driving tabs.
-            label, _ = read_inventory_header(driver.grab())
+            label, _ = read_inventory_header(driver.grab(), read_text)
             if not label:
                 log(f"Inventory does not look open; pressing "
                     f"'{self._s.key_inventory}'.")
@@ -606,7 +614,7 @@ class Backend(QObject):
                     tap=lambda k: inject.tap(k),
                     grab=driver.grab,
                     sleep=time.sleep,
-                    read_title=read_tab_title,
+                    read_title=lambda f: read_tab_title(f, read_text),
                     log=log,
                     step_delay=max(0.15, self._s.wait("after_key")),
                     key_left=self._s.key_tab_left,
