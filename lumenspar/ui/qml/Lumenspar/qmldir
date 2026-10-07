@@ -2,7 +2,10 @@ module Lumenspar
 singleton Theme 1.0 Theme.qml
 Card 1.0 Card.qml
 CategoryChip 1.0 CategoryChip.qml
+ModeChip 1.0 ModeChip.qml
 StarPicker 1.0 StarPicker.qml
 AccentButton 1.0 AccentButton.qml
 GhostButton 1.0 GhostButton.qml
 StatusPill 1.0 StatusPill.qml
+Glow 1.0 Glow.qml
+Backdrop 1.0 Backdrop.qml

@@ -72,6 +72,11 @@ class Settings:
     # The Wanderer can be renamed in-game too, after which it reads back as
     # whatever the player chose. Blank means it still shows as "Wanderer".
     wanderer_name: str = ""
+    # Other characters whose displayed name the player chose (Manekins),
+    # comma-separated. They can't be keyed in GOOD, but knowing their names
+    # lets a read that is one glyph away from the Traveler's or Wanderer's be
+    # refused instead of misassigned.
+    other_names: str = ""
 
     # Enka.Network character import: the player's UID, whose profile
     # showcase is read. Optional -- blank means characters come only from
@@ -87,12 +92,24 @@ class Settings:
     ocr_lang: str = "eng"
     min_match_score: float = 78.0     # rapidfuzz score below which a read is rejected
 
+    # reading: "local" reads every panel with Tesseract, "ai" reads the text
+    # with Google's Gemini vision model (batched) and keeps the pixel-derived
+    # facts -- rarity, locked, elixir, refinement badge, constellation.
+    reader_mode: str = "local"        # local | ai
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.5-flash-lite"
+    ai_batch_size: int = 6            # panels per Gemini request
+
     def wait(self, name: str) -> float:
         return getattr(self.delays, name) * max(0.1, self.delay_scale)
 
     @property
     def export_path(self) -> Path:
         return Path(self.export_dir).expanduser() / self.export_name
+
+    def gemini_key(self) -> str:
+        """The Gemini API key: the LUMENSPAR_GEMINI_KEY env var wins over settings."""
+        return os.environ.get("LUMENSPAR_GEMINI_KEY") or self.gemini_api_key
 
     # -- persistence -----------------------------------------------------
 
@@ -125,4 +142,8 @@ class Settings:
         tmp = path.with_suffix(".tmp")
         tmp.write_text(json.dumps(asdict(self), indent=2))
         tmp.replace(path)  # atomic: never leave a truncated config behind
+        try:
+            os.chmod(path, 0o600)   # the file may now hold an API key
+        except OSError:
+            pass                    # best effort; never break a save
         return path

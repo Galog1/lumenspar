@@ -8,6 +8,7 @@ thread; only signals cross back to the GUI thread.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import traceback
 from pathlib import Path
@@ -125,10 +126,14 @@ class Backend(QObject):
     keyCharacter = _mk("key_character", str, settingsChanged)
     travelerName = _mk("traveler_name", str, settingsChanged)
     wandererName = _mk("wanderer_name", str, settingsChanged)
+    otherNames = _mk("other_names", str, settingsChanged)
     uid = _mk("uid", str, settingsChanged)
     keyTabLeft = _mk("key_tab_left", str, settingsChanged)
     keyTabRight = _mk("key_tab_right", str, settingsChanged)
     minMatchScore = _mk("min_match_score", float, settingsChanged)
+    readerMode = _mk("reader_mode", str, settingsChanged)
+    geminiApiKey = _mk("gemini_api_key", str, settingsChanged)
+    geminiModel = _mk("gemini_model", str, settingsChanged)
     del _mk
 
     @Property(str, notify=settingsChanged)
@@ -255,6 +260,20 @@ class Backend(QObject):
     def ocrReady(self) -> bool:
         return ocr_engine.available()
 
+    @Property(bool, constant=True)
+    def geminiKeyFromEnv(self) -> bool:
+        """True when LUMENSPAR_GEMINI_KEY supplies the key; QML then shows the
+        env-var note and makes the Settings field read-only."""
+        return bool(os.environ.get("LUMENSPAR_GEMINI_KEY"))
+
+    @Property(bool, notify=settingsChanged)
+    def readerReady(self) -> bool:
+        """Whether the selected reader can run: Tesseract in local mode, a
+        Gemini API key in AI mode."""
+        if self._s.reader_mode == "local":
+            return ocr_engine.available()
+        return bool(self._s.gemini_key())
+
     @Property(str, constant=True)
     def matcherBackend(self) -> str:
         return ocr_match.backend()
@@ -343,12 +362,30 @@ class Backend(QObject):
     def _self_test_job(self, log) -> None:
         from ..ocr import preprocess as pp
 
-        log("Checking Tesseract…")
-        log(f"  tesseract: {'found' if ocr_engine.available() else 'MISSING'}")
-        log(f"  matcher:   {ocr_match.backend()}")
-        log(f"  vocabulary: {self.vocabSummary}")
+        if self._s.reader_mode == "ai":
+            from ..ai.gemini import Gemini, GeminiError, Usage
 
-        log("Grabbing a frame…")
+            log("Checking Gemini...")
+            log(f"  model: {self._s.gemini_model}")
+            key = self._s.gemini_key()
+            if not key:
+                log("  Gemini: no API key is set -- add one in Settings or "
+                    "export LUMENSPAR_GEMINI_KEY")
+            else:
+                try:
+                    display = Gemini(key, self._s.gemini_model, log=log).check()
+                except GeminiError as exc:
+                    log(f"  Gemini: {exc}")
+                else:
+                    log(f"  Gemini: ok ({display})")
+            log(f"  requests used today: {Usage().today()}")
+        else:
+            log("Checking Tesseract...")
+            log(f"  tesseract: {'found' if ocr_engine.available() else 'MISSING'}")
+            log(f"  matcher:   {ocr_match.backend()}")
+            log(f"  vocabulary: {self.vocabSummary}")
+
+        log("Grabbing a frame...")
         frame = self._capture.grab(timeout=10.0)
         h, w = frame.shape[:2]
         log(f"  captured {w}x{h} (native pixels)")
@@ -358,15 +395,16 @@ class Backend(QObject):
         )
         log(f"  aspect ratio: {note}")
 
-        # Read a broad band rather than one fixed corner: a blank corner would
-        # make a healthy OCR install look broken.
-        band = frame[h // 6 : h // 2, : w // 2]
-        txt = ocr_engine.read(pp.prep_text(band), psm=ocr_engine.PSM_BLOCK)
-        words = [t for t in txt.split() if len(t) > 1]
-        if words:
-            log(f"  OCR read {len(words)} words, e.g. {' '.join(words[:5])!r}")
-        else:
-            log("  OCR read no text in the sample area (that may be fine)")
+        if self._s.reader_mode == "local":
+            # Read a broad band rather than one fixed corner: a blank corner would
+            # make a healthy OCR install look broken.
+            band = frame[h // 6 : h // 2, : w // 2]
+            txt = ocr_engine.read(pp.prep_text(band), psm=ocr_engine.PSM_BLOCK)
+            words = [t for t in txt.split() if len(t) > 1]
+            if words:
+                log(f"  OCR read {len(words)} words, e.g. {' '.join(words[:5])!r}")
+            else:
+                log("  OCR read no text in the sample area (that may be fine)")
         log("Self-test complete.")
 
     def _store_token(self, token: str) -> None:
@@ -379,6 +417,15 @@ class Backend(QObject):
             return
         if not self._s.categories:
             self._set_status("Select at least one category to scan")
+            return
+        if not self.readerReady:
+            if self._s.reader_mode == "ai":
+                msg = ("AI reader selected but no Gemini API key is set -- add one "
+                       "in Settings or export LUMENSPAR_GEMINI_KEY")
+            else:
+                msg = "tesseract is not installed"
+            self.logAppended.emit(f"error: {msg}")
+            self._set_status(msg)
             return
         if not self._prepare_capture():
             return
@@ -414,6 +461,7 @@ class Backend(QObject):
     def _scan_job(self, log) -> None:
         import time
 
+        from ..ai.gemini import GeminiError
         from ..good import GoodExport
         from ..inject.uinput import UinputInject
         from ..inject.ydotool import YdotoolInject
@@ -542,6 +590,14 @@ class Backend(QObject):
                         # The same material can appear on both tabs; keep the
                         # larger reading rather than summing a double count.
                         export.materials[key] = max(export.materials.get(key, 0), count)
+        except (RuntimeError, GeminiError) as exc:
+            # Scanner construction can raise (e.g. "AI reader selected but no
+            # Gemini API key is set") and the AI path re-raises auth/model
+            # errors to abort the scan. Log it and end the job cleanly, the
+            # same way every other failure surfaces in this function -- never
+            # an uncaught exception in the worker thread.
+            log(f"error: {exc}")
+            return
         finally:
             inject.stop()
             if self._esc is not None:

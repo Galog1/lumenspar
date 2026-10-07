@@ -29,6 +29,10 @@ from .grid import Grid, GridError, Tile, find_grid
 from .layout import LayoutError, Region
 
 
+# AI-mode only; raised by the Gemini client and re-exported for the scanners.
+from ..ai.gemini import GeminiAuthError, GeminiError, GeminiModelError
+
+
 class ScanDriver(Protocol):
     """Everything the loop needs from the outside world."""
 
@@ -216,6 +220,19 @@ class ArtifactScanner:
         self._fail_seq = 0
         self._pitch_y = 0     # cached from the loop; re-detecting per tile is slow
 
+        # AI reader mode: panels' text is batched to Gemini, pixels still own
+        # rarity/locked/elixir/refinement. The scanner only collects frames
+        # and flushes a batch; it never reads one here.
+        if self.s.reader_mode == "ai":
+            from ..ai.gemini import Gemini, Usage
+
+            if not self.s.gemini_key():
+                raise RuntimeError("AI reader selected but no Gemini API key is set")
+            self._gemini = Gemini(self.s.gemini_key(), self.s.gemini_model,
+                                  log=self.log, usage=Usage())
+            self._pending: list[tuple[str, np.ndarray, Tile]] = []
+            self._ai_abort = False
+
     def _dbg(self, msg: str) -> None:
         if self.verbose:
             self.log(f"    [dbg] {msg}")
@@ -264,8 +281,28 @@ class ArtifactScanner:
         panel = read_panel(frame)
         parsed = build_artifact(panel, min_score=self.s.min_match_score,
                                 traveler_name=self.s.traveler_name,
-                                wanderer_name=self.s.wanderer_name)
+                                wanderer_name=self.s.wanderer_name,
+                                other_names=self.s.other_names)
         return parsed.artifact, parsed.problems
+
+    def _ai_read(self, entries: list[tuple[str, np.ndarray, Tile]]):
+        from ..ai.reader import read_artifacts
+
+        # Same build_artifact validation as `_parse_frame`, fed with the
+        # model's PanelText instead of Tesseract's; pixel facts (rarity,
+        # locked, elixir) were already filled in by the reader.
+        panels = read_artifacts(self._gemini, [frame for _, frame, _ in entries])
+        out = []
+        for panel in panels:
+            if panel is None:
+                out.append((None, ["the panel could not be segmented"]))
+                continue
+            parsed = build_artifact(panel, min_score=self.s.min_match_score,
+                                    traveler_name=self.s.traveler_name,
+                                    wanderer_name=self.s.wanderer_name,
+                                    other_names=self.s.other_names)
+            out.append((parsed.artifact, parsed.problems))
+        return out
 
     def _attempt(self, result: ScanResult):
         """One read of the currently selected item."""
@@ -280,6 +317,9 @@ class ArtifactScanner:
         return self.s.min_artifact_rarity
 
     def _read_one(self, tile: Tile, result: ScanResult) -> None:
+        if self.s.reader_mode == "ai":
+            self._ai_read_one(tile, result)
+            return
         x, y = tile.center
         self.d.click(x, y)
         self._wait("after_click")
@@ -302,6 +342,65 @@ class ArtifactScanner:
         where = f"tile r{tile.row}c{tile.col}"
         result.problems.append(f"{where}: " + "; ".join(problems))
         self._save_failure(where, frame, problems)
+
+    # -- AI reader mode ---------------------------------------------------
+
+    def _ai_read_one(self, tile: Tile, result: ScanResult) -> None:
+        """Click and grab the panel, then defer the read to the next batch.
+
+        No OCR and no retry here: the text is read by Gemini in `_flush`, and
+        a misread that slips through is still refused by `build_*`, which this
+        scanner's local path also runs.
+        """
+        x, y = tile.center
+        self.d.click(x, y)
+        self._wait("after_click")
+        frame = self._settled_frame()
+        where = f"tile r{tile.row}c{tile.col}"
+        self._pending.append((where, frame, tile))
+        if len(self._pending) >= self.s.ai_batch_size:
+            self._flush(result)
+
+    def _ai_read(self, entries: list[tuple[str, np.ndarray, Tile]]):
+        """Read one batch of panels -> [(item, problems)] per entry.
+
+        Overridden per subclass: artifacts build from PanelText, weapons from
+        WeaponPanelText, materials from (name, count) via the vocabulary.
+        """
+        raise NotImplementedError
+
+    def _flush(self, result: ScanResult) -> None:
+        """Send a full batch of panels to Gemini and account for the outcome.
+
+        A hard auth/model error aborts the scan. A quota or other Gemini
+        error marks every pending item failed (with a failure dump), then
+        stops the scan: thousands of dumps would otherwise follow one 429.
+        """
+        pending, self._pending = self._pending, []
+        if not pending:
+            return
+        self.log(f"  reading {len(pending)} panels with Gemini...")
+        try:
+            outcomes = self._ai_read(pending)
+        except (GeminiAuthError, GeminiModelError):
+            self._ai_abort = True
+            raise
+        except GeminiError as exc:
+            self._ai_abort = True
+            self.log(f"  Gemini error: {exc}")
+            for where, frame, _tile in pending:
+                result.stats.failed += 1
+                result.problems.append(f"{where}: {exc}")
+                self._save_failure(where, frame, [str(exc)])
+            return
+        for (where, frame, _tile), (item, problems) in zip(pending, outcomes):
+            if item is None:
+                result.stats.failed += 1
+                result.problems.append(f"{where}: " + "; ".join(problems))
+                self._save_failure(where, frame, problems)
+            else:
+                result.items.append(item)
+                result.stats.kept += 1
 
     def _save_failure(self, where: str, frame: np.ndarray, problems: list[str]) -> None:
         """Write the offending frame out so a failure can be diagnosed later."""
@@ -367,7 +466,7 @@ class ArtifactScanner:
         px_per_click: float | None = None
         stalls = 0
 
-        while not self.should_stop():
+        while not self.should_stop() and not getattr(self, "_ai_abort", False):
             try:
                 grid = find_grid(frame)
             except (GridError, LayoutError) as exc:
@@ -408,12 +507,12 @@ class ArtifactScanner:
                 st.pages += 1
 
             for abs_y, tiles in fresh:
-                if self.should_stop():
+                if self.should_stop() or getattr(self, "_ai_abort", False):
                     break
                 bisect.insort(scanned_abs, abs_y)
                 key = round(abs_y / pitch)
                 for tile in tiles:
-                    if self.should_stop():
+                    if self.should_stop() or getattr(self, "_ai_abort", False):
                         break
                     st.seen += 1
                     if tile.rarity and tile.rarity < self._rarity_floor():
@@ -483,10 +582,15 @@ class ArtifactScanner:
                 # Hit the bottom, or the wheel is being throttled.
                 self.log(f"  scrolled {moved}px of {target_px}px requested")
 
+        if self.s.reader_mode == "ai":
+            self._flush(result)
         self.log(
             f"Done: {st.kept} kept, {st.skipped_rarity} below rarity floor, "
             f"{st.failed} unreadable ({st.retried} retried), {st.pages} pages"
         )
+        if self.s.reader_mode == "ai":
+            self.log(f"Gemini requests this scan: {self._gemini.requests_made} "
+                     f"(today: {self._gemini.usage.today()})")
         return result
 
 
@@ -505,7 +609,26 @@ class WeaponScanner(ArtifactScanner):
         panel = read_weapon_panel(frame)
         return build_weapon(panel, min_score=self.s.min_match_score,
                             traveler_name=self.s.traveler_name,
-                            wanderer_name=self.s.wanderer_name)
+                            wanderer_name=self.s.wanderer_name,
+                            other_names=self.s.other_names)
+
+    def _ai_read(self, entries: list[tuple[str, np.ndarray, Tile]]):
+        from ..ai.reader import read_weapons
+        from .weapon_parse import build_weapon
+
+        panels = read_weapons(self._gemini, [frame for _, frame, _ in entries])
+        out = []
+        for panel in panels:
+            if panel is None:
+                out.append((None, ["the panel could not be segmented"]))
+                continue
+            item, problems = build_weapon(
+                panel, min_score=self.s.min_match_score,
+                traveler_name=self.s.traveler_name,
+                wanderer_name=self.s.wanderer_name,
+                other_names=self.s.other_names)
+            out.append((item, problems))
+        return out
 
 
 class MaterialScanner(ArtifactScanner):
@@ -517,6 +640,9 @@ class MaterialScanner(ArtifactScanner):
         return 1          # materials have no user-facing rarity filter
 
     def _read_one(self, tile: Tile, result: ScanResult) -> None:
+        if self.s.reader_mode == "ai":
+            self._ai_read_one(tile, result)
+            return
         from ..ocr import match as vocab
         from .materials import read_material_name, read_quantity
 
@@ -562,8 +688,73 @@ class MaterialScanner(ArtifactScanner):
         result.items.append((m.key, qty))
         result.stats.kept += 1
 
+    def _ai_read(self, entries: list[tuple[str, np.ndarray, Tile]]):
+        from ..ai.reader import read_materials
+        from ..ocr import match as vocab
+
+        # Same vocabulary check the local path runs, only upstream the
+        # (name, count) came from Gemini instead of Tesseract.
+        pitch = self._pitch_y or 350
+        got = read_materials(self._gemini, [(frame, tile, pitch)
+                                            for _, frame, tile in entries])
+        out = []
+        for entry in got:
+            if entry is None:
+                out.append((None, ["the panel could not be segmented"]))
+                continue
+            name, qty = entry
+            m = vocab.materials().match(name, floor=self.s.min_match_score)
+            problems = []
+            if not m.ok:
+                problems.append(
+                    f"material {name!r} matched {m.key or '—'} at {m.score:.0f}")
+            if qty is None:
+                problems.append("unreadable quantity")
+            if problems:
+                out.append((None, problems))
+            else:
+                out.append(((m.key, qty), []))
+        return out
+
 
 CHAR_LIMIT = 200        # safety stop; the roster is walked until it wraps
+
+
+def _ai_attributes_ok(frame) -> bool:
+    """Pixel-only stand-in for the local \"level parses\" capture check.
+
+    AI mode never runs Tesseract, but the Attributes-page check still has to
+    keep a frame caught mid-drift out of the batch; \"bright ink in the level
+    region\" is enough to ask Gemini.
+    """
+    from .characters import R_LEVEL, _region
+
+    crop = _region(frame, R_LEVEL).crop(frame)
+    if crop.size == 0:
+        return False
+    return bool((crop.min(2) >= 150).mean() > 0.003)
+
+
+def _ai_talents_row_count(frame) -> int:
+    """How many bright level-row bands the Talents screen shows (pixel-only)."""
+    from .characters import R_TALENTS, _region
+
+    crop = _region(frame, R_TALENTS).crop(frame)
+    if crop.size == 0:
+        return 0
+    ink = crop[:, :, ::-1].astype(int).min(2) >= 190
+    h, w = ink.shape
+    level_col = np.zeros_like(ink)
+    level_col[:, int(w * 0.70): int(w * 0.92)] = True
+    ink &= level_col
+    rows = ink.sum(1) > 4
+    bands = 0
+    prev = False
+    for on in rows:
+        if on and not prev:
+            bands += 1
+        prev = on
+    return bands
 
 
 class CharacterScanner:
@@ -593,6 +784,18 @@ class CharacterScanner:
         # what the scanner actually saw instead of omitting the page entirely.
         self._rejected: dict[str, np.ndarray] = {}
 
+        # AI reader mode: text goes to Gemini in batches, the name-repeat
+        # roster-wrap is detected by a pixel fingerprint (see scan()).
+        if self.s.reader_mode == "ai":
+            from ..ai.gemini import Gemini, Usage
+
+            if not self.s.gemini_key():
+                raise RuntimeError("AI reader selected but no Gemini API key is set")
+            self._gemini = Gemini(self.s.gemini_key(), self.s.gemini_model,
+                                  log=self.log, usage=Usage())
+            self._pending: list[tuple[str, dict[str, np.ndarray]]] = []
+            self._ai_abort = False
+
     def _save_failure(self, where: str, frames: dict[str, np.ndarray],
                       problems: list[str]) -> None:
         """Write the offending frames out so a failure can be diagnosed later.
@@ -616,6 +819,104 @@ class CharacterScanner:
                 fh.write(f"{stamp} {where}: {'; '.join(problems)}\n")
         except Exception:
             pass  # diagnostics must never break a scan
+
+    # -- AI reader mode ---------------------------------------------------
+
+    @staticmethod
+    def _name_fingerprint(frame: np.ndarray) -> np.ndarray | None:
+        """Ink mask of the Attributes name region, for roster-wrap detection.
+
+        The local scan stops when a name repeats; in AI mode the name cannot
+        be read synchronously (it is read by Gemini in a batch), so the wrap
+        is detected from the pixels instead. The name is white ink on a
+        drifting background, so the mask of bright pixels is what is stable
+        between two visits to the same character; it is pooled to a small
+        grid and compared with a tolerance by `_same_name` rather than hashed
+        exactly, so neither a flickering pixel nor a quantisation boundary
+        can split or merge two visits.
+        """
+        from .characters import R_NAME, _region
+
+        crop = _region(frame, R_NAME).crop(frame)
+        if crop.size == 0:
+            return None
+        ink = (crop.min(2) >= 190).astype(np.float32)
+        if ink.sum() < 20:
+            return None
+        rows, cols = 12, 48
+        h, w = ink.shape
+        ys = np.linspace(0, h, rows + 1).astype(int)
+        xs = np.linspace(0, w, cols + 1).astype(int)
+        small = np.zeros((rows, cols), np.float32)
+        for i in range(rows):
+            for j in range(cols):
+                cell = ink[ys[i]:max(ys[i + 1], ys[i] + 1),
+                           xs[j]:max(xs[j + 1], xs[j] + 1)]
+                small[i, j] = cell.mean()
+        return small
+
+    @staticmethod
+    def _same_name(a: np.ndarray, b: np.ndarray) -> bool:
+        """Two name fingerprints that differ by less than a few per cent of
+        the grid are the same character seen twice."""
+        return bool(np.abs(a - b).mean() < 0.04)
+
+    def _ai_flush(self, result: ScanResult) -> None:
+        """Send a batch of characters to Gemini and account for the outcome.
+
+        Constellation comes from the pixel reader inside `read_characters`;
+        build_character validation is unchanged. Hard auth/model errors abort
+        the scan; a quota or other Gemini error fails the whole batch and
+        stops the scan rather than dumping one frame per remaining character.
+        """
+        from ..ai.reader import read_characters
+        from .character_parse import build_character
+
+        pending, self._pending = self._pending, []
+        if not pending:
+            return
+        self.log(f"  reading {len(pending)} characters with Gemini...")
+        try:
+            panels = read_characters(self._gemini, [pages for _, pages in pending])
+        except (GeminiAuthError, GeminiModelError):
+            self._ai_abort = True
+            raise
+        except GeminiError as exc:
+            self._ai_abort = True
+            self.log(f"  Gemini error: {exc}")
+            for where, pages in pending:
+                result.stats.failed += 1
+                result.problems.append(f"{where}: {exc}")
+                self._save_failure(where, pages, [str(exc)])
+            return
+        for (where, pages), panel in zip(pending, panels):
+            label = panel.name or where if panel is not None else where
+            if panel is None:
+                result.stats.failed += 1
+                result.problems.append(f"{where}: the Attributes page could "
+                                       f"not be captured")
+                self._save_failure(where, pages,
+                                   ["the Attributes page could not be captured"])
+                continue
+            char, notes = build_character(
+                panel, min_score=self.s.min_match_score,
+                traveler_name=self.s.traveler_name,
+                wanderer_name=self.s.wanderer_name,
+                other_names=self.s.other_names)
+            if char is None:
+                result.stats.failed += 1
+                result.problems.append(f"{label}: " + "; ".join(notes))
+                self.log(f"  {label}: unreadable ({notes[0] if notes else '?'})")
+                self._save_failure(label, pages, notes)
+            else:
+                result.items.append(char)
+                result.stats.kept += 1
+                extra = f"  [{notes[0]}]" if notes else ""
+                self.log(f"  {char.key}: Lv{char.level} C{char.constellation} "
+                         f"talents {char.talent['auto']}/{char.talent['skill']}/"
+                         f"{char.talent['burst']}{extra}")
+                if notes:
+                    result.problems.extend(f"{char.key}: {n}" for n in notes)
 
     def _goto_page(self, item: str) -> bool:
         """Select a left-menu page with W/S rather than clicking it."""
@@ -700,6 +1001,7 @@ class CharacterScanner:
         result = ScanResult()
         st = result.stats
         seen: list[str] = []
+        seen_fp: list[np.ndarray] = []
         # The left-menu selection survives the Q/E character switch, so the
         # pages are walked down for one character and back up for the next
         # instead of returning to Attributes every time.
@@ -707,19 +1009,32 @@ class CharacterScanner:
         # What a good capture of each page looks like. The Constellation page
         # has no text to read back, so being on the page is the whole check.
         from .character_parse import parse_level
-        checks = {
-            # The level has to *parse*, not merely be non-empty: a frame caught
-            # mid-drift returns confident gibberish ("| @ero0790"), which a
-            # non-empty test accepts and no retry ever corrects.
-            "attributes": lambda f: bool(read_name(f)) and parse_level(
-                read_level(f)) is not None,
-            "constellation": lambda f: True,
-            "talents": lambda f: len(read_talents(f)) == 3,
-        }
+        if self.s.reader_mode == "ai":
+            # AI mode never calls Tesseract, so the "is this page good"
+            # checks are pixel-only presence tests: bright ink in the level
+            # region, and at least three bright level rows on the Talents
+            # screen.
+            checks = {
+                "attributes": lambda f: _ai_attributes_ok(f),
+                "constellation": lambda f: True,
+                "talents": lambda f: _ai_talents_row_count(f) >= 3,
+            }
+        else:
+            checks = {
+                # The level has to *parse*, not merely be non-empty: a frame caught
+                # mid-drift returns confident gibberish ("| @ero0790"), which a
+                # non-empty test accepts and no retry ever corrects.
+                "attributes": lambda f: bool(read_name(f)) and parse_level(
+                    read_level(f)) is not None,
+                "constellation": lambda f: True,
+                "talents": lambda f: len(read_talents(f)) == 3,
+            }
         forward = True
 
         for first in range(CHAR_LIMIT):
             if self.should_stop():
+                break
+            if self.s.reader_mode == "ai" and self._ai_abort:
                 break
 
             frames: dict[str, np.ndarray] = {}
@@ -741,73 +1056,103 @@ class CharacterScanner:
                              f"(press '{self.s.key_character}' first)")
                 break
 
-            name = read_name(frames["attributes"])
-            if not name:
-                self.log("error: the character screen does not look open "
-                         f"(press '{self.s.key_character}' first)")
-                break
-            if name in seen:
-                self.log(f"Wrapped around to {name}; all characters scanned.")
-                break
-            seen.append(name)
+            if self.s.reader_mode == "ai":
+                # The roster wrap is detected by a pixel fingerprint of the
+                # name region -- the only "name" fact available before the
+                # batch is sent to Gemini.
+                fp = self._name_fingerprint(frames["attributes"])
+                if fp is None:
+                    self.log("error: the character screen does not look open "
+                             f"(press '{self.s.key_character}' first)")
+                    break
+                if any(self._same_name(fp, old) for old in seen_fp):
+                    self.log("Wrapped around to the first character; "
+                             "all characters scanned.")
+                    break
+                seen_fp.append(fp)
+            else:
+                name = read_name(frames["attributes"])
+                if not name:
+                    self.log("error: the character screen does not look open "
+                             f"(press '{self.s.key_character}' first)")
+                    break
+                if name in seen:
+                    self.log(f"Wrapped around to {name}; all characters scanned.")
+                    break
+                seen.append(name)
             st.seen += 1
 
-            level = read_level(frames["attributes"])
-            element = read_element(frames["attributes"])
-            description = read_description(frames["attributes"])
-            constellation = (read_constellation(frames["constellation"])
-                             if "constellation" in frames else None)
-            tal = read_talents(frames["talents"]) if "talents" in frames else []
-            slots = ("auto", "skill", "burst")
-            talents = {slot: str(lvl) for slot, (lvl, _boosted) in zip(slots, tal)}
-            talent_boosted = {slot: boosted
-                             for slot, (_lvl, boosted) in zip(slots, tal)}
-
-            panel = CharacterPanelText(name=name, level=level,
-                                       constellation=constellation,
-                                       talents=talents,
-                                       talent_boosted=talent_boosted,
-                                       element=element,
-                                       description=description)
-            char, notes = build_character(panel,
-                                          min_score=self.s.min_match_score,
-                                          traveler_name=self.s.traveler_name,
-                                          wanderer_name=self.s.wanderer_name)
-            crashes = ocr.take_crashes()
-            if crashes:
-                # Say so explicitly. Left to speak for itself this arrives as
-                # an ordinary empty read, and the user goes looking for a
-                # threshold to tune that was never involved.
-                st.ocr_crashes += len(crashes)
-                notes = list(notes) + [f"Tesseract failed on this character's "
-                                       f"images ({crashes[0]})"]
-                self.log(f"  note: Tesseract crashed reading {name} "
-                         f"({crashes[0]}); continuing")
-            if char is None:
-                st.failed += 1
-                result.problems.append(f"{name}: " + "; ".join(notes))
-                self.log(f"  {name}: unreadable ({notes[0] if notes else '?'})")
-                self._save_failure(
-                    name,
-                    {**frames,
-                     **{f"{k}_rejected": v for k, v in self._rejected.items()}},
-                    notes)
+            if self.s.reader_mode == "ai":
+                # The text is read in a batch; only the frames are collected
+                # here. Constellation is counted from the Constellation page
+                # inside the reader, never by the model.
+                where = f"character {st.seen}"
+                self._pending.append((where, dict(frames)))
+                if len(self._pending) >= self.s.ai_batch_size:
+                    self._ai_flush(result)
             else:
-                result.items.append(char)
-                st.kept += 1
-                extra = f"  [{notes[0]}]" if notes else ""
-                self.log(f"  {char.key}: Lv{char.level} C{char.constellation} "
-                         f"talents {char.talent['auto']}/{char.talent['skill']}/"
-                         f"{char.talent['burst']}{extra}")
-                if notes:
-                    result.problems.extend(f"{char.key}: {n}" for n in notes)
+                level = read_level(frames["attributes"])
+                element = read_element(frames["attributes"])
+                description = read_description(frames["attributes"])
+                constellation = (read_constellation(frames["constellation"])
+                                 if "constellation" in frames else None)
+                tal = read_talents(frames["talents"]) if "talents" in frames else []
+                slots = ("auto", "skill", "burst")
+                talents = {slot: str(lvl) for slot, (lvl, _boosted) in zip(slots, tal)}
+                talent_boosted = {slot: boosted
+                                 for slot, (_lvl, boosted) in zip(slots, tal)}
+
+                panel = CharacterPanelText(name=name, level=level,
+                                           constellation=constellation,
+                                           talents=talents,
+                                           talent_boosted=talent_boosted,
+                                           element=element,
+                                           description=description)
+                char, notes = build_character(panel,
+                                              min_score=self.s.min_match_score,
+                                              traveler_name=self.s.traveler_name,
+                                              wanderer_name=self.s.wanderer_name,
+                                              other_names=self.s.other_names)
+                crashes = ocr.take_crashes()
+                if crashes:
+                    # Say so explicitly. Left to speak for itself this arrives as
+                    # an ordinary empty read, and the user goes looking for a
+                    # threshold to tune that was never involved.
+                    st.ocr_crashes += len(crashes)
+                    notes = list(notes) + [f"Tesseract failed on this character's "
+                                           f"images ({crashes[0]})"]
+                    self.log(f"  note: Tesseract crashed reading {name} "
+                             f"({crashes[0]}); continuing")
+                if char is None:
+                    st.failed += 1
+                    result.problems.append(f"{name}: " + "; ".join(notes))
+                    self.log(f"  {name}: unreadable ({notes[0] if notes else '?'})")
+                    self._save_failure(
+                        name,
+                        {**frames,
+                         **{f"{k}_rejected": v for k, v in self._rejected.items()}},
+                        notes)
+                else:
+                    result.items.append(char)
+                    st.kept += 1
+                    extra = f"  [{notes[0]}]" if notes else ""
+                    self.log(f"  {char.key}: Lv{char.level} C{char.constellation} "
+                             f"talents {char.talent['auto']}/{char.talent['skill']}/"
+                             f"{char.talent['burst']}{extra}")
+                    if notes:
+                        result.problems.extend(f"{char.key}: {n}" for n in notes)
 
             self.tap(self.s.key_tab_right)
             self.d.sleep(self.s.wait("page_scroll"))
 
+        if self.s.reader_mode == "ai":
+            self._ai_flush(result)
         crashed = (f", {st.ocr_crashes} OCR crashes survived"
                    if st.ocr_crashes else "")
         self.log(f"Done: {st.kept} characters, {st.failed} unreadable "
                 f"({st.retried} pages re-captured for a bad background"
                 f"{crashed})")
+        if self.s.reader_mode == "ai":
+            self.log(f"Gemini requests this scan: {self._gemini.requests_made} "
+                     f"(today: {self._gemini.usage.today()})")
         return result
