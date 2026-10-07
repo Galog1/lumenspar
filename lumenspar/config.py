@@ -6,19 +6,36 @@ import json
 import os
 from dataclasses import dataclass, field, asdict, fields
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
+
+from . import hostos
 
 APP = "lumenspar"
 
 CATEGORIES: tuple[str, ...] = ("artifacts", "weapons", "characters", "materials")
 
 
-def _xdg(var: str, default: str) -> Path:
-    return Path(os.environ.get(var) or Path.home() / default)
+def _config_roots(windows: bool, env: Mapping[str, str]) -> tuple[Path, Path]:
+    """(config_dir, data_dir) for the host platform.
+
+    Windows keeps settings in %APPDATA% and other data in %LOCALAPPDATA%
+    (falling back to AppData\\Roaming / AppData\\Local under the home dir);
+    everything else follows the XDG base-dir spec. A function rather than
+    module-level constants so tests can drive either branch from Linux.
+    """
+    home = Path.home()
+    if windows:
+        return (
+            Path(env.get("APPDATA") or home / "AppData" / "Roaming") / APP,
+            Path(env.get("LOCALAPPDATA") or home / "AppData" / "Local") / APP,
+        )
+    return (
+        Path(env.get("XDG_CONFIG_HOME") or home / ".config") / APP,
+        Path(env.get("XDG_DATA_HOME") or home / ".local" / "share") / APP,
+    )
 
 
-CONFIG_DIR = _xdg("XDG_CONFIG_HOME", ".config") / APP
-DATA_DIR = _xdg("XDG_DATA_HOME", ".local/share") / APP
+CONFIG_DIR, DATA_DIR = _config_roots(hostos.is_windows(), os.environ)
 CONFIG_PATH = CONFIG_DIR / "config.json"
 
 
@@ -99,6 +116,12 @@ class Settings:
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.5-flash-lite"
     ai_batch_size: int = 6            # panels per Gemini request
+
+    def __post_init__(self) -> None:
+        # The Windows build is AI-only: it ships no Tesseract, so a config
+        # written elsewhere (or an old file) can never select local OCR.
+        if hostos.is_windows():
+            self.reader_mode = "ai"
 
     def wait(self, name: str) -> float:
         return getattr(self.delays, name) * max(0.1, self.delay_scale)

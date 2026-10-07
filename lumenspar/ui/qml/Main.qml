@@ -106,7 +106,7 @@ ApplicationWindow {
 
             Item { Layout.fillWidth: true }
 
-            StatusPill { label: backend.readerMode === "ai" ? "Gemini" : "OCR"; good: backend.readerReady }
+            StatusPill { label: (backend.aiOnly || backend.readerMode === "ai") ? "Gemini" : "OCR"; good: backend.readerReady }
             StatusPill { label: backend.matcherBackend.indexOf("rapidfuzz") === 0 ? "rapidfuzz" : "difflib"; good: backend.matcherBackend.indexOf("rapidfuzz") === 0 }
             StatusPill { label: backend.vocabSummary; good: true }
         }
@@ -195,6 +195,9 @@ ApplicationWindow {
                                 font.pixelSize: 11
                                 wrapMode: Text.WordWrap
                             }
+                            // The Windows build has no Tesseract, so the
+                            // Reader card is AI-only and the toggle is gone.
+                            visible: !backend.aiOnly
                         }
                         ColumnLayout {
                             Layout.fillWidth: true
@@ -227,8 +230,8 @@ ApplicationWindow {
                             id: aiBody
                             Layout.fillWidth: true
                             spacing: 10
-                            visible: backend.readerMode === "ai"
-                            opacity: backend.readerMode === "ai" ? 1.0 : 0.0
+                            visible: backend.aiOnly || backend.readerMode === "ai"
+                            opacity: (backend.aiOnly || backend.readerMode === "ai") ? 1.0 : 0.0
                             Behavior on opacity { NumberAnimation { duration: Theme.ease } }
                             Layout.topMargin: 4
 
@@ -726,7 +729,7 @@ ApplicationWindow {
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
-                        GhostButton { label: "Re-pick screen"; onClicked: backend.repickScreen() }
+                        GhostButton { label: "Re-pick screen"; visible: !backend.aiOnly; onClicked: backend.repickScreen() }
                         GhostButton { label: "Run self-test"; enabledState: !backend.scanning; onClicked: backend.selfTest() }
                         Item { Layout.fillWidth: true }
                     }

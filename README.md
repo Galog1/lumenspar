@@ -1,6 +1,6 @@
 # Lumenspar
 
-A Linux inventory scanner for Genshin Impact. It reads your artifacts, weapons,
+An inventory scanner for Genshin Impact (Linux; Windows with the AI reader). It reads your artifacts, weapons,
 characters and materials off the screen with OCR and writes a `.GOOD` JSON file
 that [Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/),
 [SEELIE.me](https://seelie.me) and Aspirine's calculator can import.
@@ -65,6 +65,31 @@ have to live at `~/lumenspar`. `LUMENSPAR_HOME` still overrides it at runtime.
 Press **Run self-test** first: it confirms Tesseract, the matcher and the
 capture stream, and reports the resolution and aspect ratio actually being
 captured.
+
+## Windows (AI reader only)
+
+Windows is supported with the AI reader only; Tesseract is not used or needed.
+Screen capture goes through `mss` and input through `SendInput`, so none of the
+Linux packages (GStreamer, D-Bus, evdev, `/dev/uinput`) are required.
+
+```bat
+py -3 -m pip install PySide6 numpy Pillow rapidfuzz mss
+py -3 -m lumenspar
+```
+
+or double-click `install\lumenspar.bat`. Then:
+
+- **Run it as administrator.** Genshin runs elevated, and Windows silently
+  drops input sent to it by a non-elevated program. Lumenspar refuses to start
+  a scan otherwise.
+- Set Genshin to **Windowed Fullscreen** (borderless). Exclusive fullscreen can
+  capture as a black frame; Lumenspar reports this if it happens.
+- Add a Gemini API key in the Reader card (see below). Settings live in
+  `%APPDATA%\lumenspar`.
+- Press **Escape** to stop a scan.
+
+The Windows backend has been unit-tested but **not yet run on a real Windows
+machine**; expect to report issues from the first live scan.
 
 ## AI reader (optional)
 

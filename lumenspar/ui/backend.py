@@ -17,7 +17,7 @@ from PySide6.QtCore import (
     Property, QObject, QThread, QTimer, Signal, Slot, QStandardPaths,
 )
 
-from .. import enka
+from .. import enka, hostos
 from ..config import CATEGORIES, Settings
 from ..ocr import engine as ocr_engine
 from ..ocr import match as ocr_match
@@ -266,11 +266,17 @@ class Backend(QObject):
         env-var note and makes the Settings field read-only."""
         return bool(os.environ.get("LUMENSPAR_GEMINI_KEY"))
 
+    @Property(bool, constant=True)
+    def aiOnly(self) -> bool:
+        """True on Windows, which ships without Tesseract or the portal."""
+        return hostos.is_windows()
+
     @Property(bool, notify=settingsChanged)
     def readerReady(self) -> bool:
         """Whether the selected reader can run: Tesseract in local mode, a
-        Gemini API key in AI mode."""
-        if self._s.reader_mode == "local":
+        Gemini API key in AI mode. On Windows the reader is always the AI one."""
+        mode = "ai" if hostos.is_windows() else self._s.reader_mode
+        if mode == "local":
             return ocr_engine.available()
         return bool(self._s.gemini_key())
 
@@ -310,6 +316,10 @@ class Backend(QObject):
     @Slot()
     def repickScreen(self) -> None:
         """Forget the cached portal grant so the picker reappears next run."""
+        if hostos.is_windows():
+            # There is no portal on Windows; capture is automatic.
+            self._set_status("Screen selection is not used on Windows")
+            return
         self._s.restore_token = ""
         self._s.save()
         self._close_capture()
@@ -326,31 +336,41 @@ class Backend(QObject):
         self._run(self._self_test_job, "Self-test")
 
     def _prepare_capture(self) -> bool:
-        """Open the portal session on the GUI thread.
+        """Open the capture backend on the GUI thread.
 
-        D-Bus signal dispatch is bound to GLib's default main context, which
-        the GUI thread owns (Qt uses QEventDispatcherGlib on Linux).
-        Negotiating the portal from a worker thread cannot dispatch the
-        Response signal and simply blocks until it is killed, so session
-        setup has to happen here rather than inside the job.
+        On Windows that is a BitBlt session (mss, no setup needed); on Linux
+        it is the screen portal, and D-Bus signal dispatch is bound to GLib's
+        default main context, which the GUI thread owns (Qt uses
+        QEventDispatcherGlib on Linux). Negotiating the portal from a worker
+        thread cannot dispatch the Response signal and simply blocks until it
+        is killed, so session setup has to happen here rather than inside the
+        job.
         """
         if self._capture is not None:
             return True
+
+        def _open(cap) -> bool:
+            try:
+                cap.start()
+            except Exception as exc:
+                self._set_status(f"Capture unavailable: {exc}")
+                self.logAppended.emit(f"error: {exc}")
+                return False
+            self._capture = cap
+            return True
+
+        if hostos.is_windows():
+            from ..capture.win import MssCapture
+
+            self._set_status("Opening capture session...")
+            return _open(MssCapture())
         from ..capture.portal import PortalCapture
 
-        self._set_status("Opening capture session…")
-        cap = PortalCapture(
+        self._set_status("Opening capture session...")
+        return _open(PortalCapture(
             restore_token=self._s.restore_token or None,
             on_restore_token=self._store_token,
-        )
-        try:
-            cap.start()
-        except Exception as exc:
-            self._set_status(f"Capture unavailable: {exc}")
-            self.logAppended.emit(f"error: {exc}")
-            return False
-        self._capture = cap
-        return True
+        ))
 
     def _close_capture(self) -> None:
         if self._capture is not None:
@@ -362,7 +382,7 @@ class Backend(QObject):
     def _self_test_job(self, log) -> None:
         from ..ocr import preprocess as pp
 
-        if self._s.reader_mode == "ai":
+        if hostos.is_windows() or self._s.reader_mode == "ai":
             from ..ai.gemini import Gemini, GeminiError, Usage
 
             log("Checking Gemini...")
@@ -440,7 +460,12 @@ class Backend(QObject):
             self._set_status("Stopping after the current artifact…")
 
     def _screens(self) -> tuple[tuple[int, int, int, int], tuple[int, int, int, int]]:
-        """Logical rect of the captured output, and of the whole desktop."""
+        """Rect of the captured output, and of the whole desktop."""
+        if hostos.is_windows():
+            # mss reports physical pixels for both rects; Qt logical geometry
+            # would be wrong for pointing at a scaled Windows desktop.
+            cap = self._capture
+            return cap.monitor_rect(), cap.virtual_rect()
         from PySide6.QtGui import QGuiApplication
 
         cap = self._capture
@@ -463,8 +488,6 @@ class Backend(QObject):
 
         from ..ai.gemini import GeminiError
         from ..good import GoodExport
-        from ..inject.uinput import UinputInject
-        from ..inject.ydotool import YdotoolInject
         from ..scan.driver import LiveDriver
         from ..scan.scanner import (ArtifactScanner, CharacterScanner,
                                     MaterialScanner, WeaponScanner,
@@ -487,13 +510,27 @@ class Backend(QObject):
             log("Select at least one category to scan.")
             return
 
-        # uinput first: ydotool has no wheel command and the grid must scroll.
+        # Windows has one backend; Linux prefers uinput (ydotool has no wheel
+        # command and the grid must scroll).
         inject = None
-        if self._s.inject_backend in ("auto", "uinput") and UinputInject.available():
-            inject = UinputInject()
-        elif YdotoolInject.available():
-            inject = YdotoolInject()
-            log("warning: ydotool cannot scroll; only the first page will scan")
+        if hostos.is_windows():
+            from ..inject.win import WinInject, is_admin
+
+            if not is_admin():
+                log("error: Genshin runs as administrator; Windows blocks input "
+                    "from a non-elevated program. Right-click Lumenspar and "
+                    "choose 'Run as administrator'.")
+                return
+            inject = WinInject()
+        else:
+            from ..inject.uinput import UinputInject
+            from ..inject.ydotool import YdotoolInject
+
+            if self._s.inject_backend in ("auto", "uinput") and UinputInject.available():
+                inject = UinputInject()
+            elif YdotoolInject.available():
+                inject = YdotoolInject()
+                log("warning: ydotool cannot scroll; only the first page will scan")
         if inject is None:
             raise RuntimeError("no usable input backend (need /dev/uinput or ydotool)")
 
@@ -502,13 +539,16 @@ class Backend(QObject):
 
         # Escape aborts: while scanning, the game holds focus and the Stop
         # button cannot be reached without alt-tabbing.
-        from ..inject.hotkey import EscapeWatcher
-
         def _on_escape() -> None:
             self._stop_requested = True
             self.logAppended.emit("Escape pressed — stopping after this artifact.")
 
-        self._esc = EscapeWatcher(_on_escape)
+        if hostos.is_windows():
+            from ..inject.win_hotkey import WinEscapeWatcher
+            self._esc = WinEscapeWatcher(_on_escape)
+        else:
+            from ..inject.hotkey import EscapeWatcher
+            self._esc = EscapeWatcher(_on_escape)
         watched = self._esc.start()
         if watched:
             log(f"Press Escape at any time to stop ({watched} keyboards watched).")
