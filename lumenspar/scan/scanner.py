@@ -297,7 +297,7 @@ def _next_failure_stamp(scanner) -> str:
              if (m := re.match(r"fail_(\d+)_", f.name))]
     seq = max(taken, default=0) + 1
     if not scanner._fail_seq:
-        with (d / "failures.txt").open("a") as fh:
+        with (d / "failures.txt").open("a", encoding="utf-8") as fh:
             fh.write(f"── {datetime.now():%Y-%m-%d %H:%M} {scanner.item_label} scan ──\n")
     scanner._fail_seq = seq
     return f"{seq:04d}"
@@ -535,7 +535,7 @@ class ArtifactScanner:
             for tag, frame in (("before", before), ("after", after)):
                 Image.fromarray(frame[:, :, ::-1]).save(
                     self.failure_dir / f"fail_{stamp}_scroll_{tag}.png")
-            with (self.failure_dir / "failures.txt").open("a") as fh:
+            with (self.failure_dir / "failures.txt").open("a", encoding="utf-8") as fh:
                 fh.write(f"{stamp} scroll: moved {moved}px of {target}px requested "
                          f"(frames saved)\n")
         except Exception:
@@ -552,7 +552,7 @@ class ArtifactScanner:
             Image.fromarray(frame[:, :, ::-1]).save(
                 self.failure_dir / f"fail_{stamp}_{where.replace(' ', '_')}.png"
             )
-            with (self.failure_dir / "failures.txt").open("a") as fh:
+            with (self.failure_dir / "failures.txt").open("a", encoding="utf-8") as fh:
                 fh.write(f"{stamp} {where}: {'; '.join(problems)}\n")
         except Exception:
             pass  # diagnostics must never break a scan
@@ -987,7 +987,7 @@ class CharacterScanner:
                 Image.fromarray(frame[:, :, ::-1]).save(
                     self.failure_dir /
                     f"fail_{stamp}_{where.replace(' ', '_')}_{page}.png")
-            with (self.failure_dir / "failures.txt").open("a") as fh:
+            with (self.failure_dir / "failures.txt").open("a", encoding="utf-8") as fh:
                 fh.write(f"{stamp} {where}: {'; '.join(problems)}\n")
         except Exception:
             pass  # diagnostics must never break a scan

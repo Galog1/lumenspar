@@ -214,7 +214,7 @@ class Usage:
 
     def _load(self) -> None:
         try:
-            raw = json.loads(self.path.read_text())
+            raw = json.loads(self.path.read_text(encoding="utf-8"))
             day = str(raw.get("day", ""))
             count = int(raw.get("count", 0))
             if day and count >= 0:
@@ -226,7 +226,7 @@ class Usage:
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             tmp = self.path.with_suffix(".tmp")
-            tmp.write_text(json.dumps({"day": self._today, "count": self._count}))
+            tmp.write_text(json.dumps({"day": self._today, "count": self._count}), encoding="utf-8")
             tmp.replace(self.path)
         except OSError:
             pass

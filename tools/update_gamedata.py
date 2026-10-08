@@ -297,20 +297,20 @@ def main() -> int:
         ("materials.json", materials),
     ):
         (OUT / fname).write_text(
-            json.dumps({"generated": stamp, "items": items}, indent=2, ensure_ascii=False)
-        )
+            json.dumps({"generated": stamp, "items": items}, indent=2, ensure_ascii=False),
+            encoding="utf-8")
         print(f"  wrote {fname}: {len(items)} entries")
 
     enka, enka_skipped = enka_map(avatars)
     (OUT / "enka.json").write_text(
-        json.dumps({"generated": stamp, "avatars": enka}, indent=2))
+        json.dumps({"generated": stamp, "avatars": enka}, indent=2), encoding="utf-8")
     print(f"  wrote enka.json: {len(enka)} avatars")
     if enka_skipped:
         notes.append(f"enka: {len(enka_skipped)} ids without usable skills (kept out): {enka_skipped}")
 
     stats = artifact_stats()
     (OUT / "artifact_stats.json").write_text(
-        json.dumps({"generated": stamp, **stats}, indent=2))
+        json.dumps({"generated": stamp, **stats}, indent=2), encoding="utf-8")
     print(f"  wrote artifact_stats.json: rarities {sorted(stats['substat_rolls'])}")
 
     if notes:

@@ -130,7 +130,7 @@ def _substat_table() -> dict[tuple[int, str], dict[float, int]]:
     accepted: rejecting a real artifact is worse than letting through one
     extra value, since an illegal read is only a backstop, not the reader.
     """
-    raw = json.loads(_STATS_PATH.read_text())
+    raw = json.loads(_STATS_PATH.read_text(encoding="utf-8"))
     corrections = raw.get("display_corrections", {})
     table: dict[tuple[int, str], dict[float, int]] = {}
     for rarity, stats in raw["substat_rolls"].items():

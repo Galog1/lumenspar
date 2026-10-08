@@ -55,7 +55,7 @@ class EnkaError(Exception):
 
 @lru_cache(maxsize=None)
 def _avatar_map() -> dict[str, dict]:
-    return json.loads(MAP_PATH.read_text())["avatars"]
+    return json.loads(MAP_PATH.read_text(encoding="utf-8"))["avatars"]
 
 
 def fetch(uid: str, timeout: float = 20.0) -> tuple[dict, int]:
@@ -136,7 +136,7 @@ class Roster:
         self.characters: dict[str, dict] = {}
         self.next_fetch = 0.0          # wall-clock time Enka's ttl runs out
         try:
-            raw = json.loads(path.read_text())
+            raw = json.loads(path.read_text(encoding="utf-8"))
             self.uid = raw.get("uid", "")
             self.characters = raw.get("characters", {})
             self.next_fetch = float(raw.get("next_fetch", 0.0))
@@ -184,7 +184,7 @@ class Roster:
         self.path.write_text(json.dumps({
             "uid": self.uid, "next_fetch": self.next_fetch,
             "characters": self.characters,
-        }, indent=2))
+        }, indent=2), encoding="utf-8")
 
 
 def merge_characters(ocr: list[Character], enka: list[Character]) -> tuple[list[Character], int]:

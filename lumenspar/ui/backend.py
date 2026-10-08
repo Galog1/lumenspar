@@ -272,7 +272,7 @@ class Backend(QObject):
             return
         path = self._s.export_path
         try:
-            doc = json.loads(path.read_text()) if path.exists() else {}
+            doc = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
         except (OSError, ValueError) as exc:
             self._set_status(f"Could not read {path.name}: {exc}")
             return
@@ -284,7 +284,7 @@ class Backend(QObject):
         kept = [c for c in doc.get("characters", []) if c.get("key") not in roster]
         doc["characters"] = sorted([*roster.values(), *kept], key=lambda c: c["key"])
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(doc, indent=2, ensure_ascii=False))
+        path.write_text(json.dumps(doc, indent=2, ensure_ascii=False), encoding="utf-8")
         msg = (f"Wrote {len(roster)} characters from Enka.Network"
                + (f" (kept {len(kept)} others already in the file)" if kept else "")
                + f" to {path}")

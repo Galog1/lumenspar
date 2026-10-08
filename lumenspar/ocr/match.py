@@ -203,7 +203,7 @@ class Vocabulary:
 
 @lru_cache(maxsize=None)
 def _load(name: str) -> Vocabulary:
-    raw = json.loads((GAMEDATA / f"{name}.json").read_text())
+    raw = json.loads((GAMEDATA / f"{name}.json").read_text(encoding="utf-8"))
     items = raw["items"]
     if items and isinstance(items[0], str):  # locations.json is a plain list
         items = [{"key": k, "name": k} for k in items]
