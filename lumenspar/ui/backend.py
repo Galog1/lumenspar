@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import traceback
+from datetime import datetime
 from pathlib import Path
 
 from PySide6.QtCore import (
@@ -67,6 +69,52 @@ class Backend(QObject):
         self._watch = QTimer(self)
         self._watch.setInterval((enka.DEFAULT_TTL + 5) * 1000)
         self._watch.timeout.connect(self._watch_tick)
+        # Every announced job (scan, self-test, showcase fetch) is also written
+        # to its own file, so a run can be diagnosed after the window is closed.
+        self._log_file = None
+        self._log_path: Path | None = None
+        self.logAppended.connect(self._write_log_line)
+
+    # -- log files -------------------------------------------------------
+
+    LOG_KEEP = 30
+
+    def _log_dir(self) -> Path:
+        return Path(self._s.export_dir).expanduser() / "logs"
+
+    def _open_log(self, label: str) -> None:
+        """Start a log file for one job, pruning all but the newest LOG_KEEP."""
+        self._close_log()
+        try:
+            d = self._log_dir()
+            d.mkdir(parents=True, exist_ok=True)
+            slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-") or "job"
+            path = d / f"{datetime.now():%Y-%m-%d_%H-%M-%S}_{slug}.log"
+            self._log_file = path.open("a", encoding="utf-8")
+            self._log_path = path
+            ours = sorted(f for f in d.glob("*.log")
+                          if re.match(r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}_", f.name))
+            for old in ours[:-self.LOG_KEEP]:
+                old.unlink(missing_ok=True)
+        except OSError:
+            self._log_file = self._log_path = None   # logging must never stop a job
+
+    def _write_log_line(self, line: str) -> None:
+        if self._log_file is None:
+            return
+        try:
+            self._log_file.write(f"{datetime.now():%H:%M:%S}  {line}\n")
+            self._log_file.flush()   # survive a crash or a killed process
+        except OSError:
+            self._close_log()
+
+    def _close_log(self) -> None:
+        if self._log_file is not None:
+            try:
+                self._log_file.close()
+            except OSError:
+                pass
+        self._log_file = None
 
     # -- categories ------------------------------------------------------
 
@@ -679,6 +727,7 @@ class Backend(QObject):
         self.scanningChanged.emit()
         self._set_status(f"{label} running…")
         if announce:
+            self._open_log(label)
             self.logAppended.emit(f"── {label} ──")
 
         w = _Worker(job, self)
@@ -699,6 +748,10 @@ class Backend(QObject):
         self._scanning = False
         self.scanningChanged.emit()
         self._set_status(f"{label} finished" if ok else f"{label} failed: {err[:80]}")
+        if self._log_file is not None:
+            self.logAppended.emit(f"{label} {'finished' if ok else 'failed'}. "
+                                  f"Log saved to {self._log_path}")
+            self._close_log()
 
     def shutdown(self) -> None:
         """Block until any in-flight job has stopped. Call before quitting."""
@@ -707,3 +760,4 @@ class Backend(QObject):
             w.requestInterruption()
             w.wait(8000)
         self._close_capture()
+        self._close_log()

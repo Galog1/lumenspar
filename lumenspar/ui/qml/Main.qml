@@ -768,6 +768,15 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     Text { text: "Activity"; color: Theme.text; font.pixelSize: 15; font.weight: Font.DemiBold }
                     Item { Layout.fillWidth: true }
+                    GhostButton {
+                        label: "Copy all"
+                        visible: win.logLines > 0
+                        implicitHeight: 28
+                        onClicked: {
+                            const a = logArea.selectionStart, b = logArea.selectionEnd
+                            logArea.selectAll(); logArea.copy(); logArea.select(a, b)
+                        }
+                    }
                     BusyIndicator { running: backend.scanning; visible: backend.scanning; implicitWidth: 20; implicitHeight: 20 }
                 }
 
@@ -816,29 +825,35 @@ ApplicationWindow {
                         border.width: 1
                     }
 
-                    ListView {
-                        id: logView
+                    // One read-only text area rather than a list of separate
+                    // Text lines, so the log can be selected across lines and
+                    // copied (Ctrl+C, or "Copy all").
+                    ScrollView {
+                        id: logScroll
                         anchors.fill: parent
                         anchors.margins: 10
                         clip: true
-                        model: logModel
-                        spacing: 2
-                        onCountChanged: positionViewAtEnd()
-                        delegate: Text {
-                            required property string line
-                            width: logView.width
-                            text: line
-                            color: line.indexOf("error") === 0 ? Theme.danger
-                                 : line.indexOf("──") === 0 ? Theme.accent : Theme.textDim
+                        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                        TextArea {
+                            id: logArea
+                            readOnly: true
+                            selectByMouse: true
+                            persistentSelection: true
+                            textFormat: TextEdit.RichText
+                            wrapMode: TextEdit.WrapAnywhere
+                            color: Theme.textDim
+                            selectionColor: Qt.rgba(0.31, 0.847, 0.91, 0.35)
+                            selectedTextColor: Theme.text
                             font.family: "monospace"
                             font.pixelSize: 12
-                            wrapMode: Text.WrapAnywhere
+                            padding: 0
+                            background: null
                         }
                     }
 
                     Column {
                         anchors.centerIn: parent
-                        visible: logModel.count === 0
+                        visible: win.logLines === 0
                         spacing: 8
                         Text {   // faint crystal glyph
                             text: "◆"
@@ -880,7 +895,7 @@ ApplicationWindow {
         }
     }
 
-    ListModel { id: logModel }
+    property int logLines: 0
 
     FolderDialog {
         id: folderDialog
@@ -890,6 +905,20 @@ ApplicationWindow {
 
     Connections {
         target: backend
-        function onLogAppended(line) { logModel.append({ line: line }) }
+        function onLogAppended(line) {
+            const colour = line.indexOf("error") === 0 ? Theme.danger
+                         : line.indexOf("──") === 0 ? Theme.accent : Theme.textDim
+            const safe = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            // Follow new lines only when already at the bottom, so reading or
+            // selecting further up is not yanked away mid-scan.
+            const bar = logScroll.ScrollBar.vertical
+            const atEnd = win.logLines === 0 || bar.position + bar.size >= 0.995
+            // pre-wrap keeps the log's indentation, which HTML would collapse.
+            logArea.append("<span style=\"white-space:pre-wrap; color:" + colour + "\">"
+                           + safe + "</span>")
+            win.logLines += 1
+            if (atEnd)
+                Qt.callLater(function() { bar.position = Math.max(0, 1 - bar.size) })
+        }
     }
 }
