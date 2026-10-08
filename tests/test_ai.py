@@ -393,11 +393,81 @@ def test_scanner_batches_2_2_1_and_accounts(monkeypatch):
     for tile in _tiles(5):
         scanner._read_one(tile, result)
     scanner._flush(result)
+    scanner._ai_pipe.drain()          # what scan() does at the end
     assert sizes == [2, 2, 1]
     assert result.stats.kept == 5
     assert result.stats.failed == 0
     assert len(result.items) == 5
     assert not scanner._pending
+
+
+def _gated_scanner(in_flight: int):
+    """A scanner whose Gemini batches each wait for their own release event."""
+    import threading
+
+    frame = _frame()
+    s = Settings(reader_mode="ai", gemini_api_key=KEY, ai_batch_size=2,
+                 ai_in_flight=in_flight)
+    scanner = ArtifactScanner(FakeDriver(frame), s)
+    scanner._settled_frame = lambda: frame
+    gates: list[threading.Event] = []
+    started: list[int] = []
+
+    def read(entries):
+        n = len(started)
+        started.append(n)
+        gates[n].wait(5)
+        return [((n, where), []) for where, _f, _t in entries]
+
+    scanner._ai_read = read
+    return scanner, gates
+
+
+def test_scanner_keeps_reading_while_a_batch_is_in_flight():
+    """The point of the pipeline: tile reads do not wait on Gemini."""
+    import threading
+
+    scanner, gates = _gated_scanner(in_flight=2)
+    gates.extend(threading.Event() for _ in range(2))
+    result = ScanResult()
+    tiles = _tiles(4)
+    for tile in tiles[:2]:
+        scanner._read_one(tile, result)       # batch 0 sent, its answer held back
+    for tile in tiles[2:]:
+        scanner._read_one(tile, result)       # still runs: batch 1 sent too
+    assert result.stats.kept == 0             # nothing answered yet
+    gates[1].set()                            # the *later* batch answers first...
+    gates[0].set()
+    scanner._ai_pipe.drain()
+    assert result.stats.kept == 4
+    # ...and results still come out in scan order.
+    assert [batch for batch, _where in result.items] == [0, 0, 1, 1]
+
+
+def test_scanner_waits_once_the_in_flight_limit_is_reached():
+    import threading
+
+    scanner, gates = _gated_scanner(in_flight=1)
+    gates.extend(threading.Event() for _ in range(2))
+    result = ScanResult()
+    for tile in _tiles(2):
+        scanner._read_one(tile, result)       # batch 0 in flight (the limit)
+    done = threading.Event()
+
+    def next_batch():
+        for tile in _tiles(2):
+            scanner._read_one(tile, result)   # must wait for batch 0
+        done.set()
+
+    t = threading.Thread(target=next_batch)
+    t.start()
+    assert not done.wait(0.3)                 # held back by the limit
+    gates[0].set()
+    assert done.wait(5)                       # released once batch 0 settles
+    t.join(5)
+    gates[1].set()
+    scanner._ai_pipe.drain()
+    assert result.stats.kept == 4
 
 
 def test_scanner_auth_error_aborts(monkeypatch):
@@ -414,6 +484,7 @@ def test_scanner_auth_error_aborts(monkeypatch):
     with pytest.raises(GeminiAuthError):
         scanner._read_one(_tiles(1)[0], result)
         scanner._read_one(_tiles(1)[0], result)   # fills the batch -> flush
+        scanner._ai_pipe.drain()                  # the answer is settled here
     assert scanner._ai_abort
 
 
@@ -430,6 +501,7 @@ def test_scanner_quota_error_fails_pending_items(monkeypatch):
     result = ScanResult()
     for tile in _tiles(2):
         scanner._read_one(tile, result)     # flushes inside the 2nd call
+    scanner._ai_pipe.drain()
     assert scanner._ai_abort
     assert result.stats.failed == 2
     assert result.stats.kept == 0

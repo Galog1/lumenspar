@@ -13,6 +13,8 @@ from __future__ import annotations
 import bisect
 import hashlib
 import re
+from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from dataclasses import dataclass, field
 from typing import Callable, Protocol
@@ -190,6 +192,69 @@ def row_signature(frame: np.ndarray, tiles: list[Tile]) -> bytes:
     return hashlib.blake2b(joined, digest_size=16).digest()
 
 
+class _AiPipeline:
+    """Send Gemini batches in the background while the scan keeps moving.
+
+    A batch request takes several seconds, and the scan used to sit idle for
+    all of it: click six items, wait for the answer, click six more. Now each
+    batch goes to a worker thread and the scanner carries on capturing the
+    next one. At most `max_in_flight` requests are outstanding -- past that the
+    scanner waits for the oldest -- which bounds memory (a pending 4K frame is
+    ~25 MB) and the request rate the free tier sees.
+
+    Answers are settled strictly in the order the batches were sent, and
+    always on the scan thread, so results, failure dumps and log lines come
+    out in scan order and only the Gemini call itself runs concurrently.
+    """
+
+    def __init__(self, max_in_flight: int) -> None:
+        self._max = max(1, int(max_in_flight))
+        self._pool: ThreadPoolExecutor | None = None
+        self._queue: deque = deque()
+
+    def submit(self, work: Callable[[], object],
+               settle: Callable[[object, BaseException | None], None]) -> None:
+        while len(self._queue) >= self._max:
+            self._settle_oldest()
+        if self._pool is None:
+            self._pool = ThreadPoolExecutor(max_workers=self._max,
+                                            thread_name_prefix="gemini")
+        self._queue.append((self._pool.submit(work), settle))
+        self.harvest()
+
+    def harvest(self) -> None:
+        """Settle every batch that has already been answered, oldest first."""
+        while self._queue and self._queue[0][0].done():
+            self._settle_oldest()
+
+    def drain(self) -> None:
+        """Wait for and settle everything still outstanding."""
+        while self._queue:
+            self._settle_oldest()
+        self._shutdown(wait=True)
+
+    def cancel(self) -> None:
+        """Drop everything outstanding (the scan is being aborted)."""
+        for fut, _ in self._queue:
+            fut.cancel()
+        self._queue.clear()
+        self._shutdown(wait=False)
+
+    def _shutdown(self, wait: bool) -> None:
+        if self._pool is not None:
+            self._pool.shutdown(wait=wait, cancel_futures=not wait)
+            self._pool = None
+
+    def _settle_oldest(self) -> None:
+        fut, settle = self._queue.popleft()
+        try:
+            outcome = fut.result()
+        except Exception as exc:  # handed to settle, which decides what it means
+            settle(None, exc)
+            return
+        settle(outcome, None)
+
+
 def _next_failure_stamp(scanner) -> str:
     """Claim the next dump number in the failure folder, never reusing one.
 
@@ -247,6 +312,7 @@ class ArtifactScanner:
                 self._read_text = line_reader(self._gemini)
             self._pending: list[tuple[str, np.ndarray, Tile]] = []
             self._ai_abort = False
+            self._ai_pipe = _AiPipeline(self.s.ai_in_flight)
 
     def _dbg(self, msg: str) -> None:
         if self.verbose:
@@ -380,24 +446,34 @@ class ArtifactScanner:
         self._pending.append((where, frame, tile))
         if len(self._pending) >= self.s.ai_batch_size:
             self._flush(result)
+        else:
+            self._ai_pipe.harvest()
 
     def _flush(self, result: ScanResult) -> None:
-        """Send a full batch of panels to Gemini and account for the outcome.
-
-        A hard auth/model error aborts the scan. A quota or other Gemini
-        error marks every pending item failed (with a failure dump), then
-        stops the scan: thousands of dumps would otherwise follow one 429.
-        """
+        """Send the pending panels to Gemini in the background."""
         pending, self._pending = self._pending, []
         if not pending:
             return
         self.log(f"  reading {len(pending)} panels with Gemini...")
-        try:
-            outcomes = self._ai_read(pending)
-        except (GeminiAuthError, GeminiModelError):
+        self._ai_pipe.submit(
+            lambda: self._ai_read(pending),
+            lambda outcomes, exc: self._settle_batch(result, pending, outcomes, exc))
+
+    def _settle_batch(self, result: ScanResult, pending, outcomes,
+                      exc: BaseException | None) -> None:
+        """Account for one answered batch (runs on the scan thread).
+
+        A hard auth/model error aborts the scan. A quota or other Gemini
+        error marks the batch's items failed (with a failure dump), then
+        stops the scan: thousands of dumps would otherwise follow one 429.
+        Anything else is a bug and is raised, as it was before batching.
+        """
+        if (exc is not None and not isinstance(exc, GeminiError)) \
+                or isinstance(exc, (GeminiAuthError, GeminiModelError)):
             self._ai_abort = True
-            raise
-        except GeminiError as exc:
+            self._ai_pipe.cancel()
+            raise exc
+        if exc is not None:
             self._ai_abort = True
             self.log(f"  Gemini error: {exc}")
             for where, frame, _tile in pending:
@@ -596,6 +672,7 @@ class ArtifactScanner:
 
         if self.s.reader_mode == "ai":
             self._flush(result)
+            self._ai_pipe.drain()
         self.log(
             f"Done: {st.kept} kept, {st.skipped_rarity} below rarity floor, "
             f"{st.failed} unreadable ({st.retried} retried), {st.pages} pages"
@@ -807,6 +884,7 @@ class CharacterScanner:
                                   log=self.log, usage=Usage())
             self._pending: list[tuple[str, dict[str, np.ndarray]]] = []
             self._ai_abort = False
+            self._ai_pipe = _AiPipeline(self.s.ai_in_flight)
 
     def _save_failure(self, where: str, frames: dict[str, np.ndarray],
                       problems: list[str]) -> None:
@@ -874,26 +952,36 @@ class CharacterScanner:
         return bool(np.abs(a - b).mean() < 0.04)
 
     def _ai_flush(self, result: ScanResult) -> None:
-        """Send a batch of characters to Gemini and account for the outcome.
+        """Send the pending characters to Gemini in the background.
 
-        Constellation comes from the pixel reader inside `read_characters`;
-        build_character validation is unchanged. Hard auth/model errors abort
-        the scan; a quota or other Gemini error fails the whole batch and
-        stops the scan rather than dumping one frame per remaining character.
+        Constellation comes from the pixel reader inside `read_characters`.
         """
         from ..ai.reader import read_characters
-        from .character_parse import build_character
 
         pending, self._pending = self._pending, []
         if not pending:
             return
         self.log(f"  reading {len(pending)} characters with Gemini...")
-        try:
-            panels = read_characters(self._gemini, [pages for _, pages in pending])
-        except (GeminiAuthError, GeminiModelError):
+        self._ai_pipe.submit(
+            lambda: read_characters(self._gemini, [pages for _, pages in pending]),
+            lambda panels, exc: self._ai_settle(result, pending, panels, exc))
+
+    def _ai_settle(self, result: ScanResult, pending, panels,
+                   exc: BaseException | None) -> None:
+        """Account for one answered batch of characters (scan thread).
+
+        build_character validation is unchanged. Hard auth/model errors abort
+        the scan; a quota or other Gemini error fails the whole batch and
+        stops the scan rather than dumping one frame per remaining character.
+        """
+        from .character_parse import build_character
+
+        if (exc is not None and not isinstance(exc, GeminiError)) \
+                or isinstance(exc, (GeminiAuthError, GeminiModelError)):
             self._ai_abort = True
-            raise
-        except GeminiError as exc:
+            self._ai_pipe.cancel()
+            raise exc
+        if exc is not None:
             self._ai_abort = True
             self.log(f"  Gemini error: {exc}")
             for where, pages in pending:
@@ -1102,6 +1190,8 @@ class CharacterScanner:
                 self._pending.append((where, dict(frames)))
                 if len(self._pending) >= self.s.ai_batch_size:
                     self._ai_flush(result)
+                else:
+                    self._ai_pipe.harvest()
             else:
                 level = read_level(frames["attributes"])
                 element = read_element(frames["attributes"])
@@ -1159,6 +1249,7 @@ class CharacterScanner:
 
         if self.s.reader_mode == "ai":
             self._ai_flush(result)
+            self._ai_pipe.drain()
         crashed = (f", {st.ocr_crashes} OCR crashes survived"
                    if st.ocr_crashes else "")
         self.log(f"Done: {st.kept} characters, {st.failed} unreadable "

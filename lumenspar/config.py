@@ -116,6 +116,8 @@ class Settings:
     gemini_api_key: str = ""
     gemini_model: str = "gemini-3.5-flash-lite"
     ai_batch_size: int = 6            # panels per Gemini request
+    # Batches sent while the scan keeps going (see scanner._AiPipeline).
+    ai_in_flight: int = 2
 
     def __post_init__(self) -> None:
         # The Windows build is AI-only: it ships no Tesseract, so a config

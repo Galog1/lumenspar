@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import base64
 import json
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -98,6 +99,9 @@ class Gemini:
         self.sleep = sleep
         self.usage = usage
         self.requests_made = 0
+        # Batches are sent from worker threads (scanner._AiPipeline), so the
+        # request counter and the usage file must not be updated concurrently.
+        self._count_lock = threading.Lock()
         self._transport = transport or (lambda m, u, h, b: _default_transport(
             m, u, h, b, timeout))
 
@@ -142,9 +146,10 @@ class Gemini:
         raise GeminiError("Gemini request failed without a response")  # unreachable
 
     def _log_request(self) -> None:
-        self.requests_made += 1
-        if self.usage is not None:
-            self.usage.add(1)
+        with self._count_lock:
+            self.requests_made += 1
+            if self.usage is not None:
+                self.usage.add(1)
 
     def generate_json(self, prompt: str, images: list[bytes], schema: dict) -> object:
         """Post one batched prompt and parse the model's JSON answer."""
