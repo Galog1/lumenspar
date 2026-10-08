@@ -28,11 +28,11 @@ The rest of this section is for running from source.
 
 - Python 3.12+, Tesseract with English data
 - Python packages: PySide6, numpy, Pillow, pytesseract, rapidfuzz, plus the
-  GStreamer (`gi`), `dbus` and `evdev` bindings. Arch:
+  GStreamer (`gi`) and `dbus` bindings. Arch:
   `pyside6 python-numpy python-pillow python-pytesseract python-rapidfuzz
-  gst-python python-dbus python-evdev`; Fedora:
+  gst-python python-dbus`; Fedora:
   `python3-pyside6 python3-numpy python3-pillow python3-pytesseract
-  python3-rapidfuzz python3-gobject gstreamer1 python3-dbus python3-evdev`
+  python3-rapidfuzz python3-gobject gstreamer1 python3-dbus`
   (the Fedora set is what this was developed on; the Arch names are
   untested).
   `pyproject.toml` lists the pip-installable subset.
@@ -50,7 +50,7 @@ of acting on that is yours.
 ## Setup from a clean checkout
 
 ```sh
-git clone <this repo> lumenspar
+git clone https://github.com/Galog1/lumenspar.git
 cd lumenspar
 sh install/install.sh
 ```
@@ -85,7 +85,7 @@ captured.
 
 Windows is supported with the AI reader only; Tesseract is not used or needed.
 Screen capture goes through `mss` and input through `SendInput`, so none of the
-Linux packages (GStreamer, D-Bus, evdev, `/dev/uinput`) are required.
+Linux packages (GStreamer, D-Bus, `/dev/uinput`) are required.
 
 **Installer:** download `Lumenspar-Setup-<version>.exe` from the
 [Releases](https://github.com/Galog1/lumenspar/releases) page. It is built by
@@ -223,8 +223,8 @@ four per-category scanners are calibrated against the screenshots in `calib/`.
 
 Character scanning is the most demanding path, because Genshin's background art
 drifts slowly behind the text and can push a bright gradient under a number
-mid-read. Talent and level reading are measured against the saved failure
-dumps at 4K. Accuracy degrades below 1080p, where some talent levels can still
+mid-read. Talent and level reading are measured against real 4K captures.
+Accuracy degrades below 1080p, where some talent levels can still
 be read wrongly rather than refused -- prefer scanning at the highest native
 resolution available.
 

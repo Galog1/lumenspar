@@ -36,7 +36,7 @@ KINDS = ("artifacts", "weapons")
 
 
 def load_bgr(path: Path) -> np.ndarray:
-    """PNG -> BGR uint8 frame, matching live captures (see HANDOFF section 7)."""
+    """PNG -> BGR uint8 frame, the channel order live captures arrive in."""
     return np.ascontiguousarray(np.asarray(
         Image.open(path).convert("RGB"))[:, :, ::-1])
 
