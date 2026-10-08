@@ -57,6 +57,10 @@ def _scan(monkeypatch, tmp_path, distances, expected=8, hover=True):
     monkeypatch.setattr(scn, "find_grid", lambda f: Grid(
         tiles=tiles, cols=2, rows=1, pitch_x=50, pitch_y=PITCH,
         region=Region(0, 0, 100, 60)))
+    # The scroll loop is the same in both reader modes; pin the local reader
+    # so the test does not depend on the platform (Windows forces AI mode).
+    from lumenspar import hostos
+    monkeypatch.setattr(hostos, "is_windows", lambda: False)
     driver = Driver(hover=hover)
     logs: list[str] = []
     scanner = ArtifactScanner(driver, Settings(), log=logs.append,
