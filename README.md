@@ -9,6 +9,21 @@ Built for Wayland first: capture goes through the `xdg-desktop-portal`
 ScreenCast API and a PipeWire stream, so it works on KDE, GNOME and wlroots
 without X11.
 
+## Download
+
+Ready-made builds are on the [Releases](https://github.com/Galog1/lumenspar/releases)
+page:
+
+- **Linux:** `Lumenspar-<version>-x86_64.AppImage`. Make it executable and run
+  it; Tesseract, GStreamer and Qt are inside, so none of the requirements
+  below apply except PipeWire (any current desktop has it) and `/dev/uinput`
+  access. Needs a distribution about as new as Ubuntu 24.04. Built by
+  `.github/workflows/linux-release.yml` from `packaging/linux/`.
+- **Windows:** `Lumenspar-Setup-<version>.exe`; see
+  [Windows](#windows-ai-reader-only) below.
+
+The rest of this section is for running from source.
+
 ## Requirements
 
 - Python 3.12+, Tesseract with English data

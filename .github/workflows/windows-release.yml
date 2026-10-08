@@ -81,11 +81,18 @@ jobs:
           path: dist/installer/*.exe
 
       - name: Publish the release
+        # The Linux workflow builds from the same tag; whichever finishes
+        # first creates the release and the other adds its file to it.
         if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ github.ref_name }}" (Get-ChildItem dist\installer\*.exe).FullName `
-            --title "Lumenspar ${{ steps.version.outputs.version }} for Windows" `
-            --notes-file packaging/windows/RELEASE_NOTES.md `
-            --prerelease
+          gh release view "${{ github.ref_name }}" *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create "${{ github.ref_name }}" `
+              --title "Lumenspar ${{ steps.version.outputs.version }}" `
+              --notes-file packaging/RELEASE_NOTES.md `
+              --prerelease
+          }
+          gh release upload "${{ github.ref_name }}" (Get-ChildItem dist\installer\*.exe).FullName --clobber
+          if ($LASTEXITCODE -ne 0) { throw "Upload failed" }

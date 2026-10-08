@@ -1,0 +1,113 @@
+# Builds the Linux AppImage.
+#   - Pushing a tag like v0.2.0 builds it and adds it to that GitHub release
+#     (creating the release if the Windows workflow has not yet).
+#   - Running it by hand (Actions tab -> "Linux release" -> Run workflow)
+#     builds and keeps the AppImage as a downloadable artifact, no release.
+#
+# Built on Ubuntu 24.04: its Tesseract is version 5 (the OCR was tuned on 5.x;
+# 22.04 ships 4.1), and its glibc sets the oldest systems the AppImage runs on.
+name: Linux release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # to create or add to the release
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Work out the version
+        id: version
+        run: |
+          declared=$(sed -n 's/^version = "\(.*\)"/\1/p' pyproject.toml)
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            version="${GITHUB_REF_NAME#v}"
+            if [ "$version" != "$declared" ]; then
+              echo "Tag v$version does not match pyproject.toml version $declared" >&2
+              exit 1
+            fi
+          else
+            version="$declared-dev"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building $version"
+
+      - name: Install system packages
+        # PyGObject and dbus-python come from apt, built for the system
+        # Python, which is why the build uses that Python (in a venv that can
+        # see them) rather than actions/setup-python.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            python3-venv python3-gi python3-dbus \
+            gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0 \
+            gstreamer1.0-plugins-base gstreamer1.0-pipewire \
+            tesseract-ocr tesseract-ocr-eng \
+            libegl1 libgl1 libxkbcommon0 libxkbcommon-x11-0 libfontconfig1 \
+            libdbus-1-3 libxcb-cursor0
+
+      - name: Install Python packages
+        run: |
+          python3 -m venv --system-site-packages .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install PySide6-Essentials numpy Pillow pytesseract rapidfuzz pyinstaller pytest
+
+      - name: Run the tests
+        run: .venv/bin/python -m pytest -q
+
+      - name: Bundle the app (PyInstaller)
+        run: .venv/bin/pyinstaller packaging/linux/lumenspar.spec --noconfirm
+
+      - name: Start the bundled app once (headless self-check)
+        # Proves the bundle carries the QML modules, data files, Tesseract,
+        # the GStreamer elements the capture pipeline needs, and D-Bus.
+        env:
+          QT_QPA_PLATFORM: offscreen
+          LUMENSPAR_SMOKE_TEST: ${{ runner.temp }}/smoke-bundle.txt
+        run: |
+          status=0
+          timeout 120 dist/Lumenspar/Lumenspar || status=$?
+          cat "$LUMENSPAR_SMOKE_TEST" || { echo "No self-check report was written" >&2; exit 1; }
+          exit $status
+
+      - name: Build the AppImage
+        run: |
+          wget -q https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          sh packaging/linux/build-appimage.sh "${{ steps.version.outputs.version }}" "$PWD/appimagetool-x86_64.AppImage"
+          ls -la dist/*.AppImage
+
+      - name: Start the AppImage once (headless self-check)
+        env:
+          QT_QPA_PLATFORM: offscreen
+          LUMENSPAR_SMOKE_TEST: ${{ runner.temp }}/smoke-appimage.txt
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: |
+          status=0
+          timeout 180 dist/Lumenspar-*.AppImage || status=$?
+          cat "$LUMENSPAR_SMOKE_TEST" || { echo "No self-check report was written" >&2; exit 1; }
+          exit $status
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Lumenspar-${{ steps.version.outputs.version }}-x86_64.AppImage
+          path: dist/*.AppImage
+
+      - name: Publish to the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" \
+              --title "Lumenspar ${{ steps.version.outputs.version }}" \
+              --notes-file packaging/RELEASE_NOTES.md \
+              --prerelease || true   # the Windows workflow may have just created it
+          fi
+          gh release upload "$GITHUB_REF_NAME" dist/*.AppImage --clobber

@@ -1,0 +1,4 @@
+#!/bin/sh
+# AppImage entry point: start the bundled app (built by PyInstaller).
+HERE="$(dirname "$(readlink -f "$0")")"
+exec "$HERE/usr/lib/lumenspar/Lumenspar" "$@"

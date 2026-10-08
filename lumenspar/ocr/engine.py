@@ -7,8 +7,10 @@ binding.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -19,6 +21,29 @@ try:  # optional binding
     import pytesseract  # type: ignore
 except ImportError:
     pytesseract = None
+
+
+def _use_bundled_tesseract() -> None:
+    """Inside the Linux AppImage, use the Tesseract that ships with it.
+
+    The AppImage carries its own Tesseract and English data (see
+    packaging/linux/lumenspar.spec) so that OCR behaves the same whatever the
+    host has installed -- or whether it has Tesseract at all. A source checkout
+    is not frozen and keeps using the system's.
+    """
+    if not getattr(sys, "frozen", False):
+        return
+    home = Path(getattr(sys, "_MEIPASS", "")) / "tesseract"
+    exe = home / "tesseract"
+    if not exe.exists():
+        return
+    os.environ["TESSDATA_PREFIX"] = str(home / "tessdata")
+    os.environ["PATH"] = str(home) + os.pathsep + os.environ.get("PATH", "")
+    if pytesseract is not None:
+        pytesseract.pytesseract.tesseract_cmd = str(exe)
+
+
+_use_bundled_tesseract()
 
 # psm 7 = one text line; psm 6 = a uniform block; psm 8 = a single word;
 # psm 10 = a single character, for a glyph already isolated by segmentation.

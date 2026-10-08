@@ -51,15 +51,30 @@ def main(argv: list[str] | None = None) -> int:
     if smoke:
         # Release builds start the packaged app once with this set (and
         # QT_QPA_PLATFORM=offscreen): it proves the bundle carries every QML
-        # module and data file the window needs, then exits without showing
-        # anything. A windowed .exe has no console, so the report is a file.
-        ok = bool(engine.rootObjects()) and not warnings
-        report = ["ok" if ok else "FAILED",
-                  f"root objects: {len(engine.rootObjects())}",
-                  f"icon found: {ICON.exists()}",
-                  *(f"warning: {w}" for w in warnings)]
-        Path(smoke).write_text("\n".join(report) + "\n", encoding="utf-8")
-        return 0 if ok else 1
+        # module, data file and library the app needs, then exits without
+        # showing anything. A windowed .exe has no console, so the report is a
+        # file. Screen capture itself is not exercised: it needs a desktop and
+        # the user's screen-share grant, and the Self-test button covers it.
+        from PySide6.QtCore import QTimer
+
+        def run_checks() -> None:
+            from .. import selfcheck
+
+            checks = selfcheck.bundle_checks()
+            ok = (bool(engine.rootObjects()) and not warnings
+                  and all(passed for _, passed, _ in checks))
+            report = ["ok" if ok else "FAILED",
+                      f"root objects: {len(engine.rootObjects())}",
+                      f"icon found: {ICON.exists()}",
+                      *(f"{'pass' if passed else 'FAIL'}: {name}"
+                        + (f" ({detail})" if detail else "")
+                        for name, passed, detail in checks),
+                      *(f"warning: {w}" for w in warnings)]
+            Path(smoke).write_text("\n".join(report) + "\n", encoding="utf-8")
+            app.exit(0 if ok else 1)
+
+        QTimer.singleShot(0, run_checks)
+        return app.exec()
     if not engine.rootObjects():
         print("failed to load QML", file=sys.stderr)
         return 1

@@ -15,7 +15,7 @@ LINUX_ONLY = ("lumenspar.capture.portal", "lumenspar.inject.uinput",
               "lumenspar.inject.hotkey", "lumenspar.inject.ydotool")
 
 a = Analysis(
-    [str(root / "packaging" / "windows" / "launch.py")],
+    [str(root / "packaging" / "launch.py")],
     pathex=[str(root)],
     datas=[
         # The app finds these relative to its own modules, so keep the layout.
