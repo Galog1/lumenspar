@@ -42,6 +42,7 @@ class ScanDriver(Protocol):
     def click(self, x: int, y: int) -> None: ...
     def scroll(self, clicks: int) -> None: ...
     def sleep(self, seconds: float) -> None: ...
+    # Optional: def hover(self, x: int, y: int) -> bool -- move without clicking.
 
 
 @dataclass(slots=True)
@@ -129,6 +130,31 @@ def tile_fingerprint(frame: np.ndarray, tile: Tile) -> bytes:
     xs = np.linspace(0, g.shape[1] - 1, 8).astype(int)
     small = g[np.ix_(ys, xs)]
     return bytes(((small / 32).astype(np.uint8)).ravel())
+
+
+# The band of the screen that actually scrolls, as fractions of frame height.
+# Measured by diffing frames from before and after a real scroll (4K, artifact
+# tab): rows 319..1917 of 2160 change, every row outside them is static UI --
+# the tab bar and the "Show 5-star Artifacts" toggle above, the buttons below.
+# Taken a few pixels inside those edges.
+VIEWPORT_Y = (0.152, 0.882)
+
+
+def scroll_viewport(grid: "Grid", frame_h: int) -> tuple[int, int]:
+    """Rows to compare when measuring a scroll: the grid, kept off static UI.
+
+    The detected grid can reach *above* the viewport: when the top row is
+    partly hidden under the toggle bar, its tile rect starts behind the bar.
+    The bar never moves, so with it in the comparison a small shift always
+    matched best -- and since tiles repeat every row, "10px" (the true 360px
+    minus one 350px row) fit nearly as well as the real answer. A real scan
+    stopped at 160 of 380 artifacts that way, believing the list was stuck.
+    The bottom edge used to be the frame bottom, which takes in the static
+    button bar for the same reason.
+    """
+    top = max(grid.region.y0, int(frame_h * VIEWPORT_Y[0]))
+    bottom = min(frame_h, int(frame_h * VIEWPORT_Y[1]))
+    return top, max(bottom, top + 1)
 
 
 def measure_scroll_shift(
@@ -295,6 +321,7 @@ class ArtifactScanner:
         self.failure_dir = failure_dir
         self._fail_seq = 0
         self._pitch_y = 0     # cached from the loop; re-detecting per tile is slow
+        self._stall_dumps = 0  # scroll-stall frame pairs saved this scan (capped)
         self._read_text: TextReader | None = None
 
         # AI reader mode: panels' text is batched to Gemini, pixels still own
@@ -490,6 +517,30 @@ class ArtifactScanner:
                 result.items.append(item)
                 result.stats.kept += 1
 
+    def _save_scroll_stall(self, before: np.ndarray, after: np.ndarray,
+                           moved: int, target: int) -> None:
+        """Keep the frames around a scroll that barely moved.
+
+        A short scroll is either the real bottom of the list or the list
+        refusing to move, and only the frames can tell those apart. Capped
+        per scan: the genuine end of every list produces one too.
+        """
+        if self.failure_dir is None or self._stall_dumps >= 3:
+            return
+        self._stall_dumps += 1
+        try:
+            from PIL import Image
+
+            stamp = _next_failure_stamp(self)
+            for tag, frame in (("before", before), ("after", after)):
+                Image.fromarray(frame[:, :, ::-1]).save(
+                    self.failure_dir / f"fail_{stamp}_scroll_{tag}.png")
+            with (self.failure_dir / "failures.txt").open("a") as fh:
+                fh.write(f"{stamp} scroll: moved {moved}px of {target}px requested "
+                         f"(frames saved)\n")
+        except Exception:
+            pass  # diagnostics must never break a scan
+
     def _save_failure(self, where: str, frame: np.ndarray, problems: list[str]) -> None:
         """Write the offending frame out so a failure can be diagnosed later."""
         if self.failure_dir is None:
@@ -588,7 +639,16 @@ class ArtifactScanner:
             if not fresh:
                 stalls += 1
                 if stalls >= 2:
-                    self.log("Reached the end of the inventory")
+                    if st.total_expected and st.seen < st.total_expected:
+                        # The game's own count says there is more. Calling this
+                        # "the end" hid a scan that stopped at 160 of 380.
+                        msg = (f"The list stopped scrolling after {st.seen} of the "
+                               f"{st.total_expected} {self.item_label}s the game "
+                               f"reports; anything after that was not scanned")
+                        self.log(msg)
+                        result.problems.append(msg)
+                    else:
+                        self.log("Reached the end of the inventory")
                     break
             else:
                 stalls = 0
@@ -633,7 +693,7 @@ class ArtifactScanner:
             target_px = min(target_px, max(pitch, scroll_h // 2))
             gx0, gx1 = grid.region.x0, grid.region.x1
             # Only the tile area scrolls; the header above it is static.
-            gy0, gy1 = grid.region.y0, frame.shape[0]
+            gy0, gy1 = scroll_viewport(grid, frame.shape[0])
 
             if px_per_click is None:
                 # Calibrate once: one click, then measure what it actually did.
@@ -663,6 +723,28 @@ class ArtifactScanner:
                                          int(target_px * 1.6) + pitch)
             offset += moved
             self._dbg(f"requested {target_px}px via {clicks} clicks -> moved {moved}px")
+            if moved < target_px * 0.5:
+                self._save_scroll_stall(before, frame, moved, target_px)
+                # The wheel acts on whatever is under the cursor, which is
+                # wherever the last tile click left it. Park it over the middle
+                # of the grid and try once more before believing the list ended.
+                hover = getattr(self.d, "hover", None)
+                if hover is not None and (not st.total_expected
+                                          or st.seen < st.total_expected):
+                    hover((gx0 + gx1) // 2, (grid.region.y0 + grid.region.y1) // 2)
+                    self._wait("after_click")
+                    retry_from = frame
+                    self.d.scroll(clicks)
+                    self._wait("page_scroll")
+                    frame = self.d.grab()
+                    again = measure_scroll_shift(retry_from, frame, gx0, gx1, gy0, gy1,
+                                                 int(target_px * 1.6) + pitch)
+                    self.log(f"  short scroll ({moved}px of {target_px}px); retried with "
+                             f"the cursor over the grid: moved {again}px")
+                    offset += again
+                    moved += again
+                    if again < target_px * 0.5:
+                        self._save_scroll_stall(retry_from, frame, again, target_px)
             if moved < 2:
                 stalls += 1
                 self.log("  the list did not move")

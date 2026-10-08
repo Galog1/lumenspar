@@ -53,6 +53,14 @@ class LiveDriver:
         self.inject.set_screen(gw, gh)          # type: ignore[attr-defined]
         self.inject.click(dx - gx, dy - gy)
 
+    def hover(self, x: int, y: int) -> bool:
+        """Move the pointer without clicking. The wheel acts on what is under it."""
+        dx, dy = self._to_desktop(x, y)
+        gx, gy, gw, gh = self.desktop
+        self.inject.set_screen(gw, gh)          # type: ignore[attr-defined]
+        self.inject.move_abs(dx - gx, dy - gy)  # type: ignore[attr-defined]
+        return True
+
     def scroll(self, clicks: int) -> None:
         # Wheel-down is negative, and scrolling down is what advances the grid.
         self.inject.scroll(-abs(int(clicks)))   # type: ignore[attr-defined]
