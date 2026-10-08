@@ -72,7 +72,14 @@ Windows is supported with the AI reader only; Tesseract is not used or needed.
 Screen capture goes through `mss` and input through `SendInput`, so none of the
 Linux packages (GStreamer, D-Bus, evdev, `/dev/uinput`) are required.
 
-Install into a virtual environment inside the checkout. PySide6 has very deep
+**Installer:** download `Lumenspar-Setup-<version>.exe` from the
+[Releases](https://github.com/Galog1/lumenspar/releases) page. It is built by
+`.github/workflows/windows-release.yml` (PyInstaller + Inno Setup) whenever a
+`v*` tag is pushed; `packaging/windows/` holds the recipe. The app asks for
+administrator rights on every start, for the reason below. The installer is
+not code-signed, so SmartScreen may need "More info → Run anyway".
+
+**From source:** install into a virtual environment inside the checkout. PySide6 has very deep
 file paths, and installing it under Microsoft Store Python's own folder can
 exceed Windows' 260-character path limit and leave it half-installed:
 

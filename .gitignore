@@ -16,3 +16,7 @@ venv/
 
 # Test cache
 .pytest_cache/
+
+# Windows build output (PyInstaller, Inno Setup)
+/build/
+/dist/
