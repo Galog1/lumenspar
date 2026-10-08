@@ -224,7 +224,10 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         spacing: 0
                         clip: true
-                        Layout.preferredHeight: aiBody.visible ? aiBody.implicitHeight : 0
+                        // Include aiBody's top margin: without it the wrapper is 4px
+                        // short and clips the bottom of the last line ("Get a free key").
+                        Layout.preferredHeight: aiBody.visible
+                                                ? aiBody.implicitHeight + aiBody.Layout.topMargin : 0
                         Behavior on Layout.preferredHeight { NumberAnimation { duration: Theme.ease } }
                         ColumnLayout {
                             id: aiBody
