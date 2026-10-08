@@ -10,7 +10,9 @@ Row {
     signal picked(int v)
     spacing: 6
 
-    readonly property color gold: "#E8B45A"
+    // Lit stars take the game's colour for the chosen rarity (gold 5, purple 4,
+    // blue 3, green 2, grey 1) -- or for the hovered one, as a preview.
+    readonly property color tint: Theme.rarity(hoverIndex > 0 ? hoverIndex : value)
 
     Repeater {
         model: picker.maximum
@@ -27,27 +29,27 @@ Row {
             Rectangle {   // cell background
                 anchors.fill: parent
                 radius: 8
-                color: lit ? Qt.rgba(picker.gold.r, picker.gold.g, picker.gold.b, 0.10)
+                color: lit ? Qt.rgba(picker.tint.r, picker.tint.g, picker.tint.b, 0.10)
                            : "transparent"
                 border.width: 1
-                border.color: lit ? Qt.rgba(picker.gold.r, picker.gold.g, picker.gold.b, 0.55)
+                border.color: lit ? Qt.rgba(picker.tint.r, picker.tint.g, picker.tint.b, 0.55)
                                   : Theme.border
                 Behavior on color { ColorAnimation { duration: Theme.ease } }
                 Behavior on border.color { ColorAnimation { duration: Theme.ease } }
             }
 
-            Text {   // faint gold glow behind the star
+            Text {   // faint glow behind the star
                 anchors.centerIn: parent
                 text: "★"
                 font.pixelSize: 26
-                color: Qt.rgba(picker.gold.r, picker.gold.g, picker.gold.b, lit ? 0.20 : 0.0)
+                color: Qt.rgba(picker.tint.r, picker.tint.g, picker.tint.b, lit ? 0.20 : 0.0)
                 Behavior on color { ColorAnimation { duration: Theme.ease } }
             }
             Text {   // main star
                 anchors.centerIn: parent
                 text: "★"
                 font.pixelSize: 15
-                color: lit ? picker.gold : Theme.textDim
+                color: lit ? picker.tint : Theme.textDim
                 Behavior on color { ColorAnimation { duration: Theme.ease } }
             }
 
