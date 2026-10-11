@@ -43,7 +43,14 @@ STATE_PATH = CONFIG_DIR / "google_drive.json"
 SIGN_IN_TIMEOUT = 300.0
 
 # The setup guide's steps, referred to by number in error messages.
-STEP_API, STEP_PUBLISH, STEP_CLIENT = 2, 4, 5
+STEP_API, STEP_PUBLISH, STEP_CLIENT = 2, 5, 6
+
+# Google only publishes an app with a homepage and privacy policy on a domain
+# listed as authorized. Users without a site of their own enter Lumenspar's
+# project site (docs/ in the repository, served by GitHub Pages).
+HOMEPAGE_URL = "https://galog1.github.io/lumenspar/"
+PRIVACY_URL = "https://galog1.github.io/lumenspar/privacy.html"
+AUTHORIZED_DOMAIN = "galog1.github.io"
 
 
 class DriveError(Exception):

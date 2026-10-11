@@ -121,6 +121,11 @@ class WishBackend(QObject):
     def driveStep(self) -> int:
         return self._drive_step
 
+    @Property("QVariantMap", constant=True)
+    def driveSite(self) -> dict:
+        return {"homepage": gdrive.HOMEPAGE_URL, "privacy": gdrive.PRIVACY_URL,
+                "domain": gdrive.AUTHORIZED_DOMAIN}
+
     # -- actions ----------------------------------------------------------
 
     @Slot()
@@ -174,6 +179,10 @@ class WishBackend(QObject):
         if self._paimon_link:
             QGuiApplication.clipboard().setText(self._paimon_link)
             self._set_status("Link copied again")
+
+    @Slot(str)
+    def copyText(self, text: str) -> None:
+        QGuiApplication.clipboard().setText(text)
 
     @Slot()
     def stop(self) -> None:

@@ -95,6 +95,48 @@ Item {
         }
     }
 
+    // ── a value to paste into the Google Cloud console ──────────────────
+    component CopyValue: RowLayout {
+        id: cv
+        property string label
+        property string value
+        Layout.fillWidth: true
+        spacing: 8
+        Text {
+            text: cv.label
+            color: Theme.textDim
+            font.pixelSize: 12
+            Layout.preferredWidth: 150
+        }
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: 30
+            radius: 8
+            color: Theme.bg
+            border.color: Theme.border
+            border.width: 1
+            TextInput {
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                verticalAlignment: TextInput.AlignVCenter
+                text: cv.value
+                readOnly: true
+                selectByMouse: true
+                color: Theme.text
+                font.pixelSize: 12
+                font.family: "monospace"
+                clip: true
+            }
+        }
+        GhostButton {
+            id: copyBtn
+            label: copied.running ? "Copied" : "Copy"
+            onClicked: { wishes.copyText(cv.value); copied.restart() }
+            Timer { id: copied; interval: 1500 }
+        }
+    }
+
     // ── a pity meter: count over the hard pity, with a bar ──────────────
     component PityMeter: ColumnLayout {
         property string label
@@ -528,12 +570,22 @@ Item {
                     }
                     GuideStep {
                         number: 4
+                        heading: "Add a homepage and privacy policy"
+                        body: "Google will not publish an app without these. On the <b>Branding</b> page, under <b>App domain</b>, enter the two links below (Lumenspar's own pages; a site of your own works too). Under <b>Authorized domains</b> press <b>Add domain</b> and enter the domain below. Then press <b>Save</b> at the bottom."
+                        link: "https://console.developers.google.com/auth/branding"
+
+                        CopyValue { label: "Application home page"; value: wishes.driveSite.homepage }
+                        CopyValue { label: "Privacy policy link"; value: wishes.driveSite.privacy }
+                        CopyValue { label: "Authorized domain"; value: wishes.driveSite.domain }
+                    }
+                    GuideStep {
+                        number: 5
                         heading: "Publish the app"
                         body: "Under <b>Publishing status</b> press <b>Publish app</b>, then <b>Confirm</b>. Without this, Google only lets listed test users in and signs you out every 7 days. Lumenspar only asks for its own hidden Drive folder and your email address, which Google does not need to review."
                         link: "https://console.developers.google.com/auth/audience"
                     }
                     GuideStep {
-                        number: 5
+                        number: 6
                         heading: "Create a Desktop app client"
                         body: "Press <b>Create client</b>, choose Application type <b>Desktop app</b>, give it any name and press <b>Create</b>. Copy the <b>Client ID</b> and <b>Client secret</b> it shows into the fields below and press <b>Save</b>. (They identify your project, not your account; they are stored only on this computer.)"
                         link: "https://console.developers.google.com/auth/clients"
@@ -583,7 +635,7 @@ Item {
                         }
                     }
                     GuideStep {
-                        number: 6
+                        number: 7
                         heading: "Sign in"
                         body: "Your browser opens Google's sign-in. Choose your account and allow access. If Google warns that it has not verified the app, that is expected — it is your own app: choose <b>Advanced</b>, then <b>Go to Lumenspar</b>. Then come back here; your history is backed up straight away."
 

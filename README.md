@@ -216,7 +216,9 @@ shared Google app of its own: you connect a free Google Cloud project of your
 own, once. The **Setup guide** on the wish counter page walks through it step
 by step, with buttons that open each console page, and stays there for later;
 when something goes wrong, the message names the step that fixes it and the
-guide highlights it.
+guide highlights it. Google only publishes a project that has a homepage and
+a privacy policy on an authorized domain, so the guide offers Lumenspar's own
+([docs/](docs/), served at https://galog1.github.io/lumenspar/).
 
 Lumenspar only asks for its own hidden app-data folder in Drive (it cannot
 see any of your files) and your email address (to show who is signed in).
