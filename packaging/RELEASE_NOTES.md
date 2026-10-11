@@ -1,47 +1,35 @@
-Lumenspar is a Genshin Impact companion for Linux and Windows. It now opens
-on a main menu with two tools.
+Lumenspar is a Genshin Impact companion for Linux and Windows: a wish
+counter with pity and 50/50 tracking, and an inventory scanner that exports
+`.GOOD` files.
 
-## New: Wish Counter
+## New in 0.3.1
 
-Pity, guarantees and 50/50 results for every banner, read from your in-game
-wish history, the same way [paimon.moe](https://paimon.moe) does it, but
-without its Windows-only PowerShell script.
+- **Google Drive backup.** Like paimon.moe, the wish history can be kept in
+  your own Google Drive, so a reinstall or another computer gets it back.
+  It syncs on startup, after every import, and with **Back up now**. It uses
+  a free Google Cloud project of your own. The **Setup guide** on the wish
+  counter page walks through it, with a button for each console page, and
+  errors point back to the step that fixes them. Lumenspar can only see its
+  own hidden folder in your Drive.
+- **5★ portraits.** Every 5★ pull is shown as a portrait tile with its pity
+  and 50/50 result. Portraits are downloaded once and cached.
+- **Fix (Windows): wish import failed with "Permission denied"** while the
+  game was running, because the game keeps its web cache file locked. Lumenspar
+  now reads it the way Windows' own copy does, as paimon.moe's script does.
+- **Fix (Linux AppImage): no internet access on Fedora, Arch and other
+  non-Ubuntu distributions.** The AppImage looked for trusted certificates
+  where only Ubuntu keeps them, so the wish counter, the Enka.Network import
+  and the Gemini reader all failed. It now uses the system's own certificates.
 
-1. Open the wish history in-game (**Wish → History**).
-2. In Lumenspar: **Wish Counter → Import from game**.
-
-Lumenspar finds the game's web cache by itself: on Windows through the
-game's log, and on Linux inside An Anime Game Launcher (native or Flatpak),
-Lutris, Heroic or another Wine prefix. You can also pick the game folder by
-hand or paste a link. Every banner shows its 5★ and 4★ pity, whether the
-next 5★ is guaranteed, your 50/50 record, and each 5★ with the pity it came
-at.
-
-The game's history only goes back about a year, so Lumenspar keeps every
-wish it imports; later imports only add new ones.
-
-**Copy link for paimon.moe** puts a working wish history link on the
-clipboard, exactly as paimon.moe's own script would, ready to paste into
-its import page. Treat it like a password until it expires: anyone holding
-it can read your wish history.
-
-## Inventory Scanner
-
-Unchanged apart from moving onto its own page: it reads artifacts, weapons,
-characters and materials off the screen into a `.GOOD` file for Genshin
-Optimizer, SEELIE.me and Aspirine's calculator.
-
-> **Pre-release.** The wish counter has been checked against HoYoverse's
-> service and with tests, but not yet through a complete import of a real
-> history. On Windows, a complete in-game inventory scan has not been run
-> yet. Please report what happens on yours, with the log from
+> **Pre-release.** On Windows, a complete in-game inventory scan has not
+> been run yet. Please report what happens on yours, with the log from
 > `Documents/Lumenspar/logs/`.
 
-## Linux: `Lumenspar-0.3.0-x86_64.AppImage`
+## Linux: `Lumenspar-0.3.1-x86_64.AppImage`
 
 ```sh
-chmod +x Lumenspar-0.3.0-x86_64.AppImage
-./Lumenspar-0.3.0-x86_64.AppImage
+chmod +x Lumenspar-0.3.1-x86_64.AppImage
+./Lumenspar-0.3.1-x86_64.AppImage
 ```
 
 Needs a 64-bit distribution about as new as Ubuntu 24.04 (Fedora 40+,
@@ -51,7 +39,7 @@ any current desktop), sends input through `/dev/uinput`, and has Tesseract
 built in. If the AppImage will not start for lack of FUSE, run it with
 `--appimage-extract-and-run`.
 
-## Windows: `Lumenspar-Setup-0.3.0.exe`
+## Windows: `Lumenspar-Setup-0.3.1.exe`
 
 The installer is not code-signed, so SmartScreen may need **More info → Run
 anyway**. Lumenspar asks for administrator rights at every start, because
