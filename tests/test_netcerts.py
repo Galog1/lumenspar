@@ -17,7 +17,9 @@ def _frozen_linux(monkeypatch, cafile, capath):
 
 
 def test_the_system_bundle_is_used_when_openssls_own_location_is_missing(tmp_path, monkeypatch):
-    _frozen_linux(monkeypatch, "/usr/lib/ssl/cert.pem", "/usr/lib/ssl/certs")   # Ubuntu's paths
+    # Where the bundled (Ubuntu) OpenSSL looks -- missing here, as on Fedora.
+    # Not the real /usr/lib/ssl: that exists on Ubuntu, where this also runs.
+    _frozen_linux(monkeypatch, str(tmp_path / "ssl/cert.pem"), str(tmp_path / "ssl/certs"))
     bundle = tmp_path / "ca-certificates.crt"
     bundle.write_text("pem")
     env = {}
