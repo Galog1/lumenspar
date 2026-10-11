@@ -28,9 +28,7 @@ def find_link(log: Callable[[str], None], game_folder: str = "",
             raise ImportError_("Could not find Genshin Impact's web cache. Choose the game "
                                "folder by hand, or paste the wish history link.")
         log(f"Found the game's web cache: {files[0].parents[4]}")
-        links = []
-        for f in files:
-            links += [u for u in link.extract_links(f.read_bytes()) if u not in links]
+        links = link.links_from_files(files, log)
         log(f"{len(links)} wish history link(s) in the cache")
     if not links:
         raise ImportError_(NO_LINK)

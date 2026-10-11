@@ -15,6 +15,12 @@ Finding the game:
     locations are checked first; failing that, the Wine prefixes' own
     output_log.txt; failing that, a time-limited search of the home folder
     and mounted drives for a GenshinImpact_Data folder.
+
+Reading it on Windows: while the game runs, its browser holds data_2 open
+in a way that makes a plain open() fail with "Permission denied" (it allows
+others to read only if they also allow the file to be deleted, which the C
+runtime's open() never does). read_cache() opens it the way Windows' own
+copy does -- what paimon.moe's script relies on.
 """
 
 from __future__ import annotations
@@ -82,6 +88,69 @@ def extract_links(data: bytes) -> list[str]:
     return links[::-1]
 
 
+class CacheUnreadable(OSError):
+    """data_2 exists but cannot be read; the message says what to do."""
+
+
+def read_cache(path: Path, shared_read=None) -> bytes:
+    """data_2's bytes, even while the game has it open on Windows."""
+    try:
+        return path.read_bytes()
+    except PermissionError as exc:
+        if shared_read is None:
+            if os.name != "nt":
+                raise CacheUnreadable(f"Cannot read {path}: {exc.strerror}") from exc
+            shared_read = _read_shared_windows
+        try:
+            return shared_read(path)
+        except OSError as exc2:
+            raise CacheUnreadable(
+                f"Windows would not let Lumenspar read the game's web cache ({exc2}). "
+                "Close Genshin Impact and import again -- the link stays in the cache -- "
+                "or paste the link by hand.") from exc2
+
+
+def _read_shared_windows(path: Path) -> bytes:
+    """Open with read, write *and* delete sharing, as CopyFile does."""
+    import ctypes
+    import msvcrt
+    from ctypes import wintypes
+
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    k32.CreateFileW.restype = wintypes.HANDLE
+    k32.CreateFileW.argtypes = (wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                                wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD,
+                                wintypes.HANDLE)
+    generic_read, share_all, open_existing, normal = 0x80000000, 0x7, 3, 0x80
+    handle = k32.CreateFileW(str(path), generic_read, share_all, None, open_existing,
+                             normal, None)
+    if handle is None or handle == wintypes.HANDLE(-1).value:
+        raise ctypes.WinError(ctypes.get_last_error())
+    with open(msvcrt.open_osfhandle(handle, os.O_RDONLY), "rb") as f:
+        return f.read()
+
+
+def links_from_files(files: list[Path], log=None) -> list[str]:
+    """Links from several data_2 files, newest file first; an unreadable file
+    is skipped as long as another one can be read."""
+    out: list[str] = []
+    problem: CacheUnreadable | None = None
+    read_any = False
+    for f in files:
+        try:
+            data = read_cache(f)
+        except CacheUnreadable as exc:
+            problem = problem or exc
+            if log:
+                log(f"Could not read {f}: {exc}")
+            continue
+        read_any = True
+        out += [u for u in extract_links(data) if u not in out]
+    if not read_any and problem is not None:
+        raise problem
+    return out
+
+
 def paimon_link(link: str) -> str:
     """The link exactly as paimon.moe's getlink.ps1 hands it over.
 
@@ -95,11 +164,9 @@ def paimon_link(link: str) -> str:
 
 def links_from_folder(folder: Path) -> list[str]:
     """Links from a game folder the user picked by hand."""
-    out: list[str] = []
-    for d in _data_dirs_under(folder, max_depth=4, deadline=time.monotonic() + 5):
-        for f in _data_2_files(d):
-            out += [u for u in extract_links(f.read_bytes()) if u not in out]
-    return out
+    files = [f for d in _data_dirs_under(folder, max_depth=4, deadline=time.monotonic() + 5)
+             for f in _data_2_files(d)]
+    return links_from_files(files)
 
 
 # -- locating the game ----------------------------------------------------------

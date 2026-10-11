@@ -7,6 +7,7 @@ the real getGachaLog responds (newest first, 20 a page, paged by end_id).
 from __future__ import annotations
 
 import json
+import os
 import urllib.parse
 from pathlib import Path
 
@@ -284,3 +285,70 @@ def test_only_missing_portraits_are_fetched_and_failures_are_quiet(tmp_path):
 
     # Something that is not a PNG (an error page, say) is never cached.
     assert icons.download(["UI_AvatarIcon_Html"], root=tmp_path, fetch=lambda u: b"<html>") == 0
+
+
+# -- reading the cache while the game holds it open ---------------------------------
+
+def _locked(monkeypatch, locked: set):
+    real = Path.read_bytes
+
+    def read_bytes(self):
+        if self in locked:
+            raise PermissionError(13, "Permission denied", str(self))
+        return real(self)
+    monkeypatch.setattr(Path, "read_bytes", read_bytes)
+
+
+def test_a_cache_file_the_game_holds_open_is_read_with_shared_access(tmp_path, monkeypatch):
+    f = tmp_path / "data_2"
+    f.write_bytes(b"1/0/" + LINK.encode())
+    _locked(monkeypatch, {f})
+    shared = []
+    assert link.read_cache(f, shared_read=lambda p: shared.append(p) or b"ok") == b"ok"
+    assert shared == [f]
+
+
+def test_an_unreadable_cache_file_is_skipped_when_another_can_be_read(tmp_path, monkeypatch):
+    new, old = tmp_path / "new", tmp_path / "old"
+    new.write_bytes(b"x")
+    old.write_bytes(b"1/0/" + LINK.encode())
+    _locked(monkeypatch, {new})
+    monkeypatch.setattr(link.os, "name", "posix")
+    logs = []
+    assert link.links_from_files([new, old], logs.append) == [LINK]
+    assert any("Could not read" in m for m in logs)
+
+
+def test_when_no_cache_file_can_be_read_the_error_says_what_to_do(tmp_path, monkeypatch):
+    f = tmp_path / "data_2"
+    f.write_bytes(b"x")
+    _locked(monkeypatch, {f})
+
+    def still_locked(p):
+        raise PermissionError(13, "Permission denied")
+    with pytest.raises(link.CacheUnreadable, match="Close Genshin Impact"):
+        link.read_cache(f, shared_read=still_locked)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows file sharing")
+def test_windows_reads_a_file_held_open_the_way_the_game_holds_data_2(tmp_path):
+    # The game's browser keeps data_2 open with delete access and full sharing;
+    # a plain open() then fails, because it does not offer delete sharing.
+    import ctypes
+    from ctypes import wintypes
+    f = tmp_path / "data_2"
+    f.write_bytes(b"1/0/" + LINK.encode())
+    k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    k32.CreateFileW.restype = wintypes.HANDLE
+    k32.CreateFileW.argtypes = (wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                                wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD,
+                                wintypes.HANDLE)
+    delete, read, write = 0x00010000, 0x80000000, 0x40000000
+    held = k32.CreateFileW(str(f), read | write | delete, 0x7, None, 3, 0x80, None)
+    assert held not in (None, wintypes.HANDLE(-1).value)
+    try:
+        with pytest.raises(PermissionError):
+            f.read_bytes()
+        assert link.extract_links(link.read_cache(f)) == [LINK]
+    finally:
+        k32.CloseHandle(wintypes.HANDLE(held))
