@@ -1,58 +1,61 @@
-Lumenspar is an inventory scanner for Genshin Impact: it reads your artifacts,
-weapons and materials off the screen and writes a `.GOOD` file for Genshin
-Optimizer, SEELIE.me and Aspirine's calculator. Characters can be imported
-exactly from your profile showcase via Enka.Network.
+Lumenspar is a Genshin Impact companion for Linux and Windows. It now opens
+on a main menu with two tools.
 
-This release adds the **Linux AppImage**. The Windows installer is the same
-app as 0.1.0, rebuilt.
+## New: Wish Counter
 
-> **Pre-release.** These are the first packaged builds. Linux is where the
-> scanner was developed and tested, but the AppImage packaging is new; on
-> Windows, a complete in-game scan has not been run yet. Please report what
-> happens on yours, with the log from `Documents/Lumenspar/logs/`.
+Pity, guarantees and 50/50 results for every banner, read from your in-game
+wish history, the same way [paimon.moe](https://paimon.moe) does it, but
+without its Windows-only PowerShell script.
 
-## Linux: `Lumenspar-0.2.0-x86_64.AppImage`
+1. Open the wish history in-game (**Wish → History**).
+2. In Lumenspar: **Wish Counter → Import from game**.
+
+Lumenspar finds the game's web cache by itself: on Windows through the
+game's log, and on Linux inside An Anime Game Launcher (native or Flatpak),
+Lutris, Heroic or another Wine prefix. You can also pick the game folder by
+hand or paste a link. Every banner shows its 5★ and 4★ pity, whether the
+next 5★ is guaranteed, your 50/50 record, and each 5★ with the pity it came
+at.
+
+The game's history only goes back about a year, so Lumenspar keeps every
+wish it imports; later imports only add new ones.
+
+**Copy link for paimon.moe** puts a working wish history link on the
+clipboard, exactly as paimon.moe's own script would, ready to paste into
+its import page. Treat it like a password until it expires: anyone holding
+it can read your wish history.
+
+## Inventory Scanner
+
+Unchanged apart from moving onto its own page: it reads artifacts, weapons,
+characters and materials off the screen into a `.GOOD` file for Genshin
+Optimizer, SEELIE.me and Aspirine's calculator.
+
+> **Pre-release.** The wish counter has been checked against HoYoverse's
+> service and with tests, but not yet through a complete import of a real
+> history. On Windows, a complete in-game inventory scan has not been run
+> yet. Please report what happens on yours, with the log from
+> `Documents/Lumenspar/logs/`.
+
+## Linux: `Lumenspar-0.3.0-x86_64.AppImage`
 
 ```sh
-chmod +x Lumenspar-0.2.0-x86_64.AppImage
-./Lumenspar-0.2.0-x86_64.AppImage
+chmod +x Lumenspar-0.3.0-x86_64.AppImage
+./Lumenspar-0.3.0-x86_64.AppImage
 ```
 
-- Needs a 64-bit distribution about as new as Ubuntu 24.04: Fedora 40+,
-  Ubuntu 24.04+, Debian 13, Arch and its derivatives.
-- Works on Wayland and X11 through the desktop's screen-sharing portal
-  (KDE, GNOME, wlroots), so PipeWire must be running; it is on any current
-  desktop. Pick the game's screen when asked; it is remembered after that.
-- OCR (Tesseract with English data) is built in. You can also switch to the
-  AI reader (Gemini) in the Reader card.
-- Input is sent through `/dev/uinput`, which current desktops give the
-  logged-in user. Pressing **Escape** to stop a scan also needs read access
-  to the keyboard (membership of the `input` group); without it, use the
-  **Stop** button.
-- If the AppImage will not start for lack of FUSE, run it with
-  `--appimage-extract-and-run`.
+Needs a 64-bit distribution about as new as Ubuntu 24.04 (Fedora 40+,
+Ubuntu 24.04+, Debian 13, Arch and its derivatives). The inventory scanner
+captures the screen through the desktop's screen-sharing portal (PipeWire,
+any current desktop), sends input through `/dev/uinput`, and has Tesseract
+built in. If the AppImage will not start for lack of FUSE, run it with
+`--appimage-extract-and-run`.
 
-## Windows: `Lumenspar-Setup-0.2.0.exe`
+## Windows: `Lumenspar-Setup-0.3.0.exe`
 
-1. Run the installer. Windows SmartScreen may say it "protected your PC":
-   the installer is not code-signed. Choose **More info → Run anyway**.
-2. Lumenspar asks for **administrator rights** every time it starts. Genshin
-   runs elevated, and Windows silently drops input sent to it by programs
-   that are not.
-3. The Windows build reads text with Google's **Gemini** vision model only.
-   Get a free key at aistudio.google.com/apikey and paste it into the Reader
-   card. Free-tier requests may be used by Google to improve its models
-   (except in the EEA, UK and Switzerland). Only cropped item panels are
-   sent, never your UID or the full screen.
-
-Requires 64-bit Windows 10 or 11.
-
-## Before scanning (both)
-
-- In Genshin: **fullscreen** (Windowed Fullscreen on Windows), **16:9 or
-  16:10**, **English** text, control type **Keyboard**.
-- Press **Run self-test** first: it checks capture and text reading.
-- Exports go to `Documents/Lumenspar/lumenspar.good.json`. Every scan
-  overwrites it, so rename anything you want to keep. Logs are saved in
-  `Documents/Lumenspar/logs/`, and screenshots of anything that could not be
-  read in `Documents/Lumenspar/failures/`.
+The installer is not code-signed, so SmartScreen may need **More info → Run
+anyway**. Lumenspar asks for administrator rights at every start, because
+Genshin runs elevated and Windows drops input from programs that are not.
+The Windows inventory scanner reads text with Google's Gemini model, which
+needs a free API key from aistudio.google.com/apikey; the wish counter does
+not need one. Requires 64-bit Windows 10 or 11.
