@@ -3,17 +3,23 @@
 Imports run on a worker thread (they make dozens of paced web requests);
 the stats are recomputed from the stored history afterwards and published
 as plain lists/dicts, which QML reads directly.
+
+The optional Google Drive backup syncs after every import and on startup;
+its errors name the setup-guide step that fixes them, which the page
+highlights.
 """
 
 from __future__ import annotations
 
+import re
 import threading
 from datetime import datetime
 
-from PySide6.QtCore import Property, QObject, QUrl, Signal, Slot
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtCore import Property, QObject, QTimer, QUrl, Signal, Slot
+from PySide6.QtGui import QDesktopServices, QGuiApplication
 
-from ..wishes import icons, importer, link, stats, store
+from .. import gdrive
+from ..wishes import backup, icons, importer, link, stats, store
 from .backend import _Worker
 
 
@@ -24,6 +30,8 @@ class WishBackend(QObject):
     logAppended = Signal(str)
     paimonLinkChanged = Signal()
     _iconsArrived = Signal()      # from the download thread, delivered on the GUI thread
+    driveChanged = Signal()
+    _browserWanted = Signal(str)  # from the sign-in thread, opened on the GUI thread
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -39,6 +47,13 @@ class WishBackend(QObject):
         self._worker: _Worker | None = None
         self._paimon_link = ""
         self._on_success = None      # what to do once the current job has finished
+        self._drive_job = False       # the current job is a Drive one (own status line)
+        self._drive = gdrive.DriveState.load()
+        self._drive_status = ""
+        self._drive_step = 0          # the guide step the last Drive error points at
+        self._browserWanted.connect(self._open_browser)
+        if self._drive.signed_in:     # pick up imports made on other computers
+            QTimer.singleShot(0, lambda: self._sync("Checking Google Drive…"))
 
     # -- what the page shows --------------------------------------------
 
@@ -74,6 +89,37 @@ class WishBackend(QObject):
     @Property(str, notify=statusChanged)
     def status(self) -> str:
         return self._status
+
+    @Property(bool, notify=driveChanged)
+    def driveConfigured(self) -> bool:
+        return self._drive.configured
+
+    @Property(bool, notify=driveChanged)
+    def driveSignedIn(self) -> bool:
+        return self._drive.signed_in
+
+    @Property(str, notify=driveChanged)
+    def driveEmail(self) -> str:
+        return self._drive.email
+
+    @Property(str, notify=driveChanged)
+    def driveClientId(self) -> str:
+        return self._drive.client_id
+
+    @Property(str, notify=driveChanged)
+    def driveLastBackup(self) -> str:
+        try:
+            return datetime.fromisoformat(self._drive.last_backup).strftime("%Y-%m-%d %H:%M")
+        except ValueError:
+            return ""
+
+    @Property(str, notify=driveChanged)
+    def driveStatus(self) -> str:
+        return self._drive_status
+
+    @Property(int, notify=driveChanged)
+    def driveStep(self) -> int:
+        return self._drive_step
 
     # -- actions ----------------------------------------------------------
 
@@ -143,17 +189,95 @@ class WishBackend(QObject):
         def done() -> None:
             self._reload()
             self._set_status(f"Imported -- {self.totalWishes} wishes on record")
+            if self._drive.signed_in:
+                self._sync("Backing up to Google Drive…")
 
         self._start(job, "Wish import", "Importing wish history…", done)
 
-    def _start(self, job, label: str, status: str, on_success) -> None:
+    # -- Google Drive -----------------------------------------------------
+
+    @Slot(str, str)
+    def saveDriveClient(self, client_id: str, client_secret: str) -> None:
+        client_id, client_secret = client_id.strip(), client_secret.strip()
+        if not client_id or not client_secret:
+            self._drive_message("Paste both the client ID and the client secret.", gdrive.STEP_CLIENT)
+            return
+        if not client_id.endswith(".apps.googleusercontent.com"):
+            self._drive_message("That does not look like a client ID -- it ends in "
+                                "\".apps.googleusercontent.com\".", gdrive.STEP_CLIENT)
+            return
+        if (client_id, client_secret) != (self._drive.client_id, self._drive.client_secret):
+            # A sign-in belongs to the client it was made with.
+            self._drive.refresh_token = self._drive.email = ""
+        self._drive.client_id, self._drive.client_secret = client_id, client_secret
+        self._drive.save()
+        self._drive_message("Client saved -- now sign in with Google.")
+
+    @Slot()
+    def signInGoogle(self) -> None:
+        def job(log) -> None:
+            log("Waiting for Google sign-in in the browser…")
+            gdrive.sign_in(self._drive, self._browserWanted.emit,
+                           should_stop=lambda: self._stop)
+            log(f"Signed in as {self._drive.email or 'your Google account'}")
+
+        def done() -> None:
+            self._sync("Signed in -- syncing with Google Drive…")
+
+        self._start(job, "Google sign-in", "Finish signing in in your browser…", done, drive=True)
+
+    @Slot()
+    def signOutGoogle(self) -> None:
+        def job(log) -> None:
+            gdrive.sign_out(self._drive)
+
+        def done() -> None:
+            self._drive_message("Signed out. The backup stays in your Google Drive.")
+
+        self._start(job, "Google sign-out", "Signing out…", done, drive=True)
+
+    @Slot()
+    def backupNow(self) -> None:
+        self._sync("Syncing with Google Drive…")
+
+    def _sync(self, status: str) -> None:
+        result: list[tuple[int, int]] = []
+
+        def job(log) -> None:
+            result.append(backup.sync(gdrive.AppData(self._drive), log))
+            self._drive.last_backup = datetime.now().isoformat(timespec="seconds")
+            self._drive.save()
+
+        def done() -> None:
+            restored, uploaded = result[0]
+            if restored:
+                self._reload()
+            self._drive_message(
+                f"Restored {restored} wish(es) from Google Drive" if restored else
+                "Backed up" if uploaded else "Google Drive is up to date")
+
+        self._start(job, "Google Drive backup", status, done, drive=True)
+
+    @Slot(str)
+    def _open_browser(self, url: str) -> None:
+        QDesktopServices.openUrl(QUrl(url))
+
+    def _drive_message(self, text: str, step: int = 0) -> None:
+        self._drive_status, self._drive_step = text, step
+        self.driveChanged.emit()
+
+    def _start(self, job, label: str, status: str, on_success, drive: bool = False) -> None:
         if self._busy:
             return
         self._stop = False
         self._busy = True
         self._on_success = on_success
+        self._drive_job = drive
         self.busyChanged.emit()
-        self._set_status(status)
+        if drive:
+            self._drive_message(status)
+        else:
+            self._set_status(status)
         self.logAppended.emit(f"── {label} ──")
 
         w = _Worker(job, self)
@@ -173,6 +297,9 @@ class WishBackend(QObject):
         on_success, self._on_success = self._on_success, None
         if ok and on_success is not None:
             on_success()
+        elif not ok and self._drive_job:
+            step = re.search(r"\(step (\d)\)", err)
+            self._drive_message(err[:300] or "Failed", int(step.group(1)) if step else 0)
         elif not ok:
             self._set_status(err[:200] or "Failed")
 

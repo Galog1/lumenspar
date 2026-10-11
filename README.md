@@ -208,6 +208,24 @@ The API only goes back about a year, so every imported wish is kept in
 Windows) and later imports only add new ones. The link itself, which carries a
 temporary key to your wish history, is never saved.
 
+### Google Drive backup (optional)
+
+Like paimon.moe, the wish history can be kept in your Google Drive, so a
+reinstall or another computer gets it back. Lumenspar has no server and no
+shared Google app of its own: you connect a free Google Cloud project of your
+own, once. The **Setup guide** on the wish counter page walks through it step
+by step, with buttons that open each console page, and stays there for later;
+when something goes wrong, the message names the step that fixes it and the
+guide highlights it.
+
+Lumenspar only asks for its own hidden app-data folder in Drive (it cannot
+see any of your files) and your email address (to show who is signed in).
+Each account is stored there as `wishes-<uid>.json`. Syncing merges both
+copies by wish id, so neither side loses anything. It runs on startup, after
+every import, and from **Back up now**. The client ID, client secret and
+sign-in are kept in `google_drive.json` in the config folder, readable only
+by you.
+
 ## Characters from Enka.Network
 
 Character data can come from your in-game profile showcase via
