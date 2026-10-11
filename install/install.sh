@@ -19,12 +19,18 @@ sed "s|\${LUMENSPAR_HOME:-\$HOME/lumenspar}|\${LUMENSPAR_HOME:-$ROOT}|" \
     "$ROOT/install/lumenspar" > "$BIN/lumenspar"
 chmod +x "$BIN/lumenspar"
 
-cp "$ROOT/install/lumenspar.desktop" "$APPS/lumenspar.desktop"
+# Its own file name: AppImage tools (Gear Lever, AppImageLauncher) install the
+# AppImage's entry as lumenspar.desktop, which would replace this one. Exec is
+# the launcher's full path, since desktop sessions may not have ~/.local/bin on
+# their PATH.
+sed -e "s|^Name=Lumenspar$|Name=Lumenspar (local build)|" \
+    -e "s|^Exec=lumenspar$|Exec=$BIN/lumenspar|" \
+    "$ROOT/install/lumenspar.desktop" > "$APPS/lumenspar-local.desktop"
 cp "$ROOT/install/lumenspar.svg"     "$ICONS/lumenspar.svg"
 
 echo "installed:"
 echo "  $BIN/lumenspar            (project root: $ROOT)"
-echo "  $APPS/lumenspar.desktop"
+echo "  $APPS/lumenspar-local.desktop"
 echo "  $ICONS/lumenspar.svg"
 
 case ":$PATH:" in

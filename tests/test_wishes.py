@@ -236,3 +236,23 @@ def test_the_paimon_moe_link_matches_what_its_script_produces():
     script = re.search(r"(https.+?game_biz=)", entry).group(1)
     assert link.paimon_link(link.extract_links(entry.encode())[0]) == script
     assert script.endswith("game_biz=") and "authkey=" in script
+
+
+def test_an_unreachable_service_is_not_reported_as_expired_links():
+    # A real AppImage could not verify HTTPS and called every link "expired".
+    def offline(url):
+        raise OSError("certificate verify failed")
+    with pytest.raises(api.ServiceUnreachable, match="could not reach"):
+        api.first_working([LINK, LINK.replace("SECRET", "OTHER")], transport=offline,
+                          sleep=lambda s: None)
+
+
+def test_expired_links_are_skipped_until_one_works():
+    calls = []
+    def server(url):
+        calls.append(url)
+        ok = len(calls) == 3
+        return json.dumps({"retcode": 0 if ok else -101, "message": "OK" if ok else "authkey timeout",
+                           "data": {"list": []}}).encode()
+    links = [LINK.replace("SECRET", f"K{i}") for i in range(4)]
+    assert api.first_working(links, transport=server, sleep=lambda s: None) == links[2]

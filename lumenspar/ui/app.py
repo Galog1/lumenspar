@@ -12,7 +12,7 @@ from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 
-from .. import hostos
+from .. import hostos, netcerts
 from .backend import Backend
 from .wish_backend import WishBackend
 
@@ -22,6 +22,7 @@ ICON = Path(__file__).resolve().parents[2] / "install" / "lumenspar.svg"
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv)
+    netcerts.use_system_bundle()   # before any HTTPS request; see netcerts.py
     if hostos.is_windows():
         # Microsoft Store Python ignores PATH when resolving DLL dependencies,
         # so Qt's QML plugins cannot find the Qt DLLs beside PySide6 and the

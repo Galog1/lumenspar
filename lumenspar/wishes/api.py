@@ -56,6 +56,10 @@ class LinkExpired(WishApiError):
     pass
 
 
+class ServiceUnreachable(WishApiError):
+    """No answer at all (network, TLS): not a statement about the link."""
+
+
 def _default_transport(url: str) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=20) as r:
@@ -91,7 +95,8 @@ class WishApi:
             try:
                 body = json.loads(self._transport(url).decode("utf-8"))
             except (OSError, ValueError) as exc:
-                raise WishApiError(f"could not reach HoYoverse's wish history service ({exc})") from exc
+                raise ServiceUnreachable(
+                    f"could not reach HoYoverse's wish history service ({exc})") from exc
             code, msg = body.get("retcode"), str(body.get("message") or "")
             if code == 0:
                 return body.get("data") or {}
@@ -107,10 +112,16 @@ class WishApi:
         raise WishApiError("the wish history service kept asking to slow down; try again later")
 
     def works(self) -> bool:
-        """Whether this link is still accepted (one tiny request)."""
+        """Whether this link is still accepted (one tiny request).
+
+        Raises ServiceUnreachable rather than answering: if the service cannot
+        be reached, nothing is known about the link.
+        """
         try:
             self._get(api_url(self.link, "301", size=1))
             return True
+        except ServiceUnreachable:
+            raise
         except WishApiError:
             return False
 
@@ -145,9 +156,8 @@ def first_working(links: list[str], *, transport: Transport | None = None,
     for i, link in enumerate(links):
         if i:
             sleep(PAGE_DELAY)
-        try:
-            if WishApi(link, transport=transport, sleep=sleep).works():
-                return link
-        except WishApiError:
-            continue
+        # ServiceUnreachable propagates: reporting "every link expired" when the
+        # service was never reached sent a real user looking in the wrong place.
+        if WishApi(link, transport=transport, sleep=sleep).works():
+            return link
     return None

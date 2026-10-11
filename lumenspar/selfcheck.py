@@ -21,10 +21,31 @@ CAPTURE_ELEMENTS = ("pipewiresrc", "videoconvert", "capsfilter", "appsink")
 
 
 def bundle_checks() -> list[Check]:
-    """What the Linux build needs beyond the window. Windows needs none."""
+    """What the build needs beyond the window."""
     if hostos.is_windows():
-        return []
-    return [*_tesseract(), *_gstreamer(), *_dbus()]
+        return _tls()
+    return [*_tls(), *_tesseract(), *_gstreamer(), *_dbus()]
+
+
+def _tls() -> list[Check]:
+    """Trusted certificates are loaded, so HTTPS requests can be verified.
+
+    Checked without any network: a Linux bundle carrying the build machine's
+    OpenSSL found no certificates on other distributions, and every web
+    request (wishes, Enka.Network, Gemini) failed. See lumenspar/netcerts.py.
+    """
+    try:
+        import ssl
+        from pathlib import Path
+
+        loaded = ssl.create_default_context().cert_store_stats()["x509_ca"]
+        capath = ssl.get_default_verify_paths().capath
+        # A certificate directory is read lazily, so it counts if it has files.
+        lazy = bool(capath and Path(capath).is_dir() and any(Path(capath).iterdir()))
+        return [("trusted HTTPS certificates", loaded > 0 or lazy,
+                 f"{loaded} loaded" + (f", directory {capath}" if lazy else ""))]
+    except Exception as exc:
+        return [("trusted HTTPS certificates", False, f"{type(exc).__name__}: {exc}")]
 
 
 def _tesseract() -> list[Check]:
