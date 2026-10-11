@@ -47,6 +47,104 @@ Item {
         }
     }
 
+    // ── one 5★ pull: portrait, pity badge, 50/50 result ─────────────────
+    component PullTile: Item {
+        id: tile
+        required property var modelData
+        property int hardPity: 90
+        readonly property real depth: modelData.pity / Math.max(1, hardPity)
+        readonly property bool hasResult: ["won", "lost", "guaranteed"].indexOf(modelData.result) >= 0
+        width: 84
+        height: 84 + 22
+
+        HoverHandler { id: tileHover }
+        ToolTip.visible: tileHover.hovered
+        ToolTip.delay: 300
+        ToolTip.text: modelData.name + "\n" + modelData.time
+                      + (modelData.result ? " · " + modelData.result : "")
+
+        Rectangle {
+            id: art
+            width: 84; height: 84
+            radius: 12
+            // The game's 5★ item background: deep amber into gold.
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#5A3F27" }
+                GradientStop { position: 1.0; color: "#B9853E" }
+            }
+            border.width: tile.hasResult ? 2 : 1
+            border.color: tile.hasResult ? page.resultColour(tile.modelData.result)
+                                         : Qt.rgba(1, 1, 1, 0.12)
+            scale: tileHover.hovered ? 1.05 : 1.0
+            Behavior on scale { NumberAnimation { duration: 110 } }
+
+            Image {
+                anchors.fill: parent
+                anchors.margins: 3
+                source: tile.modelData.icon
+                visible: status === Image.Ready
+                fillMode: Image.PreserveAspectFit
+                asynchronous: true
+                smooth: true
+                mipmap: true
+            }
+            Text {   // placeholder until (or unless) the portrait is cached
+                anchors.centerIn: parent
+                visible: tile.modelData.icon === ""
+                text: tile.modelData.name.split(" ").map(function(w) { return w.charAt(0) }).join("").substring(0, 2)
+                color: "#FFE7B3"
+                font.pixelSize: 24
+                font.weight: Font.DemiBold
+            }
+
+            Rectangle {   // pity: green early, gold around soft pity, red near hard pity
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 4
+                height: 20; radius: 7
+                width: pityText.implicitWidth + 12
+                color: tile.depth <= 0.66 ? Theme.ok : tile.depth <= 0.83 ? Theme.rarity(5) : Theme.danger
+                Text {
+                    id: pityText
+                    anchors.centerIn: parent
+                    text: tile.modelData.pity
+                    color: "#0B0E14"
+                    font.pixelSize: 12
+                    font.weight: Font.Bold
+                }
+            }
+
+            Rectangle {   // won / lost / guaranteed
+                visible: tile.hasResult
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.margins: 4
+                height: 17; radius: 6
+                width: resultText.implicitWidth + 10
+                color: Qt.rgba(0.04, 0.05, 0.08, 0.72)
+                Text {
+                    id: resultText
+                    anchors.centerIn: parent
+                    text: tile.modelData.result === "guaranteed" ? "guar." : tile.modelData.result
+                    color: page.resultColour(tile.modelData.result)
+                    font.pixelSize: 10
+                    font.weight: Font.DemiBold
+                }
+            }
+        }
+
+        Text {
+            anchors.top: art.bottom
+            anchors.topMargin: 5
+            width: parent.width
+            text: tile.modelData.name
+            color: Theme.text
+            font.pixelSize: 11
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignHCenter
+        }
+    }
+
     // ── one banner ─────────────────────────────────────────────────────
     component BannerCard: Card {
         id: card
@@ -111,38 +209,15 @@ Item {
 
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 4
+            spacing: 8
             visible: card.b.fives.length > 0
             Text { text: "5★ history"; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold }
-            Repeater {
-                model: card.b.fives
-                delegate: RowLayout {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    spacing: 10
-                    Text {
-                        text: modelData.name
-                        color: Theme.rarity(5)
-                        font.pixelSize: 13
-                        Layout.fillWidth: true
-                        elide: Text.ElideRight
-                    }
-                    Text { text: modelData.time.substring(0, 10); color: Theme.textDim; font.pixelSize: 11 }
-                    Text {
-                        text: modelData.pity
-                        color: Theme.text
-                        font.pixelSize: 13
-                        font.weight: Font.DemiBold
-                        horizontalAlignment: Text.AlignRight
-                        Layout.preferredWidth: 28
-                    }
-                    Text {
-                        text: modelData.result
-                        visible: modelData.result !== ""
-                        color: page.resultColour(modelData.result)
-                        font.pixelSize: 11
-                        Layout.preferredWidth: 72
-                    }
+            Flow {
+                Layout.fillWidth: true
+                spacing: 10
+                Repeater {
+                    model: card.b.fives
+                    delegate: PullTile { hardPity: card.b.hardPity }
                 }
             }
         }

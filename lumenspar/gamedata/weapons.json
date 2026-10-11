@@ -1,11 +1,12 @@
 {
-  "generated": "2026-10-06T15:10:52+00:00",
+  "generated": "2026-10-11T19:12:10+00:00",
   "items": [
     {
       "key": "ATeaspoonOfTranscendence",
       "name": "A Teaspoon of Transcendence",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_CrystallineSword",
       "inGO": true
     },
     {
@@ -13,6 +14,7 @@
       "name": "A Thousand Blazing Suns",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_RadianceSword",
       "inGO": true
     },
     {
@@ -20,6 +22,7 @@
       "name": "A Thousand Floating Dreams",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Ayus",
       "inGO": true
     },
     {
@@ -27,6 +30,7 @@
       "name": "A Touch of Frost in Scorching Summer!",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Icecream",
       "inGO": false
     },
     {
@@ -34,6 +38,7 @@
       "name": "Absolution",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Estoc",
       "inGO": true
     },
     {
@@ -41,6 +46,7 @@
       "name": "Akuoumaru",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Maria",
       "inGO": true
     },
     {
@@ -48,6 +54,7 @@
       "name": "Alley Hunter",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Outlaw",
       "inGO": true
     },
     {
@@ -55,6 +62,7 @@
       "name": "Amenoma Kageuchi",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Bakufu",
       "inGO": true
     },
     {
@@ -62,6 +70,7 @@
       "name": "Amos' Bow",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Amos",
       "inGO": true
     },
     {
@@ -69,6 +78,7 @@
       "name": "Angelos' Heptades",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_FairyGarden",
       "inGO": true
     },
     {
@@ -76,6 +86,7 @@
       "name": "Apprentice's Notes",
       "rarity": 1,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Apprentice",
       "inGO": true
     },
     {
@@ -83,6 +94,7 @@
       "name": "Aqua Simulacra",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Kirin",
       "inGO": true
     },
     {
@@ -90,6 +102,7 @@
       "name": "Aquila Favonia",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Falcon",
       "inGO": true
     },
     {
@@ -97,6 +110,7 @@
       "name": "Ardent Storm",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_MorphGravitas_Wind",
       "inGO": false
     },
     {
@@ -104,6 +118,7 @@
       "name": "Ardent Storm - Sublimation",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_MorphGravitas_Great_Wind",
       "inGO": false
     },
     {
@@ -111,6 +126,7 @@
       "name": "Ash-Graven Drinking Horn",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_ConchSprayer",
       "inGO": true
     },
     {
@@ -118,6 +134,7 @@
       "name": "Astral Vulture's Crimson Plumage",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Qoyllorsnova",
       "inGO": true
     },
     {
@@ -125,6 +142,7 @@
       "name": "Athame Artis",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Motsognir",
       "inGO": true
     },
     {
@@ -132,6 +150,7 @@
       "name": "Azurelight",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_OuterSword",
       "inGO": true
     },
     {
@@ -139,6 +158,7 @@
       "name": "Ballad of the Boundless Blue",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_DandelionPoem",
       "inGO": true
     },
     {
@@ -146,6 +166,7 @@
       "name": "Ballad of the Fjords",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Shanty",
       "inGO": true
     },
     {
@@ -153,6 +174,7 @@
       "name": "Beacon of the Reed Sea",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Deshret",
       "inGO": true
     },
     {
@@ -160,6 +182,7 @@
       "name": "Beginner's Protector",
       "rarity": 1,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Gewalt",
       "inGO": true
     },
     {
@@ -167,13 +190,15 @@
       "name": "Beyond the Chrysalis",
       "rarity": 5,
       "type": "sword",
-      "inGO": false
+      "icon": "UI_EquipIcon_Sword_Samosvist",
+      "inGO": true
     },
     {
       "key": "BlackTassel",
       "name": "Black Tassel",
       "rarity": 3,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Noire",
       "inGO": true
     },
     {
@@ -181,6 +206,7 @@
       "name": "Blackcliff Agate",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Blackrock",
       "inGO": true
     },
     {
@@ -188,6 +214,7 @@
       "name": "Blackcliff Longsword",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Blackrock",
       "inGO": true
     },
     {
@@ -195,6 +222,7 @@
       "name": "Blackcliff Pole",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Blackrock",
       "inGO": true
     },
     {
@@ -202,6 +230,7 @@
       "name": "Blackcliff Slasher",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Blackrock",
       "inGO": true
     },
     {
@@ -209,6 +238,7 @@
       "name": "Blackcliff Warbow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Blackrock",
       "inGO": true
     },
     {
@@ -216,6 +246,7 @@
       "name": "Blackmarrow Lantern",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Ilmarinen",
       "inGO": true
     },
     {
@@ -223,6 +254,7 @@
       "name": "Blade of Atonement",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_GlintstoneClaymore",
       "inGO": true
     },
     {
@@ -230,6 +262,7 @@
       "name": "Bloodsoaked Ruins",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_TummaLyhty",
       "inGO": true
     },
     {
@@ -237,6 +270,7 @@
       "name": "Bloodtainted Greatsword",
       "rarity": 3,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Siegfry",
       "inGO": true
     },
     {
@@ -244,13 +278,15 @@
       "name": "Breezeborne Refrain",
       "rarity": 4,
       "type": "bow",
-      "inGO": false
+      "icon": "UI_EquipIcon_Bow_Windtalker",
+      "inGO": true
     },
     {
       "key": "CalamityOfEshu",
       "name": "Calamity of Eshu",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_SacrificialNgombe",
       "inGO": true
     },
     {
@@ -258,6 +294,7 @@
       "name": "Calamity Queller",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Santika",
       "inGO": true
     },
     {
@@ -265,6 +302,7 @@
       "name": "Cashflow Supervision",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Wheatley",
       "inGO": true
     },
     {
@@ -272,6 +310,7 @@
       "name": "Chain Breaker",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Isikhulu",
       "inGO": true
     },
     {
@@ -279,6 +318,7 @@
       "name": "Cinnabar Spindle",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Opus",
       "inGO": true
     },
     {
@@ -286,6 +326,7 @@
       "name": "Clash of Kings",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_SandMemoria",
       "inGO": true
     },
     {
@@ -293,6 +334,7 @@
       "name": "Cloudforged",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Ultimatum",
       "inGO": true
     },
     {
@@ -300,6 +342,7 @@
       "name": "Compound Bow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Exotic",
       "inGO": true
     },
     {
@@ -307,6 +350,7 @@
       "name": "Cool Steel",
       "rarity": 3,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Steel",
       "inGO": true
     },
     {
@@ -314,6 +358,7 @@
       "name": "Covenant of Frost and Snow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_GlintstoneBow",
       "inGO": true
     },
     {
@@ -321,6 +366,7 @@
       "name": "Crane's Echoing Call",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MountainGale",
       "inGO": true
     },
     {
@@ -328,6 +374,7 @@
       "name": "Crescent Pike",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Exotic",
       "inGO": true
     },
     {
@@ -335,6 +382,7 @@
       "name": "Crimson Moon's Semblance",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_BloodMoon",
       "inGO": true
     },
     {
@@ -342,6 +390,7 @@
       "name": "Dark Iron Sword",
       "rarity": 3,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Darker",
       "inGO": true
     },
     {
@@ -349,6 +398,7 @@
       "name": "Dawning Frost",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Ziedas",
       "inGO": true
     },
     {
@@ -356,6 +406,7 @@
       "name": "Dawnstar of Shahar",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MorphShahar_Wind",
       "inGO": false
     },
     {
@@ -363,6 +414,7 @@
       "name": "Dawnstar of Shahar - Sublimation",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MorphShahar_Great_Wind",
       "inGO": false
     },
     {
@@ -370,6 +422,7 @@
       "name": "Deathmatch",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Gladiator",
       "inGO": true
     },
     {
@@ -377,6 +430,7 @@
       "name": "Debate Club",
       "rarity": 3,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Reasoning",
       "inGO": true
     },
     {
@@ -384,6 +438,7 @@
       "name": "Dialogues of the Desert Sages",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Caduceus",
       "inGO": true
     },
     {
@@ -391,6 +446,7 @@
       "name": "Disaster and Remorse",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Carbine",
       "inGO": true
     },
     {
@@ -398,6 +454,7 @@
       "name": "Dodoco Tales",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Ludiharpastum",
       "inGO": true
     },
     {
@@ -405,6 +462,7 @@
       "name": "Dragon's Bane",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Stardust",
       "inGO": true
     },
     {
@@ -412,6 +470,7 @@
       "name": "Dragonspine Spear",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Everfrost",
       "inGO": true
     },
     {
@@ -419,6 +478,7 @@
       "name": "Dull Blade",
       "rarity": 1,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Blunt",
       "inGO": true
     },
     {
@@ -426,6 +486,7 @@
       "name": "Earth Shaker",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Isikhulu",
       "inGO": true
     },
     {
@@ -433,6 +494,7 @@
       "name": "Echoes of the Heart",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_GlintstoneCatalyst",
       "inGO": true
     },
     {
@@ -440,6 +502,7 @@
       "name": "Elegy for the End",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Widsith",
       "inGO": true
     },
     {
@@ -447,6 +510,7 @@
       "name": "Emberwell",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_GlintstoneSword",
       "inGO": true
     },
     {
@@ -454,6 +518,7 @@
       "name": "Emerald Orb",
       "rarity": 3,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Jade",
       "inGO": true
     },
     {
@@ -461,6 +526,7 @@
       "name": "End of the Line",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Fin",
       "inGO": true
     },
     {
@@ -468,6 +534,7 @@
       "name": "Engulfing Lightning",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Narukami",
       "inGO": true
     },
     {
@@ -475,6 +542,7 @@
       "name": "Etherlight Spindlelute",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_SeeliesLute",
       "inGO": true
     },
     {
@@ -482,6 +550,7 @@
       "name": "Everlasting Moonglow",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Kaleido",
       "inGO": true
     },
     {
@@ -489,6 +558,7 @@
       "name": "Exaiphanes Blade",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_WeaponQuestSnezhnaya",
       "inGO": true
     },
     {
@@ -496,6 +566,7 @@
       "name": "Exaiphanes Blade",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_WeaponQuestSnezhnaya01",
       "inGO": true
     },
     {
@@ -503,6 +574,7 @@
       "name": "Exaiphanes Blade",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_WeaponQuestSnezhnaya02",
       "inGO": true
     },
     {
@@ -510,6 +582,7 @@
       "name": "Eye of Perception",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Truelens",
       "inGO": true
     },
     {
@@ -517,6 +590,7 @@
       "name": "Fading Twilight",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Fallensun",
       "inGO": true
     },
     {
@@ -524,6 +598,7 @@
       "name": "Fang of the Mountain King",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_EmeraldSword",
       "inGO": true
     },
     {
@@ -531,6 +606,7 @@
       "name": "Favonius Codex",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Zephyrus",
       "inGO": true
     },
     {
@@ -538,6 +614,7 @@
       "name": "Favonius Greatsword",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Zephyrus",
       "inGO": true
     },
     {
@@ -545,6 +622,7 @@
       "name": "Favonius Lance",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Zephyrus",
       "inGO": true
     },
     {
@@ -552,6 +630,7 @@
       "name": "Favonius Sword",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Zephyrus",
       "inGO": true
     },
     {
@@ -559,6 +638,7 @@
       "name": "Favonius Warbow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Zephyrus",
       "inGO": true
     },
     {
@@ -566,6 +646,7 @@
       "name": "Ferrous Shadow",
       "rarity": 3,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Glaive",
       "inGO": true
     },
     {
@@ -573,6 +654,7 @@
       "name": "Festering Desire",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Magnum",
       "inGO": true
     },
     {
@@ -580,6 +662,7 @@
       "name": "Fillet Blade",
       "rarity": 3,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Sashimi",
       "inGO": true
     },
     {
@@ -587,6 +670,7 @@
       "name": "Finale of the Deep",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Vorpal",
       "inGO": true
     },
     {
@@ -594,6 +678,7 @@
       "name": "Flame-Forged Insight",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Polilith",
       "inGO": true
     },
     {
@@ -601,6 +686,7 @@
       "name": "Fleuve Cendre Ferryman",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Machination",
       "inGO": true
     },
     {
@@ -608,6 +694,7 @@
       "name": "Flower-Wreathed Feathers",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Umpakati",
       "inGO": true
     },
     {
@@ -615,6 +702,7 @@
       "name": "Flowing Purity",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Vorpal",
       "inGO": true
     },
     {
@@ -622,6 +710,7 @@
       "name": "Flute of Ezpitzal",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Isikhulu",
       "inGO": true
     },
     {
@@ -629,6 +718,7 @@
       "name": "Footprint of the Rainbow",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Isikhulu",
       "inGO": true
     },
     {
@@ -636,6 +726,7 @@
       "name": "Forest Regalia",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Arakalari",
       "inGO": true
     },
     {
@@ -643,6 +734,7 @@
       "name": "Forged by the Golden Melody",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_EscapeWheel",
       "inGO": true
     },
     {
@@ -650,6 +742,7 @@
       "name": "Fractured Halo",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Perdix",
       "inGO": true
     },
     {
@@ -657,6 +750,7 @@
       "name": "Freedom-Sworn",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Widsith",
       "inGO": true
     },
     {
@@ -664,6 +758,7 @@
       "name": "Frostbearer",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Everfrost",
       "inGO": true
     },
     {
@@ -671,6 +766,7 @@
       "name": "Frostbreath",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_FaesCrystalle",
       "inGO": true
     },
     {
@@ -678,6 +774,7 @@
       "name": "Fruit of Fulfillment",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Arakalari",
       "inGO": true
     },
     {
@@ -685,6 +782,7 @@
       "name": "Fruitful Hook",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Umpakati",
       "inGO": true
     },
     {
@@ -692,6 +790,7 @@
       "name": "Gest of the Mighty Wolf",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_EnsisAquilonis",
       "inGO": true
     },
     {
@@ -699,6 +798,7 @@
       "name": "Golden Bough of Nemorensis",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_MorphNemorensis_Wind",
       "inGO": false
     },
     {
@@ -706,6 +806,7 @@
       "name": "Golden Bough of Nemorensis - Sublimation",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_MorphNemorensis_Great_Wind",
       "inGO": false
     },
     {
@@ -713,6 +814,7 @@
       "name": "Golden Frostbound Oath",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Alkonost",
       "inGO": true
     },
     {
@@ -720,6 +822,7 @@
       "name": "Hakushin Ring",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Bakufu",
       "inGO": true
     },
     {
@@ -727,6 +830,7 @@
       "name": "Halberd",
       "rarity": 3,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Halberd",
       "inGO": true
     },
     {
@@ -734,6 +838,7 @@
       "name": "Hallowed Fetters",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MorphIlia_Wind",
       "inGO": false
     },
     {
@@ -741,6 +846,7 @@
       "name": "Hallowed Fetters - Sublimation",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MorphIlia_Great_Wind",
       "inGO": false
     },
     {
@@ -748,6 +854,7 @@
       "name": "Hamayumi",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Bakufu",
       "inGO": true
     },
     {
@@ -755,6 +862,7 @@
       "name": "Haran Geppaku Futsu",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Amenoma",
       "inGO": true
     },
     {
@@ -762,6 +870,7 @@
       "name": "Harbinger of Dawn",
       "rarity": 3,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Dawn",
       "inGO": true
     },
     {
@@ -769,6 +878,7 @@
       "name": "Heretic's Molten Blade",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_SerpentTooth",
       "inGO": true
     },
     {
@@ -776,6 +886,7 @@
       "name": "Hunter's Bow",
       "rarity": 1,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Hunters",
       "inGO": true
     },
     {
@@ -783,6 +894,7 @@
       "name": "Hunter's Path",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Ayus",
       "inGO": true
     },
     {
@@ -790,13 +902,15 @@
       "name": "Hymn of the Maelstrom",
       "rarity": 5,
       "type": "catalyst",
-      "inGO": false
+      "icon": "UI_EquipIcon_Catalyst_Bludnye",
+      "inGO": true
     },
     {
       "key": "IbisPiercer",
       "name": "Ibis Piercer",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Ibis",
       "inGO": true
     },
     {
@@ -804,6 +918,7 @@
       "name": "Iron Point",
       "rarity": 2,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Rod",
       "inGO": true
     },
     {
@@ -811,6 +926,7 @@
       "name": "Iron Sting",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Exotic",
       "inGO": true
     },
     {
@@ -818,6 +934,7 @@
       "name": "Jade Vista",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_ShatteredMirror",
       "inGO": true
     },
     {
@@ -825,6 +942,7 @@
       "name": "Jadefall's Splendor",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Morax",
       "inGO": true
     },
     {
@@ -832,6 +950,7 @@
       "name": "Kagotsurube Isshin",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Youtou",
       "inGO": true
     },
     {
@@ -839,6 +958,7 @@
       "name": "Kagura's Verity",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Narukami",
       "inGO": true
     },
     {
@@ -846,6 +966,7 @@
       "name": "Katsuragikiri Nagamasa",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Bakufu",
       "inGO": true
     },
     {
@@ -853,6 +974,7 @@
       "name": "Key of Khaj-Nisut",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Deshret",
       "inGO": true
     },
     {
@@ -860,6 +982,7 @@
       "name": "King's Squire",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Arakalari",
       "inGO": true
     },
     {
@@ -867,6 +990,7 @@
       "name": "Kitain Cross Spear",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Bakufu",
       "inGO": true
     },
     {
@@ -874,6 +998,7 @@
       "name": "Light of Foliar Incision",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Ayus",
       "inGO": true
     },
     {
@@ -881,6 +1006,7 @@
       "name": "Lightbearing Moonshard",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_SilverwareSaw",
       "inGO": true
     },
     {
@@ -888,6 +1014,7 @@
       "name": "Lion's Roar",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Rockkiller",
       "inGO": true
     },
     {
@@ -895,6 +1022,7 @@
       "name": "Lithic Blade",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Lapis",
       "inGO": true
     },
     {
@@ -902,6 +1030,7 @@
       "name": "Lithic Spear",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Lapis",
       "inGO": true
     },
     {
@@ -909,6 +1038,7 @@
       "name": "Lost Prayer to the Sacred Winds",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Fourwinds",
       "inGO": true
     },
     {
@@ -916,6 +1046,7 @@
       "name": "Lumidouce Elegy",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Muguet",
       "inGO": true
     },
     {
@@ -923,6 +1054,7 @@
       "name": "Luxurious Sea-Lord",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_MillenniaTuna",
       "inGO": true
     },
     {
@@ -930,6 +1062,7 @@
       "name": "Magic Guide",
       "rarity": 3,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Intro",
       "inGO": true
     },
     {
@@ -937,6 +1070,7 @@
       "name": "Mailed Flower",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Fleurfair",
       "inGO": true
     },
     {
@@ -944,6 +1078,7 @@
       "name": "Makhaira Aquamarine",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Pleroma",
       "inGO": true
     },
     {
@@ -951,6 +1086,7 @@
       "name": "Mappa Mare",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Exotic",
       "inGO": true
     },
     {
@@ -958,6 +1094,7 @@
       "name": "Master Key",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Ilmarinen",
       "inGO": true
     },
     {
@@ -965,6 +1102,7 @@
       "name": "Memory of Dust",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Kunwu",
       "inGO": true
     },
     {
@@ -972,6 +1110,7 @@
       "name": "Messenger",
       "rarity": 3,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Msg",
       "inGO": true
     },
     {
@@ -979,6 +1118,7 @@
       "name": "Missive Windspear",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Windvane",
       "inGO": true
     },
     {
@@ -986,6 +1126,7 @@
       "name": "Mistsplitter Reforged",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Narukami",
       "inGO": true
     },
     {
@@ -993,6 +1134,7 @@
       "name": "Mitternachts Waltz",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Nachtblind",
       "inGO": true
     },
     {
@@ -1000,6 +1142,7 @@
       "name": "Moonpiercer",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Arakalari",
       "inGO": true
     },
     {
@@ -1007,6 +1150,7 @@
       "name": "Moonweaver's Dawn",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Miekka",
       "inGO": true
     },
     {
@@ -1014,6 +1158,7 @@
       "name": "Mountain-Bracing Bolt",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Umpakati",
       "inGO": true
     },
     {
@@ -1021,6 +1166,7 @@
       "name": "Mouun's Moon",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Maria",
       "inGO": true
     },
     {
@@ -1028,13 +1174,15 @@
       "name": "New Bough",
       "rarity": 4,
       "type": "sword",
-      "inGO": false
+      "icon": "UI_EquipIcon_Sword_SpikedStake",
+      "inGO": true
     },
     {
       "key": "NightweaversLookingGlass",
       "name": "Nightweaver's Looking Glass",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MenulisRing",
       "inGO": true
     },
     {
@@ -1042,6 +1190,7 @@
       "name": "Nocturne's Curtain Call",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Brisingamen",
       "inGO": true
     },
     {
@@ -1049,6 +1198,7 @@
       "name": "Oathsworn Eye",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Jyanome",
       "inGO": true
     },
     {
@@ -1056,6 +1206,7 @@
       "name": "Old Merc's Pal",
       "rarity": 2,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Oyaji",
       "inGO": true
     },
     {
@@ -1063,6 +1214,7 @@
       "name": "Otherworldly Story",
       "rarity": 3,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Lightnov",
       "inGO": true
     },
     {
@@ -1070,6 +1222,7 @@
       "name": "Peak Patrol Song",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_XochitlsTube",
       "inGO": true
     },
     {
@@ -1077,6 +1230,7 @@
       "name": "Phantasmal Gift: Star Omen",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Kristall",
       "inGO": false
     },
     {
@@ -1084,6 +1238,7 @@
       "name": "Pocket Grimoire",
       "rarity": 2,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Pocket",
       "inGO": true
     },
     {
@@ -1091,6 +1246,7 @@
       "name": "Polar Star",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Worldbane",
       "inGO": true
     },
     {
@@ -1098,6 +1254,7 @@
       "name": "Portable Power Saw",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Mechanic",
       "inGO": true
     },
     {
@@ -1105,6 +1262,7 @@
       "name": "Predator",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Predator",
       "inGO": true
     },
     {
@@ -1112,6 +1270,7 @@
       "name": "Primordial Jade Cutter",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Morax",
       "inGO": true
     },
     {
@@ -1119,6 +1278,7 @@
       "name": "Primordial Jade Winged-Spear",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Morax",
       "inGO": true
     },
     {
@@ -1126,6 +1286,7 @@
       "name": "Prospector's Drill",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Mechanic",
       "inGO": true
     },
     {
@@ -1133,6 +1294,7 @@
       "name": "Prospector's Shovel",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Ilmarinen",
       "inGO": true
     },
     {
@@ -1140,6 +1302,7 @@
       "name": "Prototype Amber",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Proto",
       "inGO": true
     },
     {
@@ -1147,6 +1310,7 @@
       "name": "Prototype Archaic",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Proto",
       "inGO": true
     },
     {
@@ -1154,6 +1318,7 @@
       "name": "Prototype Crescent",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Proto",
       "inGO": true
     },
     {
@@ -1161,6 +1326,7 @@
       "name": "Prototype Rancour",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Proto",
       "inGO": true
     },
     {
@@ -1168,6 +1334,7 @@
       "name": "Prototype Starglitter",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Proto",
       "inGO": true
     },
     {
@@ -1181,6 +1348,7 @@
       "name": "Rainbow Serpent's Rain Bow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_ElegguaBow",
       "inGO": true
     },
     {
@@ -1188,6 +1356,7 @@
       "name": "Rainslasher",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Perdue",
       "inGO": true
     },
     {
@@ -1195,6 +1364,7 @@
       "name": "Range Gauge",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Mechanic",
       "inGO": true
     },
     {
@@ -1202,6 +1372,7 @@
       "name": "Raven Bow",
       "rarity": 3,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Crowfeather",
       "inGO": true
     },
     {
@@ -1209,6 +1380,7 @@
       "name": "Recurve Bow",
       "rarity": 3,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Curve",
       "inGO": true
     },
     {
@@ -1216,6 +1388,7 @@
       "name": "Redhorn Stonethresher",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Itadorimaru",
       "inGO": true
     },
     {
@@ -1223,6 +1396,7 @@
       "name": "Reliquary of Truth",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Sistrum",
       "inGO": true
     },
     {
@@ -1230,6 +1404,7 @@
       "name": "Rightful Reward",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Vorpal",
       "inGO": true
     },
     {
@@ -1237,6 +1412,7 @@
       "name": "Ring of Yaxche",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Isikhulu",
       "inGO": true
     },
     {
@@ -1244,6 +1420,7 @@
       "name": "Royal Bow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Theocrat",
       "inGO": true
     },
     {
@@ -1251,6 +1428,7 @@
       "name": "Royal Greatsword",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Theocrat",
       "inGO": true
     },
     {
@@ -1258,6 +1436,7 @@
       "name": "Royal Grimoire",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Theocrat",
       "inGO": true
     },
     {
@@ -1265,6 +1444,7 @@
       "name": "Royal Longsword",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Theocrat",
       "inGO": true
     },
     {
@@ -1272,6 +1452,7 @@
       "name": "Royal Spear",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Theocrat",
       "inGO": true
     },
     {
@@ -1279,6 +1460,7 @@
       "name": "Rust",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Recluse",
       "inGO": true
     },
     {
@@ -1286,6 +1468,7 @@
       "name": "Sacrificer's Staff",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Krivule",
       "inGO": true
     },
     {
@@ -1293,6 +1476,7 @@
       "name": "Sacrificial Bow",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Fossil",
       "inGO": true
     },
     {
@@ -1300,6 +1484,7 @@
       "name": "Sacrificial Fragments",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Fossil",
       "inGO": true
     },
     {
@@ -1307,6 +1492,7 @@
       "name": "Sacrificial Greatsword",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Fossil",
       "inGO": true
     },
     {
@@ -1314,6 +1500,7 @@
       "name": "Sacrificial Jade",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Yue",
       "inGO": true
     },
     {
@@ -1321,6 +1508,7 @@
       "name": "Sacrificial Sword",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Fossil",
       "inGO": true
     },
     {
@@ -1328,6 +1516,7 @@
       "name": "Sapwood Blade",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Arakalari",
       "inGO": true
     },
     {
@@ -1335,6 +1524,7 @@
       "name": "Scion of the Blazing Sun",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Gurabad",
       "inGO": true
     },
     {
@@ -1342,6 +1532,7 @@
       "name": "Seasoned Hunter's Bow",
       "rarity": 2,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Old",
       "inGO": true
     },
     {
@@ -1349,6 +1540,7 @@
       "name": "Sequence of Solitude",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Stinger",
       "inGO": true
     },
     {
@@ -1356,6 +1548,7 @@
       "name": "Serenity's Call",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Ilmarinen",
       "inGO": true
     },
     {
@@ -1363,6 +1556,7 @@
       "name": "Serpent Devourer",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_MorphVinces_Wind",
       "inGO": false
     },
     {
@@ -1370,6 +1564,7 @@
       "name": "Serpent Devourer - Sublimation",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_MorphVinces_Great_Wind",
       "inGO": false
     },
     {
@@ -1377,6 +1572,7 @@
       "name": "Serpent Spine",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Kione",
       "inGO": true
     },
     {
@@ -1384,6 +1580,7 @@
       "name": "Sharpshooter's Oath",
       "rarity": 3,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Arjuna",
       "inGO": true
     },
     {
@@ -1391,6 +1588,7 @@
       "name": "Shattered Moon",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_MorphSpinifer_Wind",
       "inGO": false
     },
     {
@@ -1398,6 +1596,7 @@
       "name": "Shattered Moon - Sublimation",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_MorphSpinifer_Great_Wind",
       "inGO": false
     },
     {
@@ -1405,13 +1604,15 @@
       "name": "Silver Light",
       "rarity": 4,
       "type": "sword",
-      "inGO": false
+      "icon": "UI_EquipIcon_Sword_Fajian",
+      "inGO": true
     },
     {
       "key": "SilverRadianceOfGradlon",
       "name": "Silver Radiance of Gradlon",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_MorphGradlon_Wind",
       "inGO": false
     },
     {
@@ -1419,6 +1620,7 @@
       "name": "Silver Radiance of Gradlon - Sublimation",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_MorphGradlon_Great_Wind",
       "inGO": false
     },
     {
@@ -1426,6 +1628,7 @@
       "name": "Silver Sword",
       "rarity": 2,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Silver",
       "inGO": true
     },
     {
@@ -1433,6 +1636,7 @@
       "name": "Silvershower Heartstrings",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Arcdange",
       "inGO": true
     },
     {
@@ -1440,6 +1644,7 @@
       "name": "Skyrider Greatsword",
       "rarity": 3,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Mitsurugi",
       "inGO": true
     },
     {
@@ -1447,6 +1652,7 @@
       "name": "Skyrider Sword",
       "rarity": 3,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Mitsurugi",
       "inGO": true
     },
     {
@@ -1454,6 +1660,7 @@
       "name": "Skyward Atlas",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Dvalin",
       "inGO": true
     },
     {
@@ -1461,6 +1668,7 @@
       "name": "Skyward Blade",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Dvalin",
       "inGO": true
     },
     {
@@ -1468,6 +1676,7 @@
       "name": "Skyward Harp",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Dvalin",
       "inGO": true
     },
     {
@@ -1475,6 +1684,7 @@
       "name": "Skyward Pride",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Dvalin",
       "inGO": true
     },
     {
@@ -1482,6 +1692,7 @@
       "name": "Skyward Spine",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Dvalin",
       "inGO": true
     },
     {
@@ -1489,6 +1700,7 @@
       "name": "Slingshot",
       "rarity": 3,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Sling",
       "inGO": true
     },
     {
@@ -1496,6 +1708,7 @@
       "name": "Snare Hook",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Ilmarinen",
       "inGO": true
     },
     {
@@ -1503,6 +1716,7 @@
       "name": "Snow-Tombed Starsilver",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Dragonfell",
       "inGO": true
     },
     {
@@ -1510,6 +1724,7 @@
       "name": "Solar Pearl",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Resurrection",
       "inGO": true
     },
     {
@@ -1517,6 +1732,7 @@
       "name": "Song of Broken Pines",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Widsith",
       "inGO": true
     },
     {
@@ -1524,6 +1740,7 @@
       "name": "Song of Stillness",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Vorpal",
       "inGO": true
     },
     {
@@ -1531,6 +1748,7 @@
       "name": "Song of the Vigil",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_GlintstonePolearm",
       "inGO": true
     },
     {
@@ -1538,6 +1756,7 @@
       "name": "Splendor of Tranquil Waters",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Regalis",
       "inGO": true
     },
     {
@@ -1545,6 +1764,7 @@
       "name": "Staff of Homa",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Homa",
       "inGO": true
     },
     {
@@ -1552,6 +1772,7 @@
       "name": "Staff of the Scarlet Sands",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Deshret",
       "inGO": true
     },
     {
@@ -1559,6 +1780,7 @@
       "name": "Starcaller's Watch",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Figurines",
       "inGO": true
     },
     {
@@ -1566,6 +1788,7 @@
       "name": "Starlight of Fylkir",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_MorphFylkir_Wind",
       "inGO": false
     },
     {
@@ -1573,6 +1796,7 @@
       "name": "Starlight of Fylkir - Sublimation",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_MorphFylkir_Great_Wind",
       "inGO": false
     },
     {
@@ -1580,6 +1804,7 @@
       "name": "Starpiercer",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_MorphChrod_Wind",
       "inGO": false
     },
     {
@@ -1587,6 +1812,7 @@
       "name": "Starpiercer - Sublimation",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_MorphChrod_Great_Wind",
       "inGO": false
     },
     {
@@ -1594,6 +1820,7 @@
       "name": "Sturdy Bone",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Umpakati",
       "inGO": true
     },
     {
@@ -1601,6 +1828,7 @@
       "name": "Summit Shaper",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Kunwu",
       "inGO": true
     },
     {
@@ -1608,6 +1836,7 @@
       "name": "Sunny Morning Sleep-In",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_SakuraFan",
       "inGO": true
     },
     {
@@ -1615,6 +1844,7 @@
       "name": "Super Awesome Magic Key",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_LoliFriend",
       "inGO": false
     },
     {
@@ -1622,6 +1852,7 @@
       "name": "Surf's Up",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_MechaPufferfish",
       "inGO": true
     },
     {
@@ -1629,6 +1860,7 @@
       "name": "Sword of Descension",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Psalmus",
       "inGO": true
     },
     {
@@ -1636,6 +1868,7 @@
       "name": "Sword of Narzissenkreuz",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Purewill",
       "inGO": true
     },
     {
@@ -1643,6 +1876,7 @@
       "name": "Symphonist of Scents",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Trident",
       "inGO": true
     },
     {
@@ -1650,6 +1884,7 @@
       "name": "Talking Stick",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_BeastTamer",
       "inGO": true
     },
     {
@@ -1657,6 +1892,7 @@
       "name": "Tamayuratei no Ohanashi",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Aoandon",
       "inGO": true
     },
     {
@@ -1664,6 +1900,7 @@
       "name": "The Alley Flash",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Outlaw",
       "inGO": true
     },
     {
@@ -1671,6 +1908,7 @@
       "name": "The Bell",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Troupe",
       "inGO": true
     },
     {
@@ -1678,6 +1916,7 @@
       "name": "The Black Sword",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Bloodstained",
       "inGO": true
     },
     {
@@ -1685,6 +1924,7 @@
       "name": "\"The Catch\"",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Mori",
       "inGO": true
     },
     {
@@ -1692,6 +1932,7 @@
       "name": "The Daybreak Chronicles",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Arianna",
       "inGO": true
     },
     {
@@ -1699,6 +1940,7 @@
       "name": "The Dockhand's Assistant",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Mechanic",
       "inGO": true
     },
     {
@@ -1706,6 +1948,7 @@
       "name": "The First Great Magic",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Pledge",
       "inGO": true
     },
     {
@@ -1713,6 +1956,7 @@
       "name": "The Flute",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Troupe",
       "inGO": true
     },
     {
@@ -1720,6 +1964,7 @@
       "name": "The Stringless",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Troupe",
       "inGO": true
     },
     {
@@ -1727,6 +1972,7 @@
       "name": "The Unforged",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Kunwu",
       "inGO": true
     },
     {
@@ -1734,6 +1980,7 @@
       "name": "The Viridescent Hunt",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Viridescent",
       "inGO": true
     },
     {
@@ -1741,6 +1988,7 @@
       "name": "The Widsith",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Troupe",
       "inGO": true
     },
     {
@@ -1748,6 +1996,7 @@
       "name": "Thrilling Tales of Dragon Slayers",
       "rarity": 3,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Pulpfic",
       "inGO": true
     },
     {
@@ -1755,6 +2004,7 @@
       "name": "Thundering Pulse",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Narukami",
       "inGO": true
     },
     {
@@ -1762,6 +2012,7 @@
       "name": "Tidal Shadow",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Vorpal",
       "inGO": true
     },
     {
@@ -1769,6 +2020,7 @@
       "name": "Tome of the Eternal Flow",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Iudex",
       "inGO": true
     },
     {
@@ -1776,6 +2028,7 @@
       "name": "Toukabou Shigure",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Kasabouzu",
       "inGO": true
     },
     {
@@ -1783,6 +2036,7 @@
       "name": "Traveler's Handy Sword",
       "rarity": 3,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Traveler",
       "inGO": true
     },
     {
@@ -1790,6 +2044,7 @@
       "name": "Tulaytullah's Remembrance",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Alaya",
       "inGO": true
     },
     {
@@ -1797,6 +2052,7 @@
       "name": "Twin Nephrite",
       "rarity": 3,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Phoney",
       "inGO": true
     },
     {
@@ -1804,6 +2060,7 @@
       "name": "\"Ultimate Overlord's Mega Magic Sword\"",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Champion",
       "inGO": true
     },
     {
@@ -1811,6 +2068,7 @@
       "name": "Unbreakable: Durandarte",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_VarkaTunkeldegen",
       "inGO": false
     },
     {
@@ -1818,6 +2076,7 @@
       "name": "Uraku Misugiri",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Needle",
       "inGO": true
     },
     {
@@ -1825,6 +2084,7 @@
       "name": "Verdict",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_GoldenVerdict",
       "inGO": true
     },
     {
@@ -1832,6 +2092,7 @@
       "name": "Vivid Notions",
       "rarity": 5,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_VaresaTransformer",
       "inGO": true
     },
     {
@@ -1839,6 +2100,7 @@
       "name": "Vortex Vanquisher",
       "rarity": 5,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Kunwu",
       "inGO": true
     },
     {
@@ -1846,6 +2108,7 @@
       "name": "Wandering Evenstar",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Pleroma",
       "inGO": true
     },
     {
@@ -1853,6 +2116,7 @@
       "name": "Waster Greatsword",
       "rarity": 1,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Aniki",
       "inGO": true
     },
     {
@@ -1860,6 +2124,7 @@
       "name": "Wavebreaker's Fin",
       "rarity": 4,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Maria",
       "inGO": true
     },
     {
@@ -1867,6 +2132,7 @@
       "name": "Waveriding Whirl",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Umpakati",
       "inGO": true
     },
     {
@@ -1874,6 +2140,7 @@
       "name": "White Iron Greatsword",
       "rarity": 3,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Tin",
       "inGO": true
     },
     {
@@ -1881,6 +2148,7 @@
       "name": "White Tassel",
       "rarity": 3,
       "type": "polearm",
+      "icon": "UI_EquipIcon_Pole_Ruby",
       "inGO": true
     },
     {
@@ -1888,6 +2156,7 @@
       "name": "Whiteblind",
       "rarity": 4,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Exotic",
       "inGO": true
     },
     {
@@ -1895,6 +2164,7 @@
       "name": "Whitelake Frostfeather",
       "rarity": 5,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Swanlake",
       "inGO": true
     },
     {
@@ -1902,6 +2172,7 @@
       "name": "Windblume Ode",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_Fleurfair",
       "inGO": true
     },
     {
@@ -1909,6 +2180,7 @@
       "name": "Wine and Song",
       "rarity": 4,
       "type": "catalyst",
+      "icon": "UI_EquipIcon_Catalyst_Outlaw",
       "inGO": true
     },
     {
@@ -1916,13 +2188,15 @@
       "name": "Winter's Heavy Heart",
       "rarity": 4,
       "type": "catalyst",
-      "inGO": false
+      "icon": "UI_EquipIcon_Catalyst_FrostScepter",
+      "inGO": true
     },
     {
       "key": "WolfFang",
       "name": "Wolf-Fang",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Boreas",
       "inGO": true
     },
     {
@@ -1930,6 +2204,7 @@
       "name": "Wolf's Gravestone",
       "rarity": 5,
       "type": "claymore",
+      "icon": "UI_EquipIcon_Claymore_Wolfmound",
       "inGO": true
     },
     {
@@ -1937,6 +2212,7 @@
       "name": "Xiphos' Moonlight",
       "rarity": 4,
       "type": "sword",
+      "icon": "UI_EquipIcon_Sword_Pleroma",
       "inGO": true
     },
     {
@@ -1944,6 +2220,7 @@
       "name": "Yayu",
       "rarity": 4,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_MorphYayu_Wind",
       "inGO": false
     },
     {
@@ -1951,6 +2228,7 @@
       "name": "Yayu - Sublimation",
       "rarity": 5,
       "type": "bow",
+      "icon": "UI_EquipIcon_Bow_MorphYayu_Great_Wind",
       "inGO": false
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-06T15:10:52+00:00",
+  "generated": "2026-10-11T19:12:10+00:00",
   "items": [
     {
       "key": "Aino",
@@ -7,6 +7,7 @@
       "rarity": 4,
       "element": "hydro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Aino",
       "inGO": true
     },
     {
@@ -15,6 +16,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Albedo",
       "inGO": true
     },
     {
@@ -23,6 +25,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Alhatham",
       "inGO": true
     },
     {
@@ -31,6 +34,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Aloy",
       "inGO": true
     },
     {
@@ -39,6 +43,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Alyosha",
       "inGO": true
     },
     {
@@ -47,6 +52,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Ambor",
       "inGO": true
     },
     {
@@ -55,6 +61,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Itto",
       "inGO": true
     },
     {
@@ -63,6 +70,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Arlecchino",
       "inGO": true
     },
     {
@@ -71,6 +79,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Baizhuer",
       "inGO": true
     },
     {
@@ -79,6 +88,7 @@
       "rarity": 4,
       "element": "hydro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Barbara",
       "inGO": true
     },
     {
@@ -87,6 +97,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Beidou",
       "inGO": true
     },
     {
@@ -95,6 +106,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Bennett",
       "inGO": true
     },
     {
@@ -103,6 +115,7 @@
       "rarity": 4,
       "element": "hydro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Candace",
       "inGO": true
     },
     {
@@ -111,6 +124,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Charlotte",
       "inGO": true
     },
     {
@@ -119,6 +133,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Chasca",
       "inGO": true
     },
     {
@@ -127,6 +142,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Chevreuse",
       "inGO": true
     },
     {
@@ -135,6 +151,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Chiori",
       "inGO": true
     },
     {
@@ -143,6 +160,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Chongyun",
       "inGO": true
     },
     {
@@ -151,6 +169,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Citlali",
       "inGO": true
     },
     {
@@ -159,6 +178,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Clorinde",
       "inGO": true
     },
     {
@@ -167,6 +187,7 @@
       "rarity": 4,
       "element": "dendro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Collei",
       "inGO": true
     },
     {
@@ -175,6 +196,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Columbina",
       "inGO": true
     },
     {
@@ -183,6 +205,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Cyno",
       "inGO": true
     },
     {
@@ -191,6 +214,7 @@
       "rarity": 4,
       "element": "hydro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Dahlia",
       "inGO": true
     },
     {
@@ -199,6 +223,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Dehya",
       "inGO": true
     },
     {
@@ -207,6 +232,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Diluc",
       "inGO": true
     },
     {
@@ -215,6 +241,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Diona",
       "inGO": true
     },
     {
@@ -223,6 +250,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Dori",
       "inGO": true
     },
     {
@@ -231,6 +259,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Durin",
       "inGO": true
     },
     {
@@ -239,6 +268,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Emilie",
       "inGO": true
     },
     {
@@ -247,6 +277,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Escoffier",
       "inGO": true
     },
     {
@@ -255,6 +286,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Eula",
       "inGO": true
     },
     {
@@ -263,6 +295,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Faruzan",
       "inGO": true
     },
     {
@@ -271,6 +304,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Fischl",
       "inGO": true
     },
     {
@@ -279,6 +313,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Flins",
       "inGO": true
     },
     {
@@ -287,6 +322,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Freminet",
       "inGO": true
     },
     {
@@ -295,6 +331,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Furina",
       "inGO": true
     },
     {
@@ -303,6 +340,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Gaming",
       "inGO": true
     },
     {
@@ -311,6 +349,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Ganyu",
       "inGO": true
     },
     {
@@ -319,6 +358,7 @@
       "rarity": 4,
       "element": "geo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Gorou",
       "inGO": true
     },
     {
@@ -327,6 +367,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Hutao",
       "inGO": true
     },
     {
@@ -335,6 +376,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Iansan",
       "inGO": true
     },
     {
@@ -343,6 +385,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Ifa",
       "inGO": true
     },
     {
@@ -351,6 +394,7 @@
       "rarity": 4,
       "element": "geo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Illuga",
       "inGO": true
     },
     {
@@ -359,6 +403,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Ineffa",
       "inGO": true
     },
     {
@@ -367,6 +412,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Jahoda",
       "inGO": true
     },
     {
@@ -375,6 +421,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Qin",
       "inGO": true
     },
     {
@@ -383,6 +430,7 @@
       "rarity": 4,
       "element": "geo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Kachina",
       "inGO": true
     },
     {
@@ -391,6 +439,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Kazuha",
       "inGO": true
     },
     {
@@ -399,6 +448,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Kaeya",
       "inGO": true
     },
     {
@@ -407,6 +457,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Ayaka",
       "inGO": true
     },
     {
@@ -415,6 +466,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Ayato",
       "inGO": true
     },
     {
@@ -423,6 +475,7 @@
       "rarity": 4,
       "element": "dendro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Kaveh",
       "inGO": true
     },
     {
@@ -431,6 +484,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Keqing",
       "inGO": true
     },
     {
@@ -439,6 +493,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Kinich",
       "inGO": true
     },
     {
@@ -447,6 +502,7 @@
       "rarity": 4,
       "element": "dendro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Momoka",
       "inGO": true
     },
     {
@@ -455,6 +511,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Klee",
       "inGO": true
     },
     {
@@ -463,6 +520,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Sara",
       "inGO": true
     },
     {
@@ -471,6 +529,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Shinobu",
       "inGO": true
     },
     {
@@ -479,6 +538,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Lanyan",
       "inGO": true
     },
     {
@@ -487,6 +547,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Lauma",
       "inGO": true
     },
     {
@@ -495,6 +556,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Layla",
       "inGO": true
     },
     {
@@ -503,6 +565,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Linnea",
       "inGO": true
     },
     {
@@ -511,6 +574,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Lisa",
       "inGO": true
     },
     {
@@ -519,6 +583,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Lohen",
       "inGO": true
     },
     {
@@ -527,6 +592,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Linette",
       "inGO": true
     },
     {
@@ -535,6 +601,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Liney",
       "inGO": true
     },
     {
@@ -543,6 +610,7 @@
       "rarity": 5,
       "element": null,
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_MannequinBoy",
       "inGO": false
     },
     {
@@ -551,6 +619,7 @@
       "rarity": 5,
       "element": null,
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_MannequinGirl",
       "inGO": false
     },
     {
@@ -559,6 +628,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Mavuika",
       "inGO": true
     },
     {
@@ -567,6 +637,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Mika",
       "inGO": true
     },
     {
@@ -575,6 +646,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Mona",
       "inGO": true
     },
     {
@@ -583,6 +655,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Mualani",
       "inGO": true
     },
     {
@@ -591,6 +664,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Nahida",
       "inGO": true
     },
     {
@@ -599,6 +673,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Navia",
       "inGO": true
     },
     {
@@ -607,6 +682,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Nefer",
       "inGO": true
     },
     {
@@ -615,6 +691,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Neuvillette",
       "inGO": true
     },
     {
@@ -623,6 +700,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Nicole",
       "inGO": true
     },
     {
@@ -631,6 +709,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Nilou",
       "inGO": true
     },
     {
@@ -639,6 +718,7 @@
       "rarity": 4,
       "element": "geo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Ningguang",
       "inGO": true
     },
     {
@@ -647,6 +727,7 @@
       "rarity": 4,
       "element": "geo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Noel",
       "inGO": true
     },
     {
@@ -655,6 +736,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Odette",
       "inGO": true
     },
     {
@@ -663,6 +745,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Olorun",
       "inGO": true
     },
     {
@@ -671,6 +754,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Prune",
       "inGO": true
     },
     {
@@ -679,6 +763,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Qiqi",
       "inGO": true
     },
     {
@@ -687,6 +772,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Shougun",
       "inGO": true
     },
     {
@@ -695,6 +781,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Razor",
       "inGO": true
     },
     {
@@ -703,6 +790,7 @@
       "rarity": 4,
       "element": "cryo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Rosaria",
       "inGO": true
     },
     {
@@ -711,6 +799,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_MarionetteNew",
       "inGO": true
     },
     {
@@ -719,6 +808,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Kokomi",
       "inGO": true
     },
     {
@@ -727,6 +817,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Sayu",
       "inGO": true
     },
     {
@@ -735,6 +826,7 @@
       "rarity": 4,
       "element": "electro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Sethos",
       "inGO": true
     },
     {
@@ -743,6 +835,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Shenhe",
       "inGO": true
     },
     {
@@ -751,6 +844,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Heizo",
       "inGO": true
     },
     {
@@ -759,6 +853,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Sigewinne",
       "inGO": true
     },
     {
@@ -767,6 +862,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_SkirkNew",
       "inGO": true
     },
     {
@@ -781,6 +877,7 @@
       "rarity": 4,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Sucrose",
       "inGO": true
     },
     {
@@ -789,6 +886,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Tartaglia",
       "inGO": true
     },
     {
@@ -797,6 +895,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Tohma",
       "inGO": true
     },
     {
@@ -805,6 +904,7 @@
       "rarity": 5,
       "element": "dendro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Tighnari",
       "inGO": true
     },
     {
@@ -869,6 +969,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Varesa",
       "inGO": true
     },
     {
@@ -877,6 +978,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Varka",
       "inGO": true
     },
     {
@@ -885,6 +987,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Venti",
       "inGO": true
     },
     {
@@ -893,7 +996,8 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "sword",
-      "inGO": false
+      "icon": "UI_AvatarIcon_Vesna",
+      "inGO": true
     },
     {
       "key": "Vodyanitsa",
@@ -901,7 +1005,8 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "catalyst",
-      "inGO": false
+      "icon": "UI_AvatarIcon_Vodyanitsa",
+      "inGO": true
     },
     {
       "key": "Wanderer",
@@ -909,6 +1014,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Wanderer",
       "inGO": true
     },
     {
@@ -917,6 +1023,7 @@
       "rarity": 5,
       "element": "cryo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Wriothesley",
       "inGO": true
     },
     {
@@ -925,6 +1032,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Xiangling",
       "inGO": true
     },
     {
@@ -933,6 +1041,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Liuyun",
       "inGO": true
     },
     {
@@ -941,6 +1050,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Xiao",
       "inGO": true
     },
     {
@@ -949,6 +1059,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Xilonen",
       "inGO": true
     },
     {
@@ -957,6 +1068,7 @@
       "rarity": 4,
       "element": "hydro",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Xingqiu",
       "inGO": true
     },
     {
@@ -965,6 +1077,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "claymore",
+      "icon": "UI_AvatarIcon_Xinyan",
       "inGO": true
     },
     {
@@ -973,6 +1086,7 @@
       "rarity": 5,
       "element": "electro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Yae",
       "inGO": true
     },
     {
@@ -981,6 +1095,7 @@
       "rarity": 4,
       "element": "pyro",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Feiyan",
       "inGO": true
     },
     {
@@ -989,6 +1104,7 @@
       "rarity": 4,
       "element": "dendro",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Yaoyao",
       "inGO": true
     },
     {
@@ -997,6 +1113,7 @@
       "rarity": 5,
       "element": "hydro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Yelan",
       "inGO": true
     },
     {
@@ -1005,6 +1122,7 @@
       "rarity": 5,
       "element": "pyro",
       "weaponType": "bow",
+      "icon": "UI_AvatarIcon_Yoimiya",
       "inGO": true
     },
     {
@@ -1013,6 +1131,7 @@
       "rarity": 5,
       "element": "anemo",
       "weaponType": "catalyst",
+      "icon": "UI_AvatarIcon_Mizuki",
       "inGO": true
     },
     {
@@ -1021,6 +1140,7 @@
       "rarity": 4,
       "element": "geo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Yunjin",
       "inGO": true
     },
     {
@@ -1029,6 +1149,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "polearm",
+      "icon": "UI_AvatarIcon_Zhongli",
       "inGO": true
     },
     {
@@ -1037,6 +1158,7 @@
       "rarity": 5,
       "element": "geo",
       "weaponType": "sword",
+      "icon": "UI_AvatarIcon_Zibai",
       "inGO": true
     }
   ]

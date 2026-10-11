@@ -194,7 +194,10 @@ like a password until it expires: anyone holding it can read your wish
 history.
 
 Per banner it shows the 5★ and 4★ pity, whether the next 5★ is guaranteed
-to be featured, the 50/50 record, and every 5★ with the pity it came at.
+to be featured, the 50/50 record, and every 5★ as a portrait tile with the
+pity it came at. Portraits are the game's own art from Project Amber
+(gi.yatta.moe), downloaded the first time they are needed and cached in
+Lumenspar's data folder; they are not shipped with it.
 Won or lost is decided against paimon.moe's banner schedule
 (`lumenspar/gamedata/wish_banners.json`, refreshed by
 `tools/update_gamedata.py`), so a 5★ from a banner newer than that file shows as

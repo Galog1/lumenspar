@@ -256,3 +256,31 @@ def test_expired_links_are_skipped_until_one_works():
                            "data": {"list": []}}).encode()
     links = [LINK.replace("SECRET", f"K{i}") for i in range(4)]
     assert api.first_working(links, transport=server, sleep=lambda s: None) == links[2]
+
+
+# -- portraits ------------------------------------------------------------------
+
+from lumenspar.wishes import icons
+
+
+def test_portraits_are_looked_up_by_display_name():
+    assert icons.icon_name("Furina") == "UI_AvatarIcon_Furina"
+    assert icons.icon_name("skyward harp").startswith("UI_EquipIcon_")
+    assert icons.icon_name("Nobody At All") == ""
+
+
+def test_only_missing_portraits_are_fetched_and_failures_are_quiet(tmp_path):
+    (tmp_path / "UI_AvatarIcon_Furina.png").write_bytes(b"\x89PNG cached")
+    wanted = icons.missing(["Furina", "Furina", "Skyward Harp", "Nobody At All"], root=tmp_path)
+    assert wanted == [icons.icon_name("Skyward Harp")]          # cached, duplicate, unknown skipped
+
+    def fetch(url):
+        if "Bow" in url or "Claymore" in url or "Sword" in url or "Catalyst" in url or "Pole" in url:
+            return b"\x89PNG weapon"
+        raise OSError("offline")
+    assert icons.download(wanted + ["UI_AvatarIcon_Gone"], root=tmp_path, fetch=fetch) == 1
+    assert (tmp_path / f"{wanted[0]}.png").read_bytes() == b"\x89PNG weapon"
+    assert not (tmp_path / "UI_AvatarIcon_Gone.png").exists()
+
+    # Something that is not a PNG (an error page, say) is never cached.
+    assert icons.download(["UI_AvatarIcon_Html"], root=tmp_path, fetch=lambda u: b"<html>") == 0

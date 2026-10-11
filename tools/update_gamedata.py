@@ -289,6 +289,7 @@ def main() -> int:
             "key": to_key(a["name"]), "name": a["name"], "rarity": a.get("rank"),
             "element": ELEMENTS.get(a.get("element") or ""),
             "weaponType": WEAPON_TYPES.get(a.get("weaponType") or ""),
+            "icon": a.get("icon") or "",   # Amber asset name, for the wish counter
         },
         "characters",
     )
@@ -305,6 +306,7 @@ def main() -> int:
         lambda w: {
             "key": to_key(w["name"]), "name": w["name"], "rarity": w.get("rank"),
             "type": WEAPON_TYPES.get(w.get("type") or ""),
+            "icon": w.get("icon") or "",
         },
         "weapons",
     )

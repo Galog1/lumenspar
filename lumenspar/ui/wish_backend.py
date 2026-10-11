@@ -7,12 +7,13 @@ as plain lists/dicts, which QML reads directly.
 
 from __future__ import annotations
 
+import threading
 from datetime import datetime
 
-from PySide6.QtCore import Property, QObject, Signal, Slot
+from PySide6.QtCore import Property, QObject, QUrl, Signal, Slot
 from PySide6.QtGui import QGuiApplication
 
-from ..wishes import importer, link, stats, store
+from ..wishes import icons, importer, link, stats, store
 from .backend import _Worker
 
 
@@ -22,11 +23,16 @@ class WishBackend(QObject):
     statusChanged = Signal()
     logAppended = Signal(str)
     paimonLinkChanged = Signal()
+    _iconsArrived = Signal()      # from the download thread, delivered on the GUI thread
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
+        self._icon_fetch = False
+        self._icon_tried: set[str] = set()   # one attempt per portrait per session
+        self._iconsArrived.connect(self._on_icons)
         self._history = store.latest()
         self._stats = stats.all_stats(self._history.wishes) if self._history else []
+        self._with_icons()
         self._busy = False
         self._status = ""
         self._stop = False
@@ -173,6 +179,36 @@ class WishBackend(QObject):
     def _reload(self) -> None:
         self._history = store.latest()
         self._stats = stats.all_stats(self._history.wishes) if self._history else []
+        self._with_icons()
+        self.changed.emit()
+
+    # -- portraits --------------------------------------------------------
+
+    def _with_icons(self) -> None:
+        """Give each 5★ its cached portrait, and fetch the missing ones."""
+        names = []
+        for banner in self._stats:
+            for five in banner["fives"]:
+                icon = icons.icon_name(five["name"])
+                file = icons.path(icon) if icon else None
+                five["icon"] = QUrl.fromLocalFile(str(file)).toString() \
+                    if file and file.is_file() else ""
+                names.append(five["name"])
+        # Each portrait is tried once per session: offline, a failed fetch
+        # would otherwise be retried on every refresh, forever.
+        wanted = [n for n in icons.missing(names) if n not in self._icon_tried]
+        if wanted and not self._icon_fetch:
+            self._icon_fetch = True
+            self._icon_tried.update(wanted)
+
+            def fetch() -> None:
+                icons.download(wanted)
+                self._iconsArrived.emit()
+            threading.Thread(target=fetch, daemon=True).start()
+
+    def _on_icons(self) -> None:
+        self._icon_fetch = False
+        self._with_icons()
         self.changed.emit()
 
     def _set_status(self, text: str) -> None:
