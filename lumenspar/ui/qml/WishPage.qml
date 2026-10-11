@@ -571,7 +571,7 @@ Item {
                     GuideStep {
                         number: 4
                         heading: "Add a homepage, privacy policy and terms"
-                        body: "Google will not publish an app without these. On the <b>Branding</b> page, under <b>App domain</b>, enter the three links below (Lumenspar's own pages; a site of your own works too). Under <b>Authorized domains</b> press <b>Add domain</b> and enter the domain below. Then press <b>Save</b> at the bottom."
+                        body: "Google will not publish an app without these. On the <b>Branding</b> page, under <b>App domain</b>, enter the three links below (Lumenspar's own pages; a site of your own works too). Under <b>Authorized domains</b> press <b>Add domain</b> and enter the domain below. Then press <b>Save</b> at the bottom.<br><b>Leave the app logo empty:</b> a logo makes Google ask you to prove you own the homepage's website (brand verification). Without one nothing needs verifying; if Branding still says your branding is not shown to users, that is fine and sign-in works."
                         link: "https://console.developers.google.com/auth/branding"
 
                         CopyValue { label: "Application home page"; value: wishes.driveSite.homepage }
