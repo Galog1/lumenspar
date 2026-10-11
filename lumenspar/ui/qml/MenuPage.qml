@@ -22,7 +22,7 @@ Item {
         property string blurb
         property string detail
         property string target
-        Layout.preferredWidth: 360
+        Layout.preferredWidth: Math.min(330, (menu.width - 140) / 3)
         Layout.preferredHeight: 300
         radius: Theme.radius + 4
         color: hover.hovered ? Theme.surfaceHi : Theme.surface
@@ -101,6 +101,13 @@ Item {
             blurb: "Reads your artifacts, weapons, characters and materials off the screen into a .GOOD file for Genshin Optimizer and friends."
             detail: backend.scanning ? "Scan running…" : ""
             target: "scanner"
+        }
+        Tile {
+            glyph: "✦"
+            title: "Build Cards"
+            blurb: "Akasha-style cards for every character in your profile showcase: talents, weapon, artifacts with roll counts, crit value and final stats."
+            detail: cards.cards.length > 0 ? cards.cards.length + " characters collected" : ""
+            target: "cards"
         }
     }
 }

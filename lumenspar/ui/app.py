@@ -14,6 +14,7 @@ from PySide6.QtQuickControls2 import QQuickStyle
 
 from .. import hostos, netcerts
 from .backend import Backend
+from .builds_backend import BuildsBackend
 from .wish_backend import WishBackend
 
 QML_DIR = Path(__file__).resolve().parent / "qml"
@@ -47,9 +48,12 @@ def main(argv: list[str] | None = None) -> int:
     engine.rootContext().setContextProperty("backend", backend)
     wishes = WishBackend(app)
     engine.rootContext().setContextProperty("wishes", wishes)
+    cards = BuildsBackend(backend._s, app)
+    engine.rootContext().setContextProperty("cards", cards)
 
     app.aboutToQuit.connect(backend.shutdown)
     app.aboutToQuit.connect(wishes.shutdown)
+    app.aboutToQuit.connect(cards.shutdown)
 
     engine.load(QUrl.fromLocalFile(str(QML_DIR / "Main.qml")))
     smoke = os.environ.get("LUMENSPAR_SMOKE_TEST")

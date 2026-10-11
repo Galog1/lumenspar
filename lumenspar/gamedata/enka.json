@@ -5,889 +5,1629 @@
       "key": "KamisatoAyaka",
       "auto": "10024",
       "skill": "10018",
-      "burst": "10019"
+      "burst": "10019",
+      "proud": {
+        "auto": "231",
+        "skill": "232",
+        "burst": "239"
+      }
     },
     "10000003": {
       "key": "Jean",
       "auto": "10031",
       "skill": "10033",
-      "burst": "10034"
+      "burst": "10034",
+      "proud": {
+        "auto": "331",
+        "skill": "332",
+        "burst": "339"
+      }
     },
     "10000005-502": {
       "key": "TravelerPyro",
       "auto": "100541",
       "skill": "10097",
-      "burst": "10098"
+      "burst": "10098",
+      "proud": {
+        "auto": "530",
+        "skill": "532",
+        "burst": "539"
+      }
     },
     "10000005-503": {
       "key": "TravelerHydro",
       "auto": "100542",
       "skill": "10087",
-      "burst": "10088"
+      "burst": "10088",
+      "proud": {
+        "auto": "630",
+        "skill": "632",
+        "burst": "639"
+      }
     },
     "10000005-504": {
       "key": "TravelerAnemo",
       "auto": "100543",
       "skill": "10067",
-      "burst": "10068"
+      "burst": "10068",
+      "proud": {
+        "auto": "730",
+        "skill": "732",
+        "burst": "739"
+      }
     },
     "10000005-505": {
       "key": "TravelerCryo",
       "auto": "100544",
       "burst": "10127",
-      "skill": "10128"
+      "skill": "10128",
+      "proud": {
+        "auto": "830",
+        "burst": "832",
+        "skill": "839"
+      }
     },
     "10000005-506": {
       "key": "TravelerGeo",
       "auto": "100545",
       "skill": "10077",
-      "burst": "10078"
+      "burst": "10078",
+      "proud": {
+        "auto": "730",
+        "skill": "932",
+        "burst": "939"
+      }
     },
     "10000005-507": {
       "key": "TravelerElectro",
       "auto": "100546",
       "skill": "10602",
-      "burst": "10605"
+      "burst": "10605",
+      "proud": {
+        "auto": "1030",
+        "skill": "1032",
+        "burst": "1039"
+      }
     },
     "10000005-508": {
       "key": "TravelerDendro",
       "auto": "100547",
       "burst": "10117",
-      "skill": "10118"
+      "skill": "10118",
+      "proud": {
+        "auto": "1130",
+        "burst": "1132",
+        "skill": "1139"
+      }
     },
     "10000006": {
       "key": "Lisa",
       "auto": "10060",
       "skill": "10061",
-      "burst": "10062"
+      "burst": "10062",
+      "proud": {
+        "auto": "431",
+        "skill": "432",
+        "burst": "439"
+      }
     },
     "10000007-702": {
       "key": "TravelerPyro",
       "auto": "100551",
       "skill": "10097",
-      "burst": "10098"
+      "burst": "10098",
+      "proud": {
+        "auto": "531",
+        "skill": "532",
+        "burst": "539"
+      }
     },
     "10000007-703": {
       "key": "TravelerHydro",
       "auto": "100552",
       "skill": "10087",
-      "burst": "10088"
+      "burst": "10088",
+      "proud": {
+        "auto": "631",
+        "skill": "632",
+        "burst": "639"
+      }
     },
     "10000007-704": {
       "key": "TravelerAnemo",
       "auto": "100553",
       "skill": "10067",
-      "burst": "10068"
+      "burst": "10068",
+      "proud": {
+        "auto": "731",
+        "skill": "732",
+        "burst": "739"
+      }
     },
     "10000007-705": {
       "key": "TravelerCryo",
       "auto": "100554",
       "burst": "10127",
-      "skill": "10128"
+      "skill": "10128",
+      "proud": {
+        "auto": "831",
+        "burst": "832",
+        "skill": "839"
+      }
     },
     "10000007-706": {
       "key": "TravelerGeo",
       "auto": "100555",
       "skill": "10077",
-      "burst": "10078"
+      "burst": "10078",
+      "proud": {
+        "auto": "731",
+        "skill": "932",
+        "burst": "939"
+      }
     },
     "10000007-707": {
       "key": "TravelerElectro",
       "auto": "100556",
       "skill": "10602",
-      "burst": "10605"
+      "burst": "10605",
+      "proud": {
+        "auto": "1031",
+        "skill": "1032",
+        "burst": "1039"
+      }
     },
     "10000007-708": {
       "key": "TravelerDendro",
       "auto": "100557",
       "burst": "10117",
-      "skill": "10118"
+      "skill": "10118",
+      "proud": {
+        "auto": "1131",
+        "burst": "1132",
+        "skill": "1139"
+      }
     },
     "10000014": {
       "key": "Barbara",
       "auto": "10070",
       "skill": "10071",
-      "burst": "10072"
+      "burst": "10072",
+      "proud": {
+        "auto": "1431",
+        "skill": "1432",
+        "burst": "1439"
+      }
     },
     "10000015": {
       "key": "Kaeya",
       "auto": "10073",
       "skill": "10074",
-      "burst": "10075"
+      "burst": "10075",
+      "proud": {
+        "auto": "1531",
+        "skill": "1532",
+        "burst": "1539"
+      }
     },
     "10000016": {
       "key": "Diluc",
       "auto": "10160",
       "skill": "10161",
-      "burst": "10165"
+      "burst": "10165",
+      "proud": {
+        "auto": "1631",
+        "skill": "1632",
+        "burst": "1639"
+      }
     },
     "10000020": {
       "key": "Razor",
       "auto": "10201",
       "skill": "10202",
-      "burst": "10203"
+      "burst": "10203",
+      "proud": {
+        "auto": "2031",
+        "skill": "2032",
+        "burst": "2039"
+      }
     },
     "10000021": {
       "key": "Amber",
       "auto": "10041",
       "skill": "10032",
-      "burst": "10017"
+      "burst": "10017",
+      "proud": {
+        "auto": "2131",
+        "skill": "2132",
+        "burst": "2139"
+      }
     },
     "10000022": {
       "key": "Venti",
       "auto": "10221",
       "skill": "10224",
-      "burst": "10225"
+      "burst": "10225",
+      "proud": {
+        "auto": "2231",
+        "skill": "2232",
+        "burst": "2239"
+      }
     },
     "10000023": {
       "key": "Xiangling",
       "auto": "10231",
       "skill": "10232",
-      "burst": "10235"
+      "burst": "10235",
+      "proud": {
+        "auto": "2331",
+        "skill": "2332",
+        "burst": "2339"
+      }
     },
     "10000024": {
       "key": "Beidou",
       "auto": "10241",
       "skill": "10242",
-      "burst": "10245"
+      "burst": "10245",
+      "proud": {
+        "auto": "2431",
+        "skill": "2432",
+        "burst": "2439"
+      }
     },
     "10000025": {
       "key": "Xingqiu",
       "auto": "10381",
       "skill": "10382",
-      "burst": "10385"
+      "burst": "10385",
+      "proud": {
+        "auto": "2531",
+        "skill": "2532",
+        "burst": "2539"
+      }
     },
     "10000026": {
       "key": "Xiao",
       "auto": "10261",
       "skill": "10262",
-      "burst": "10265"
+      "burst": "10265",
+      "proud": {
+        "auto": "2631",
+        "skill": "2632",
+        "burst": "2639"
+      }
     },
     "10000027": {
       "key": "Ningguang",
       "auto": "10271",
       "skill": "10272",
-      "burst": "10274"
+      "burst": "10274",
+      "proud": {
+        "auto": "2731",
+        "skill": "2732",
+        "burst": "2739"
+      }
     },
     "10000029": {
       "key": "Klee",
       "auto": "10291",
       "skill": "10292",
-      "burst": "10295"
+      "burst": "10295",
+      "proud": {
+        "auto": "2931",
+        "skill": "2932",
+        "burst": "2939"
+      }
     },
     "10000030": {
       "key": "Zhongli",
       "auto": "10301",
       "skill": "10302",
-      "burst": "10303"
+      "burst": "10303",
+      "proud": {
+        "auto": "3031",
+        "skill": "3032",
+        "burst": "3039"
+      }
     },
     "10000031": {
       "key": "Fischl",
       "auto": "10311",
       "skill": "10312",
-      "burst": "10313"
+      "burst": "10313",
+      "proud": {
+        "auto": "3131",
+        "skill": "3132",
+        "burst": "3139"
+      }
     },
     "10000032": {
       "key": "Bennett",
       "auto": "10321",
       "skill": "10322",
-      "burst": "10323"
+      "burst": "10323",
+      "proud": {
+        "auto": "3231",
+        "skill": "3232",
+        "burst": "3239"
+      }
     },
     "10000033": {
       "key": "Tartaglia",
       "auto": "10331",
       "skill": "10332",
-      "burst": "10333"
+      "burst": "10333",
+      "proud": {
+        "auto": "3331",
+        "skill": "3332",
+        "burst": "3339"
+      }
     },
     "10000034": {
       "key": "Noelle",
       "auto": "10341",
       "skill": "10342",
-      "burst": "10343"
+      "burst": "10343",
+      "proud": {
+        "auto": "3431",
+        "skill": "3432",
+        "burst": "3439"
+      }
     },
     "10000035": {
       "key": "Qiqi",
       "auto": "10351",
       "skill": "10352",
-      "burst": "10353"
+      "burst": "10353",
+      "proud": {
+        "auto": "3531",
+        "skill": "3532",
+        "burst": "3539"
+      }
     },
     "10000036": {
       "key": "Chongyun",
       "auto": "10401",
       "skill": "10402",
-      "burst": "10403"
+      "burst": "10403",
+      "proud": {
+        "auto": "3631",
+        "skill": "3632",
+        "burst": "3639"
+      }
     },
     "10000037": {
       "key": "Ganyu",
       "auto": "10371",
       "skill": "10372",
-      "burst": "10373"
+      "burst": "10373",
+      "proud": {
+        "auto": "3731",
+        "skill": "3732",
+        "burst": "3739"
+      }
     },
     "10000038": {
       "key": "Albedo",
       "auto": "10386",
       "skill": "10387",
-      "burst": "10388"
+      "burst": "10388",
+      "proud": {
+        "auto": "3831",
+        "skill": "3832",
+        "burst": "3839"
+      }
     },
     "10000039": {
       "key": "Diona",
       "auto": "10391",
       "skill": "10392",
-      "burst": "10395"
+      "burst": "10395",
+      "proud": {
+        "auto": "3931",
+        "skill": "3932",
+        "burst": "3939"
+      }
     },
     "10000041": {
       "key": "Mona",
       "auto": "10411",
       "skill": "10412",
-      "burst": "10415"
+      "burst": "10415",
+      "proud": {
+        "auto": "4131",
+        "skill": "4132",
+        "burst": "4139"
+      }
     },
     "10000042": {
       "key": "Keqing",
       "auto": "10421",
       "skill": "10422",
-      "burst": "10425"
+      "burst": "10425",
+      "proud": {
+        "auto": "4231",
+        "skill": "4232",
+        "burst": "4239"
+      }
     },
     "10000043": {
       "key": "Sucrose",
       "auto": "10431",
       "skill": "10432",
-      "burst": "10435"
+      "burst": "10435",
+      "proud": {
+        "auto": "4331",
+        "skill": "4332",
+        "burst": "4339"
+      }
     },
     "10000044": {
       "key": "Xinyan",
       "auto": "10441",
       "skill": "10442",
-      "burst": "10443"
+      "burst": "10443",
+      "proud": {
+        "auto": "4431",
+        "skill": "4432",
+        "burst": "4439"
+      }
     },
     "10000045": {
       "key": "Rosaria",
       "auto": "10451",
       "skill": "10452",
-      "burst": "10453"
+      "burst": "10453",
+      "proud": {
+        "auto": "4531",
+        "skill": "4532",
+        "burst": "4539"
+      }
     },
     "10000046": {
       "key": "HuTao",
       "auto": "10461",
       "skill": "10462",
-      "burst": "10463"
+      "burst": "10463",
+      "proud": {
+        "auto": "4631",
+        "skill": "4632",
+        "burst": "4639"
+      }
     },
     "10000047": {
       "key": "KaedeharaKazuha",
       "auto": "10471",
       "skill": "10472",
-      "burst": "10475"
+      "burst": "10475",
+      "proud": {
+        "auto": "4731",
+        "skill": "4732",
+        "burst": "4739"
+      }
     },
     "10000048": {
       "key": "Yanfei",
       "auto": "10481",
       "skill": "10482",
-      "burst": "10485"
+      "burst": "10485",
+      "proud": {
+        "auto": "4831",
+        "skill": "4832",
+        "burst": "4839"
+      }
     },
     "10000049": {
       "key": "Yoimiya",
       "auto": "10491",
       "skill": "10492",
-      "burst": "10495"
+      "burst": "10495",
+      "proud": {
+        "auto": "4931",
+        "skill": "4932",
+        "burst": "4939"
+      }
     },
     "10000050": {
       "key": "Thoma",
       "auto": "10501",
       "skill": "10502",
-      "burst": "10505"
+      "burst": "10505",
+      "proud": {
+        "auto": "5031",
+        "skill": "5032",
+        "burst": "5039"
+      }
     },
     "10000051": {
       "key": "Eula",
       "auto": "10511",
       "skill": "10512",
-      "burst": "10515"
+      "burst": "10515",
+      "proud": {
+        "auto": "5131",
+        "skill": "5132",
+        "burst": "5139"
+      }
     },
     "10000052": {
       "key": "RaidenShogun",
       "auto": "10521",
       "skill": "10522",
-      "burst": "10525"
+      "burst": "10525",
+      "proud": {
+        "auto": "5231",
+        "skill": "5232",
+        "burst": "5239"
+      }
     },
     "10000053": {
       "key": "Sayu",
       "auto": "10531",
       "skill": "10532",
-      "burst": "10535"
+      "burst": "10535",
+      "proud": {
+        "auto": "5331",
+        "skill": "5332",
+        "burst": "5339"
+      }
     },
     "10000054": {
       "key": "SangonomiyaKokomi",
       "auto": "10541",
       "skill": "10542",
-      "burst": "10545"
+      "burst": "10545",
+      "proud": {
+        "auto": "5431",
+        "skill": "5432",
+        "burst": "5439"
+      }
     },
     "10000055": {
       "key": "Gorou",
       "auto": "10551",
       "skill": "10552",
-      "burst": "10555"
+      "burst": "10555",
+      "proud": {
+        "auto": "5531",
+        "skill": "5532",
+        "burst": "5539"
+      }
     },
     "10000056": {
       "key": "KujouSara",
       "auto": "10561",
       "skill": "10562",
-      "burst": "10565"
+      "burst": "10565",
+      "proud": {
+        "auto": "5631",
+        "skill": "5632",
+        "burst": "5639"
+      }
     },
     "10000057": {
       "key": "AratakiItto",
       "auto": "10571",
       "skill": "10572",
-      "burst": "10575"
+      "burst": "10575",
+      "proud": {
+        "auto": "5731",
+        "skill": "5732",
+        "burst": "5739"
+      }
     },
     "10000058": {
       "key": "YaeMiko",
       "auto": "10581",
       "skill": "10582",
-      "burst": "10585"
+      "burst": "10585",
+      "proud": {
+        "auto": "5831",
+        "skill": "5832",
+        "burst": "5839"
+      }
     },
     "10000059": {
       "key": "ShikanoinHeizou",
       "auto": "10591",
       "skill": "10592",
-      "burst": "10595"
+      "burst": "10595",
+      "proud": {
+        "auto": "5931",
+        "skill": "5932",
+        "burst": "5939"
+      }
     },
     "10000060": {
       "key": "Yelan",
       "auto": "10606",
       "skill": "10607",
-      "burst": "10610"
+      "burst": "10610",
+      "proud": {
+        "auto": "6031",
+        "skill": "6032",
+        "burst": "6039"
+      }
     },
     "10000061": {
       "key": "Kirara",
       "auto": "10611",
       "skill": "10612",
-      "burst": "10615"
+      "burst": "10615",
+      "proud": {
+        "auto": "6131",
+        "skill": "6132",
+        "burst": "6139"
+      }
     },
     "10000062": {
       "key": "Aloy",
       "auto": "10621",
       "skill": "10622",
-      "burst": "10625"
+      "burst": "10625",
+      "proud": {
+        "auto": "6231",
+        "skill": "6232",
+        "burst": "6239"
+      }
     },
     "10000063": {
       "key": "Shenhe",
       "auto": "10631",
       "skill": "10632",
-      "burst": "10635"
+      "burst": "10635",
+      "proud": {
+        "auto": "6331",
+        "skill": "6332",
+        "burst": "6339"
+      }
     },
     "10000064": {
       "key": "YunJin",
       "auto": "10641",
       "skill": "10642",
-      "burst": "10643"
+      "burst": "10643",
+      "proud": {
+        "auto": "6431",
+        "skill": "6432",
+        "burst": "6439"
+      }
     },
     "10000065": {
       "key": "KukiShinobu",
       "auto": "10651",
       "skill": "10652",
-      "burst": "10655"
+      "burst": "10655",
+      "proud": {
+        "auto": "6531",
+        "skill": "6532",
+        "burst": "6539"
+      }
     },
     "10000066": {
       "key": "KamisatoAyato",
       "auto": "10661",
       "skill": "10662",
-      "burst": "10665"
+      "burst": "10665",
+      "proud": {
+        "auto": "6631",
+        "skill": "6632",
+        "burst": "6639"
+      }
     },
     "10000067": {
       "key": "Collei",
       "auto": "10671",
       "skill": "10672",
-      "burst": "10675"
+      "burst": "10675",
+      "proud": {
+        "auto": "6731",
+        "skill": "6732",
+        "burst": "6739"
+      }
     },
     "10000068": {
       "key": "Dori",
       "auto": "10681",
       "skill": "10682",
-      "burst": "10685"
+      "burst": "10685",
+      "proud": {
+        "auto": "6831",
+        "skill": "6832",
+        "burst": "6839"
+      }
     },
     "10000069": {
       "key": "Tighnari",
       "auto": "10691",
       "skill": "10692",
-      "burst": "10695"
+      "burst": "10695",
+      "proud": {
+        "auto": "6931",
+        "skill": "6932",
+        "burst": "6939"
+      }
     },
     "10000070": {
       "key": "Nilou",
       "auto": "10701",
       "skill": "10702",
-      "burst": "10705"
+      "burst": "10705",
+      "proud": {
+        "auto": "7031",
+        "skill": "7032",
+        "burst": "7039"
+      }
     },
     "10000071": {
       "key": "Cyno",
       "auto": "10711",
       "skill": "10712",
-      "burst": "10715"
+      "burst": "10715",
+      "proud": {
+        "auto": "7131",
+        "skill": "7132",
+        "burst": "7139"
+      }
     },
     "10000072": {
       "key": "Candace",
       "auto": "10721",
       "skill": "10722",
-      "burst": "10725"
+      "burst": "10725",
+      "proud": {
+        "auto": "7231",
+        "skill": "7232",
+        "burst": "7239"
+      }
     },
     "10000073": {
       "key": "Nahida",
       "auto": "10731",
       "skill": "10732",
-      "burst": "10735"
+      "burst": "10735",
+      "proud": {
+        "auto": "7331",
+        "skill": "7332",
+        "burst": "7339"
+      }
     },
     "10000074": {
       "key": "Layla",
       "auto": "10741",
       "skill": "10742",
-      "burst": "10745"
+      "burst": "10745",
+      "proud": {
+        "auto": "7431",
+        "skill": "7432",
+        "burst": "7439"
+      }
     },
     "10000075": {
       "key": "Wanderer",
       "auto": "10751",
       "skill": "10752",
-      "burst": "10755"
+      "burst": "10755",
+      "proud": {
+        "auto": "7531",
+        "skill": "7532",
+        "burst": "7539"
+      }
     },
     "10000076": {
       "key": "Faruzan",
       "auto": "10761",
       "skill": "10762",
-      "burst": "10765"
+      "burst": "10765",
+      "proud": {
+        "auto": "7631",
+        "skill": "7632",
+        "burst": "7639"
+      }
     },
     "10000077": {
       "key": "Yaoyao",
       "auto": "10771",
       "skill": "10772",
-      "burst": "10775"
+      "burst": "10775",
+      "proud": {
+        "auto": "7731",
+        "skill": "7732",
+        "burst": "7739"
+      }
     },
     "10000078": {
       "key": "Alhaitham",
       "auto": "10781",
       "skill": "10782",
-      "burst": "10785"
+      "burst": "10785",
+      "proud": {
+        "auto": "7831",
+        "skill": "7832",
+        "burst": "7839"
+      }
     },
     "10000079": {
       "key": "Dehya",
       "auto": "10791",
       "skill": "10792",
-      "burst": "10795"
+      "burst": "10795",
+      "proud": {
+        "auto": "7931",
+        "skill": "7932",
+        "burst": "7939"
+      }
     },
     "10000080": {
       "key": "Mika",
       "auto": "10801",
       "skill": "10802",
-      "burst": "10805"
+      "burst": "10805",
+      "proud": {
+        "auto": "8031",
+        "skill": "8032",
+        "burst": "8039"
+      }
     },
     "10000081": {
       "key": "Kaveh",
       "auto": "10811",
       "skill": "10812",
-      "burst": "10815"
+      "burst": "10815",
+      "proud": {
+        "auto": "8131",
+        "skill": "8132",
+        "burst": "8139"
+      }
     },
     "10000082": {
       "key": "Baizhu",
       "auto": "10821",
       "skill": "10822",
-      "burst": "10825"
+      "burst": "10825",
+      "proud": {
+        "auto": "8231",
+        "skill": "8232",
+        "burst": "8239"
+      }
     },
     "10000083": {
       "key": "Lynette",
       "auto": "10831",
       "skill": "10832",
-      "burst": "10835"
+      "burst": "10835",
+      "proud": {
+        "auto": "8331",
+        "skill": "8332",
+        "burst": "8339"
+      }
     },
     "10000084": {
       "key": "Lyney",
       "auto": "10841",
       "skill": "10842",
-      "burst": "10845"
+      "burst": "10845",
+      "proud": {
+        "auto": "8431",
+        "skill": "8432",
+        "burst": "8439"
+      }
     },
     "10000085": {
       "key": "Freminet",
       "auto": "10851",
       "skill": "10852",
-      "burst": "10855"
+      "burst": "10855",
+      "proud": {
+        "auto": "8531",
+        "skill": "8532",
+        "burst": "8539"
+      }
     },
     "10000086": {
       "key": "Wriothesley",
       "auto": "10861",
       "skill": "10862",
-      "burst": "10865"
+      "burst": "10865",
+      "proud": {
+        "auto": "8631",
+        "skill": "8632",
+        "burst": "8639"
+      }
     },
     "10000087": {
       "key": "Neuvillette",
       "auto": "10871",
       "skill": "10872",
-      "burst": "10875"
+      "burst": "10875",
+      "proud": {
+        "auto": "8731",
+        "skill": "8732",
+        "burst": "8739"
+      }
     },
     "10000088": {
       "key": "Charlotte",
       "auto": "10881",
       "skill": "10882",
-      "burst": "10885"
+      "burst": "10885",
+      "proud": {
+        "auto": "8831",
+        "skill": "8832",
+        "burst": "8839"
+      }
     },
     "10000089": {
       "key": "Furina",
       "auto": "10891",
       "skill": "10892",
-      "burst": "10895"
+      "burst": "10895",
+      "proud": {
+        "auto": "8931",
+        "skill": "8932",
+        "burst": "8939"
+      }
     },
     "10000090": {
       "key": "Chevreuse",
       "auto": "10901",
       "skill": "10902",
-      "burst": "10905"
+      "burst": "10905",
+      "proud": {
+        "auto": "9031",
+        "skill": "9032",
+        "burst": "9039"
+      }
     },
     "10000091": {
       "key": "Navia",
       "auto": "10911",
       "skill": "10912",
-      "burst": "10915"
+      "burst": "10915",
+      "proud": {
+        "auto": "9131",
+        "skill": "9132",
+        "burst": "9139"
+      }
     },
     "10000092": {
       "key": "Gaming",
       "auto": "10921",
       "skill": "10922",
-      "burst": "10925"
+      "burst": "10925",
+      "proud": {
+        "auto": "9231",
+        "skill": "9232",
+        "burst": "9239"
+      }
     },
     "10000093": {
       "key": "Xianyun",
       "auto": "10931",
       "skill": "10932",
-      "burst": "10935"
+      "burst": "10935",
+      "proud": {
+        "auto": "9331",
+        "skill": "9332",
+        "burst": "9339"
+      }
     },
     "10000094": {
       "key": "Chiori",
       "auto": "10941",
       "skill": "10942",
-      "burst": "10945"
+      "burst": "10945",
+      "proud": {
+        "auto": "9431",
+        "skill": "9432",
+        "burst": "9439"
+      }
     },
     "10000095": {
       "key": "Sigewinne",
       "auto": "10951",
       "skill": "10952",
-      "burst": "10955"
+      "burst": "10955",
+      "proud": {
+        "auto": "9531",
+        "skill": "9532",
+        "burst": "9539"
+      }
     },
     "10000096": {
       "key": "Arlecchino",
       "auto": "10961",
       "skill": "10962",
-      "burst": "10965"
+      "burst": "10965",
+      "proud": {
+        "auto": "9631",
+        "skill": "9632",
+        "burst": "9639"
+      }
     },
     "10000097": {
       "key": "Sethos",
       "auto": "10971",
       "skill": "10972",
-      "burst": "10975"
+      "burst": "10975",
+      "proud": {
+        "auto": "9731",
+        "skill": "9732",
+        "burst": "9739"
+      }
     },
     "10000098": {
       "key": "Clorinde",
       "auto": "10981",
       "skill": "10982",
-      "burst": "10985"
+      "burst": "10985",
+      "proud": {
+        "auto": "9831",
+        "skill": "9832",
+        "burst": "9839"
+      }
     },
     "10000099": {
       "key": "Emilie",
       "auto": "10991",
       "skill": "10992",
-      "burst": "10995"
+      "burst": "10995",
+      "proud": {
+        "auto": "9931",
+        "skill": "9932",
+        "burst": "9939"
+      }
     },
     "10000100": {
       "key": "Kachina",
       "auto": "11001",
       "skill": "11002",
-      "burst": "11005"
+      "burst": "11005",
+      "proud": {
+        "auto": "10031",
+        "skill": "10032",
+        "burst": "10039"
+      }
     },
     "10000101": {
       "key": "Kinich",
       "auto": "11011",
       "skill": "11012",
-      "burst": "11015"
+      "burst": "11015",
+      "proud": {
+        "auto": "10131",
+        "skill": "10132",
+        "burst": "10139"
+      }
     },
     "10000102": {
       "key": "Mualani",
       "auto": "30000",
       "skill": "30002",
-      "burst": "30007"
+      "burst": "30007",
+      "proud": {
+        "auto": "10231",
+        "skill": "10232",
+        "burst": "10239"
+      }
     },
     "10000103": {
       "key": "Xilonen",
       "auto": "11031",
       "skill": "11032",
-      "burst": "11035"
+      "burst": "11035",
+      "proud": {
+        "auto": "10331",
+        "skill": "10332",
+        "burst": "10339"
+      }
     },
     "10000104": {
       "key": "Chasca",
       "auto": "11041",
       "skill": "11042",
-      "burst": "11045"
+      "burst": "11045",
+      "proud": {
+        "auto": "10431",
+        "skill": "10432",
+        "burst": "10439"
+      }
     },
     "10000105": {
       "key": "Ororon",
       "auto": "30501",
       "skill": "30502",
-      "burst": "30505"
+      "burst": "30505",
+      "proud": {
+        "auto": "10531",
+        "skill": "10532",
+        "burst": "10539"
+      }
     },
     "10000106": {
       "key": "Mavuika",
       "auto": "11061",
       "skill": "11062",
-      "burst": "11065"
+      "burst": "11065",
+      "proud": {
+        "auto": "10631",
+        "skill": "10632",
+        "burst": "10639"
+      }
     },
     "10000107": {
       "key": "Citlali",
       "auto": "11071",
       "skill": "11072",
-      "burst": "11075"
+      "burst": "11075",
+      "proud": {
+        "auto": "10731",
+        "skill": "10732",
+        "burst": "10739"
+      }
     },
     "10000108": {
       "key": "LanYan",
       "auto": "11081",
       "skill": "11082",
-      "burst": "11085"
+      "burst": "11085",
+      "proud": {
+        "auto": "10831",
+        "skill": "10832",
+        "burst": "10839"
+      }
     },
     "10000109": {
       "key": "YumemizukiMizuki",
       "auto": "11091",
       "skill": "11092",
-      "burst": "11095"
+      "burst": "11095",
+      "proud": {
+        "auto": "10931",
+        "skill": "10932",
+        "burst": "10939"
+      }
     },
     "10000110": {
       "key": "Iansan",
       "auto": "11101",
       "skill": "11102",
-      "burst": "11105"
+      "burst": "11105",
+      "proud": {
+        "auto": "11031",
+        "skill": "11032",
+        "burst": "11039"
+      }
     },
     "10000111": {
       "key": "Varesa",
       "auto": "11111",
       "skill": "11112",
-      "burst": "11115"
+      "burst": "11115",
+      "proud": {
+        "auto": "11131",
+        "skill": "11132",
+        "burst": "11139"
+      }
     },
     "10000112": {
       "key": "Escoffier",
       "auto": "11121",
       "skill": "11122",
-      "burst": "11125"
+      "burst": "11125",
+      "proud": {
+        "auto": "11231",
+        "skill": "11232",
+        "burst": "11239"
+      }
     },
     "10000113": {
       "key": "Ifa",
       "auto": "11131",
       "skill": "11132",
-      "burst": "11135"
+      "burst": "11135",
+      "proud": {
+        "auto": "11331",
+        "skill": "11332",
+        "burst": "11339"
+      }
     },
     "10000114": {
       "key": "Skirk",
       "auto": "11141",
       "skill": "11142",
-      "burst": "11145"
+      "burst": "11145",
+      "proud": {
+        "auto": "11431",
+        "skill": "11432",
+        "burst": "11439"
+      }
     },
     "10000115": {
       "key": "Dahlia",
       "auto": "11151",
       "skill": "11152",
-      "burst": "11155"
+      "burst": "11155",
+      "proud": {
+        "auto": "11531",
+        "skill": "11532",
+        "burst": "11539"
+      }
     },
     "10000116": {
       "key": "Ineffa",
       "auto": "11161",
       "skill": "11162",
-      "burst": "11165"
+      "burst": "11165",
+      "proud": {
+        "auto": "11631",
+        "skill": "11632",
+        "burst": "11639"
+      }
     },
     "10000117-11702": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111751"
+      "burst": "111751",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000117-11703": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111752"
+      "burst": "111752",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000117-11704": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111753"
+      "burst": "111753",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000117-11705": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111754"
+      "burst": "111754",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000117-11706": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111755"
+      "burst": "111755",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000117-11707": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111756"
+      "burst": "111756",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000117-11708": {
       "key": "Manekin",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111757"
+      "burst": "111757",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11802": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111751"
+      "burst": "111751",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11803": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111752"
+      "burst": "111752",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11804": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111753"
+      "burst": "111753",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11805": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111754"
+      "burst": "111754",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11806": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111755"
+      "burst": "111755",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11807": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111756"
+      "burst": "111756",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000118-11808": {
       "key": "Manekina",
       "auto": "11171",
       "skill": "11172",
-      "burst": "111757"
+      "burst": "111757",
+      "proud": {
+        "auto": "11731",
+        "skill": "11732",
+        "burst": "11739"
+      }
     },
     "10000119": {
       "key": "Lauma",
       "auto": "11191",
       "skill": "11192",
-      "burst": "11195"
+      "burst": "11195",
+      "proud": {
+        "auto": "11931",
+        "skill": "11932",
+        "burst": "11939"
+      }
     },
     "10000120": {
       "key": "Flins",
       "auto": "11201",
       "skill": "11202",
-      "burst": "11205"
+      "burst": "11205",
+      "proud": {
+        "auto": "12031",
+        "skill": "12032",
+        "burst": "12039"
+      }
     },
     "10000121": {
       "key": "Aino",
       "auto": "11211",
       "skill": "11212",
-      "burst": "11215"
+      "burst": "11215",
+      "proud": {
+        "auto": "12131",
+        "skill": "12132",
+        "burst": "12139"
+      }
     },
     "10000122": {
       "key": "Nefer",
       "auto": "11221",
       "skill": "11222",
-      "burst": "11225"
+      "burst": "11225",
+      "proud": {
+        "auto": "12231",
+        "skill": "12232",
+        "burst": "12239"
+      }
     },
     "10000123": {
       "key": "Durin",
       "auto": "11231",
       "skill": "11232",
-      "burst": "11235"
+      "burst": "11235",
+      "proud": {
+        "auto": "12331",
+        "skill": "12332",
+        "burst": "12339"
+      }
     },
     "10000124": {
       "key": "Jahoda",
       "auto": "11241",
       "skill": "11242",
-      "burst": "11245"
+      "burst": "11245",
+      "proud": {
+        "auto": "12431",
+        "skill": "12432",
+        "burst": "12439"
+      }
     },
     "10000125": {
       "key": "Columbina",
       "auto": "11251",
       "skill": "11252",
-      "burst": "11255"
+      "burst": "11255",
+      "proud": {
+        "auto": "12531",
+        "skill": "12532",
+        "burst": "12539"
+      }
     },
     "10000126": {
       "key": "Zibai",
       "auto": "11261",
       "skill": "11262",
-      "burst": "11265"
+      "burst": "11265",
+      "proud": {
+        "auto": "12631",
+        "skill": "12632",
+        "burst": "12639"
+      }
     },
     "10000127": {
       "key": "Illuga",
       "auto": "11271",
       "skill": "11272",
-      "burst": "11275"
+      "burst": "11275",
+      "proud": {
+        "auto": "12731",
+        "skill": "12732",
+        "burst": "12739"
+      }
     },
     "10000128": {
       "key": "Varka",
       "auto": "11281",
       "skill": "11282",
-      "burst": "11285"
+      "burst": "11285",
+      "proud": {
+        "auto": "12831",
+        "skill": "12832",
+        "burst": "12839"
+      }
     },
     "10000129": {
       "key": "Lohen",
       "auto": "11291",
       "skill": "11292",
-      "burst": "11295"
+      "burst": "11295",
+      "proud": {
+        "auto": "12931",
+        "skill": "12932",
+        "burst": "12939"
+      }
     },
     "10000130": {
       "key": "Linnea",
       "auto": "11301",
       "skill": "11302",
-      "burst": "11305"
+      "burst": "11305",
+      "proud": {
+        "auto": "13031",
+        "skill": "13032",
+        "burst": "13039"
+      }
     },
     "10000131": {
       "key": "Nicole",
       "auto": "11311",
       "skill": "11312",
-      "burst": "11315"
+      "burst": "11315",
+      "proud": {
+        "auto": "13131",
+        "skill": "13132",
+        "burst": "13139"
+      }
     },
     "10000132": {
       "key": "Prune",
       "auto": "11321",
       "skill": "11322",
-      "burst": "11325"
+      "burst": "11325",
+      "proud": {
+        "auto": "13231",
+        "skill": "13232",
+        "burst": "13239"
+      }
     },
     "10000133": {
       "key": "Sandrone",
       "auto": "11331",
       "skill": "11332",
-      "burst": "11335"
+      "burst": "11335",
+      "proud": {
+        "auto": "13331",
+        "skill": "13332",
+        "burst": "13339"
+      }
     },
     "10000140": {
       "key": "Vodyanitsa",
       "auto": "11401",
       "skill": "11402",
-      "burst": "11405"
+      "burst": "11405",
+      "proud": {
+        "auto": "14031",
+        "skill": "14032",
+        "burst": "14039"
+      }
     },
     "10000143": {
       "key": "Vesna",
       "auto": "11431",
       "skill": "11432",
-      "burst": "11435"
+      "burst": "11435",
+      "proud": {
+        "auto": "14331",
+        "skill": "14332",
+        "burst": "14339"
+      }
     },
     "10000148": {
       "key": "Alyosha",
       "auto": "11481",
       "skill": "11482",
-      "burst": "11485"
+      "burst": "11485",
+      "proud": {
+        "auto": "14831",
+        "skill": "14832",
+        "burst": "14839"
+      }
     },
     "10000150": {
       "key": "Odette",
       "auto": "11501",
       "skill": "11502",
-      "burst": "11505"
+      "burst": "11505",
+      "proud": {
+        "auto": "15031",
+        "skill": "15032",
+        "burst": "15039"
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 # Lumenspar
 
-A Genshin Impact companion for Linux and Windows, with two tools on its main
-menu:
+A Genshin Impact companion for Linux and Windows, with three tools on its
+main menu:
 
 - **Wish Counter** -- pity, guarantees and 50/50 results for every banner, read
   from your in-game wish history (the same method as
@@ -10,6 +10,10 @@ menu:
   materials off the screen with OCR and writes a `.GOOD` JSON file that
   [Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/),
   [SEELIE.me](https://seelie.me) and Aspirine's calculator can import.
+- **Build Cards** -- [Akasha](https://akasha.cv)-style cards for the characters
+  in your profile showcase, read through [Enka.Network](https://enka.network):
+  talents, weapon, artifacts with exact roll counts, crit value and final
+  stats, saved as images if you like.
 
 Built for Wayland first: capture goes through the `xdg-desktop-portal`
 ScreenCast API and a PipeWire stream, so it works on KDE, GNOME and wlroots
@@ -237,6 +241,33 @@ copies by wish id, so neither side loses anything. It runs on startup, after
 every import, and from **Back up now**. The sign-in, and the client ID and
 secret of a project of your own, are kept in `google_drive.json` in the
 config folder, readable only by you.
+
+## Build cards
+
+Enter your UID and press **Fetch showcase**. Lumenspar reads the characters in
+your in-game profile showcase through Enka.Network (turn on **Show Character
+Details** in your profile) and draws a card for each:
+
+- level, friendship, constellations, and talent levels including constellation
+  bonuses (marked in the element's colour);
+- the weapon with its level, refinement and stats;
+- every artifact with its main stat, substats and **how many times each
+  substat rolled** -- exact, because the showcase lists every roll an
+  artifact received -- plus each artifact's crit value;
+- the character's final stats as the game reports them, total crit value
+  (2 × CRIT Rate + CRIT DMG from substats) and active set bonuses.
+
+The showcase holds a limited number of characters, so Lumenspar keeps every
+character it has seen for that UID: swap others in, let the game publish the
+showcase (going to the title screen and back is quickest), and fetch again.
+Enka.Network caches a showcase for a short while; the button counts down until
+a fresh one is available. **Save card as image** writes a 2320×1200 PNG to
+`cards/` in the export folder.
+
+Art (portraits, splash art, weapon and artifact icons) comes from Project Amber
+and is downloaded once, when first needed. Unlike Akasha, there are no
+leaderboards: those compare builds across many players on a server, and
+Lumenspar has none.
 
 ## Characters from Enka.Network
 

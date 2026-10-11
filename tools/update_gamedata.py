@@ -158,6 +158,10 @@ def enka_map(avatars: dict) -> tuple[dict, list[str]]:
     attack, elemental skill, burst), not by SkillOrder: SkillOrder lists the
     Cryo and Dendro Travelers' burst before their skill, and trusting it would
     swap those two talent levels.
+
+    `proud` holds each talent's "proud skill group": a showcase's
+    proudSkillExtraLevelMap is keyed by it, giving the constellation bonus
+    (+3) the build cards add on top of the base level.
     """
     store = json.loads(fetch(ENKA_AVATARS))
     names = {str(a["id"]): a["name"] for a in avatars.values()}
@@ -165,10 +169,14 @@ def enka_map(avatars: dict) -> tuple[dict, list[str]]:
     skipped: list[str] = []
     for eid, e in store.items():
         kinds: dict[str, str] = {}
+        proud: dict[str, str] = {}
         for sid in e.get("SkillOrder") or []:
             m = re.search(r"Skill_([ASE])_", e.get("Skills", {}).get(str(sid)) or "")
             if m:
                 kinds[_SKILL_KIND[m.group(1)]] = str(sid)
+                group = (e.get("ProudMap") or {}).get(str(sid))
+                if group:
+                    proud[_SKILL_KIND[m.group(1)]] = str(group)
         if sorted(kinds) != ["auto", "burst", "skill"]:
             skipped.append(eid)      # element-less Traveler/Manekin variants
             continue
@@ -184,7 +192,7 @@ def enka_map(avatars: dict) -> tuple[dict, list[str]]:
         else:
             skipped.append(eid)
             continue
-        out[eid] = {"key": key, **kinds}
+        out[eid] = {"key": key, **kinds, "proud": proud}
     return out, skipped
 
 
@@ -307,6 +315,7 @@ def main() -> int:
             "key": to_key(w["name"]), "name": w["name"], "rarity": w.get("rank"),
             "type": WEAPON_TYPES.get(w.get("type") or ""),
             "icon": w.get("icon") or "",
+            "id": w.get("id"),               # the item id an Enka showcase reports
         },
         "weapons",
     )
@@ -315,6 +324,8 @@ def main() -> int:
         lambda r: {
             "key": to_key(r["name"]), "name": r["name"],
             "rarities": sorted(r.get("levelList") or []),
+            "id": r.get("id"),               # the set id an Enka showcase reports
+            "bonuses": [t for _, t in sorted((r.get("affixList") or {}).items())],
         },
         "artifact sets",
     )

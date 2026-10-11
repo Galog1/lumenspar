@@ -1,9 +1,10 @@
-"""Character and weapon portraits for the wish counter.
+"""Game art for the wish counter and the build cards.
 
-Icons are the game's own UI art, served by Project Amber (gi.yatta.moe) under
-the asset names recorded in gamedata/characters.json and weapons.json. They
-are not shipped with Lumenspar: the ones a history actually needs are
-downloaded once and cached in the data folder.
+Portraits, weapon and artifact icons and character splash art are the game's
+own UI art, served by Project Amber (gi.yatta.moe) under the asset names
+recorded in gamedata/characters.json and weapons.json, or reported by an
+Enka.Network showcase. They are not shipped with Lumenspar: the ones actually
+needed are downloaded once and cached in the data folder.
 """
 
 from __future__ import annotations
@@ -18,6 +19,8 @@ from ..config import DATA_DIR
 
 ICON_DIR = DATA_DIR / "icons"
 ASSET_URL = "https://gi.yatta.moe/assets/UI/{name}.png"
+# Artifact icons live in their own folder there.
+_SUBFOLDERS = (("UI_RelicIcon_", "reliquary/"),)
 USER_AGENT = "Lumenspar (+https://github.com/Galog1/lumenspar)"
 _GAMEDATA = Path(__file__).resolve().parent.parent / "gamedata"
 
@@ -45,6 +48,16 @@ def path(name: str, root: Path = ICON_DIR) -> Path:
     return root / f"{name}.png"
 
 
+def asset_url(name: str) -> str:
+    folder = next((f for prefix, f in _SUBFOLDERS if name.startswith(prefix)), "")
+    return ASSET_URL.format(name=folder + name)
+
+
+def missing_assets(names: Iterable[str], root: Path = ICON_DIR) -> list[str]:
+    """Asset names (as opposed to item names) not cached yet."""
+    return sorted({n for n in names if n and not path(n, root).is_file()})
+
+
 def missing(items: Iterable[str], root: Path = ICON_DIR) -> list[str]:
     """Icon asset names these items need that are not cached yet."""
     names = {icon_name(i) for i in items} - {""}
@@ -64,7 +77,7 @@ def download(names: Iterable[str], root: Path = ICON_DIR,
     got = 0
     for name in names:
         try:
-            data = fetch(ASSET_URL.format(name=name))
+            data = fetch(asset_url(name))
             if not data.startswith(b"\x89PNG"):
                 continue
             root.mkdir(parents=True, exist_ok=True)

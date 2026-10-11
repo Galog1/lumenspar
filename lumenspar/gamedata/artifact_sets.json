@@ -8,7 +8,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15044,
+      "bonuses": [
+        "ATK +18%.",
+        "After a Normal Attack, Charged Attack, Elemental Skill, or Elemental Burst hits an opponent, gain the Blessing of Pastoral Winds effect for 6s: ATK is increased by 25%. If the equipping character has completed Witch's Homework, Blessing of Pastoral Winds will be upgraded to Resolve of Pastoral Winds, which additionally increases the CRIT Rate of the equipping character by 20%. This effect can be triggered even when the character is off-field."
+      ]
     },
     {
       "key": "Adventurer",
@@ -18,7 +23,12 @@
         2,
         3
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10010,
+      "bonuses": [
+        "Max HP increased by 1,000.",
+        "Opening a chest regenerates 30% Max HP over 5s."
+      ]
     },
     {
       "key": "ArchaicPetra",
@@ -27,7 +37,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15014,
+      "bonuses": [
+        "Gain a 15% Geo DMG Bonus.",
+        "Upon obtaining an Elemental Shard created through Crystallize or triggering a Lunar-Crystallize reaction, all party members gain a 35% DMG Bonus for that particular element for 10s. Only one form of Elemental DMG Bonus can be gained in this manner at any one time."
+      ]
     },
     {
       "key": "AubadeOfMorningstarAndMoon",
@@ -36,7 +51,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15043,
+      "bonuses": [
+        "Increases Elemental Mastery by 80.",
+        "When the equipping character is off-field, Lunar Reaction DMG is increased by 20%. When the party's Moonsign Level is at least Ascendant Gleam, Lunar Reaction DMG will be further increased by 40%. This effect will disappear after the equipping character is active for 3s."
+      ]
     },
     {
       "key": "Berserker",
@@ -45,7 +65,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10005,
+      "bonuses": [
+        "CRIT Rate +12%",
+        "When HP is below 70%, CRIT Rate increases by an additional 24%."
+      ]
     },
     {
       "key": "BlizzardStrayer",
@@ -54,7 +79,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 14001,
+      "bonuses": [
+        "Cryo DMG Bonus +15%",
+        "When a character attacks an opponent affected by Cryo, their CRIT Rate is increased by 20%. If the opponent is Frozen, CRIT Rate is increased by an additional 20%."
+      ]
     },
     {
       "key": "BloodstainedChivalry",
@@ -63,7 +93,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15008,
+      "bonuses": [
+        "Physical DMG +25%",
+        "After defeating an opponent, increases Charged Attack DMG by 50%, and reduces its Stamina cost to 0 for 10s."
+      ]
     },
     {
       "key": "BraveHeart",
@@ -72,7 +107,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10002,
+      "bonuses": [
+        "ATK +18%.",
+        "Increases DMG by 30% against opponents with more than 50% HP."
+      ]
     },
     {
       "key": "CelestialGift",
@@ -81,7 +121,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15045,
+      "bonuses": [
+        "Energy Recharge +20%.",
+        "If the equipping character has completed Witch's Homework, after they use an Elemental Skill, they gain \"Light's Guidance\" for 20s: All nearby party members gain a 20% Elemental DMG Bonus corresponding to the equipping character's Elemental Type. The equipping character can trigger this effect while off-field. DMG Bonuses provided by Artifact Sets with the same name do not stack.\\n· When your party has the Hexerei: Secret Rite effect, Light's Guidance is upgraded to \"Mortal Hymn\": All nearby party members gain a 40% Elemental DMG Bonus corresponding to both the equipping character and the current active party member's Elemental Type instead. If both characters have the same Elemental Type, these bonuses will not stack."
+      ]
     },
     {
       "key": "CrimsonWitchOfFlames",
@@ -90,7 +135,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15006,
+      "bonuses": [
+        "Pyro DMG Bonus +15%",
+        "Increases Overloaded, Burning, and Burgeon DMG by 40%. Increases Vaporize and Melt DMG by 15%. Using Elemental Skill increases the 2-Piece Set Bonus by 50% of its starting value for 10s. Max 3 stacks."
+      ]
     },
     {
       "key": "DeepwoodMemories",
@@ -99,7 +149,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15025,
+      "bonuses": [
+        "Dendro DMG Bonus +15%.",
+        "After Elemental Skills or Bursts hit opponents, the targets' Dendro RES will be decreased by 30% for 8s. This effect can be triggered even if the equipping character is not on the field."
+      ]
     },
     {
       "key": "DefendersWill",
@@ -108,7 +163,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10003,
+      "bonuses": [
+        "DEF +30%",
+        "For each different element present in your own party, the wearer's Elemental RES to that corresponding element is increased by 30%."
+      ]
     },
     {
       "key": "DesertPavilionChronicle",
@@ -117,7 +177,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15027,
+      "bonuses": [
+        "Anemo DMG Bonus +15%",
+        "When Charged Attacks hit opponents, the equipping character's Normal Attack SPD will increase by 10% while Normal, Charged, and Plunging Attack DMG will increase by 40% for 15s."
+      ]
     },
     {
       "key": "DisenchantmentInDeepShadow",
@@ -126,7 +191,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15046,
+      "bonuses": [
+        "ATK +18%.",
+        "Increases Superconduct Reaction DMG by 80% and Stellar-Conduct Reaction DMG by 40%. When the wielder attacks opponents affected by Superconduct or Stellar-Conduct, this attack's CRIT Rate is increased by 16%."
+      ]
     },
     {
       "key": "EchoesOfAnOffering",
@@ -135,7 +205,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15024,
+      "bonuses": [
+        "ATK +18%.",
+        "When Normal Attacks hit opponents, there is a 36% chance that it will trigger Valley Rite, which will increase Normal Attack DMG by 70% of ATK. This effect will be dispelled 0.05s after a Normal Attack deals DMG. If a Normal Attack fails to trigger Valley Rite, the odds of it triggering the next time will increase by 20%. This trigger can occur once every 0.2s."
+      ]
     },
     {
       "key": "EmblemOfSeveredFate",
@@ -144,7 +219,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15020,
+      "bonuses": [
+        "Energy Recharge +20%",
+        "Increases Elemental Burst DMG by 25% of Energy Recharge. A maximum of 75% bonus DMG can be obtained in this way."
+      ]
     },
     {
       "key": "FinaleOfTheDeepGalleries",
@@ -153,7 +233,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15040,
+      "bonuses": [
+        "Cryo DMG Bonus +15%",
+        "When the equipping character has 0 Elemental Energy, Normal Attack DMG is increased by 60% and Elemental Burst DMG is increased by 60%. After the equipping character deals Normal Attack DMG, the aforementioned Elemental Burst effect will stop applying for 6s. After the equipping character deals Elemental Burst DMG, the aforementioned Normal Attack effect will stop applying for 6s. This effect can trigger even if the equipping character is off the field."
+      ]
     },
     {
       "key": "FlowerOfParadiseLost",
@@ -162,7 +247,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15028,
+      "bonuses": [
+        "Increases Elemental Mastery by 80.",
+        "The equipping character's Bloom, Hyperbloom, and Burgeon reaction DMG are increased by 40%, and their Lunar-Bloom reaction DMG is increased by 10%. Additionally, after the equipping character triggers Bloom, Hyperbloom, Lunar-Bloom, or Burgeon, they will gain another 25% bonus to the effects mentioned prior. Each stack of this lasts 10s. Max 4 stacks simultaneously. This effect can only be triggered once per second. The character who equips this can still trigger its effects when not on the field."
+      ]
     },
     {
       "key": "FragmentOfHarmonicWhimsy",
@@ -171,7 +261,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15035,
+      "bonuses": [
+        "ATK +18%.",
+        "When the value of a Bond of Life increases or decreases, this character deals 18% increased DMG for 6s. Max 3 stacks."
+      ]
     },
     {
       "key": "Gambler",
@@ -180,7 +275,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10008,
+      "bonuses": [
+        "Increases Elemental Skill DMG by 20%.",
+        "Defeating an opponent has a 100% chance to remove Elemental Skill CD. Can only occur once every 15s."
+      ]
     },
     {
       "key": "GildedDreams",
@@ -189,7 +289,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15026,
+      "bonuses": [
+        "Increases Elemental Mastery by 80.",
+        "Within 8s of triggering an Elemental Reaction, the character equipping this will obtain buffs based on the Elemental Type of the other party members. ATK is increased by 14% for each party member whose Elemental Type is the same as the equipping character, and Elemental Mastery is increased by 50 for every party member with a different Elemental Type. Each of the aforementioned buffs will count up to 3 characters. This effect can be triggered once every 8s. The character who equips this can still trigger its effects when not on the field."
+      ]
     },
     {
       "key": "GladiatorsFinale",
@@ -198,7 +303,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15001,
+      "bonuses": [
+        "ATK +18%.",
+        "If the wielder of this artifact set uses a Sword, Claymore or Polearm, increases their Normal Attack DMG by 35%."
+      ]
     },
     {
       "key": "GoldenTroupe",
@@ -207,7 +317,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15032,
+      "bonuses": [
+        "Increases Elemental Skill DMG by 20%.",
+        "Increases Elemental Skill DMG by 25%. Additionally, when not on the field, Elemental Skill DMG will be further increased by 25%. This effect will be cleared 2s after taking the field."
+      ]
     },
     {
       "key": "HeartOfDepth",
@@ -216,7 +331,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15016,
+      "bonuses": [
+        "Hydro DMG Bonus +15%",
+        "After using Elemental Skill, increases Normal Attack and Charged Attack DMG by 30% for 15s."
+      ]
     },
     {
       "key": "HeartOfTheFurnace",
@@ -225,7 +345,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15048,
+      "bonuses": [
+        "ATK +18%.",
+        "Increases the equipping character's ATK by 12% for 12s when they trigger a Stellar Glimmer reaction or deal Stellar Glimmer reaction DMG. Also increases Stellar Glimmer reaction DMG dealt by all nearby party members by 50%. The above effects can trigger even when the equipping character is not on the field, and the DMG bonus from multiple Artifact Sets with the same name do not stack."
+      ]
     },
     {
       "key": "HuskOfOpulentDreams",
@@ -234,7 +359,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15021,
+      "bonuses": [
+        "DEF +30%",
+        "A character equipped with this Artifact set will obtain the Curiosity effect in the following conditions: When on the field, the character gains 1 stack after hitting an opponent with a Geo attack, triggering a maximum of once every 0.3s. When off the field, the character gains 1 stack every 3s. Curiosity can stack up to 4 times, each providing 6% DEF and a 6% Geo DMG Bonus. When 6 seconds pass without gaining a Curiosity stack, 1 stack is lost."
+      ]
     },
     {
       "key": "Instructor",
@@ -243,7 +373,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10007,
+      "bonuses": [
+        "Increases Elemental Mastery by 80.",
+        "Upon triggering an Elemental Reaction, increases all party members' Elemental Mastery by 120 for 8s."
+      ]
     },
     {
       "key": "Lavawalker",
@@ -252,7 +387,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 14003,
+      "bonuses": [
+        "Pyro RES increased by 40%.",
+        "Increases DMG against opponents affected by Pyro by 35%."
+      ]
     },
     {
       "key": "LongNightsOath",
@@ -261,7 +401,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15039,
+      "bonuses": [
+        "Plunging Attack DMG increased by 25%.",
+        "After the equipping character's Plunging Attack/Charged Attack/Elemental Skill hits an opponent, they will gain 1/2/2 stack(s) of \"Radiance Everlasting.\" Plunging Attacks, Charged Attacks, or Elemental Skills can each trigger this effect once every 1s. Radiance Everlasting: Plunging Attacks deal 15% increased DMG for 6s. Max 5 stacks. Each stack's duration is counted independently."
+      ]
     },
     {
       "key": "LuckyDog",
@@ -271,7 +416,12 @@
         2,
         3
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10011,
+      "bonuses": [
+        "DEF increased by 100.",
+        "Picking up Mora restores 300 HP."
+      ]
     },
     {
       "key": "MaidenBeloved",
@@ -280,7 +430,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 14004,
+      "bonuses": [
+        "Character Healing Effectiveness +15%",
+        "Using an Elemental Skill or Burst increases healing received by all party members by 20% for 10s."
+      ]
     },
     {
       "key": "MarechausseeHunter",
@@ -289,7 +444,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15031,
+      "bonuses": [
+        "Normal and Charged Attack DMG +15%",
+        "When current HP increases or decreases, CRIT Rate will be increased by 12% for 5s. Max 3 stacks."
+      ]
     },
     {
       "key": "MartialArtist",
@@ -298,7 +458,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10006,
+      "bonuses": [
+        "Normal and Charged Attack DMG +15%",
+        "After using Elemental Skill, increases Normal Attack and Charged Attack DMG by 25% for 8s."
+      ]
     },
     {
       "key": "NightOfTheSkysUnveiling",
@@ -307,7 +472,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15041,
+      "bonuses": [
+        "Increases Elemental Mastery by 80.",
+        "When nearby party members trigger Lunar Reactions, if the equipping character is on the field, gain the Gleaming Moon: Intent effect for 4s: Increases CRIT Rate by 15%/30% when the party's Moonsign is Nascent Gleam/Ascendant Gleam. All party members' Lunar Reaction DMG is increased by 10% for each different Gleaming Moon effect that party members have. Effects from Gleaming Moon cannot stack."
+      ]
     },
     {
       "key": "NighttimeWhispersInTheEchoingWoods",
@@ -316,7 +486,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15034,
+      "bonuses": [
+        "ATK +18%.",
+        "After using an Elemental Skill, gain a 20% Geo DMG Bonus for 10s. When under a shield granted by the Crystallize reaction, or when Moondrifts formed by Lunar-Crystallize reactions are nearby, the above effect is increased by 150%. When these conditions are no longer met, this additional increase disappears after 1s."
+      ]
     },
     {
       "key": "NoblesseOblige",
@@ -325,7 +500,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15007,
+      "bonuses": [
+        "Elemental Burst DMG +20%",
+        "Using an Elemental Burst increases all party members' ATK by 20% for 12s. This effect cannot stack."
+      ]
     },
     {
       "key": "NymphsDream",
@@ -334,7 +514,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15029,
+      "bonuses": [
+        "Hydro DMG Bonus +15%",
+        "After Normal, Charged, and Plunging Attacks, Elemental Skills, and Elemental Bursts hit opponents, 1 stack of Mirrored Nymph will be triggered, lasting 8s. When under the effect of 1, 2, or 3 or more Mirrored Nymph stacks, ATK will be increased by 7%/16%/25%, and Hydro DMG Bonus will be increased by 4%/9%/15%. Mirrored Nymph stacks created by Normal, Charged, and Plunging Attacks, Elemental Skills, and Elemental Bursts exist independently."
+      ]
     },
     {
       "key": "ObsidianCodex",
@@ -343,7 +528,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15038,
+      "bonuses": [
+        "While the equipping character is in Nightsoul's Blessing and is on the field, their DMG dealt is increased by 15%.",
+        "After the equipping character consumes 1 Nightsoul point while on the field, CRIT Rate increases by 40% for 6s. This effect can trigger once every second."
+      ]
     },
     {
       "key": "OceanHuedClam",
@@ -352,7 +542,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15022,
+      "bonuses": [
+        "Healing Bonus +15%.",
+        "When the character equipping this artifact set heals a character in the party, a Sea-Dyed Foam will appear for 3 seconds, accumulating the amount of HP recovered from healing (including overflow healing). At the end of the duration, the Sea-Dyed Foam will explode, dealing DMG to nearby opponents based on 90% of the accumulated healing. (This DMG is calculated similarly to Reactions such as Electro-Charged, and Superconduct, but is not affected by Elemental Mastery, Character Levels, or Reaction DMG Bonuses). Only one Sea-Dyed Foam can be produced every 3.5 seconds. Each Sea-Dyed Foam can accumulate up to 30,000 HP (including overflow healing). There can be no more than one Sea-Dyed Foam active at any given time. This effect can still be triggered even when the character who is using this artifact set is not on the field."
+      ]
     },
     {
       "key": "PaleFlame",
@@ -361,7 +556,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15018,
+      "bonuses": [
+        "Physical DMG is increased by 25%.",
+        "When an Elemental Skill hits an opponent, ATK is increased by 9% for 7s. This effect stacks up to 2 times and can be triggered once every 0.3s. Once 2 stacks are reached, the 2-set effect is increased by 100%."
+      ]
     },
     {
       "key": "PrayersForDestiny",
@@ -370,7 +570,11 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15010,
+      "bonuses": [
+        "Affected by Hydro for 40% less time."
+      ]
     },
     {
       "key": "PrayersForIllumination",
@@ -379,7 +583,11 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15009,
+      "bonuses": [
+        "Affected by Pyro for 40% less time."
+      ]
     },
     {
       "key": "PrayersForWisdom",
@@ -388,7 +596,11 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15011,
+      "bonuses": [
+        "Affected by Electro for 40% less time."
+      ]
     },
     {
       "key": "PrayersToSpringtime",
@@ -397,7 +609,11 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15013,
+      "bonuses": [
+        "Affected by Cryo for 40% less time."
+      ]
     },
     {
       "key": "ResolutionOfSojourner",
@@ -406,7 +622,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10001,
+      "bonuses": [
+        "ATK +18%.",
+        "Increases Charged Attack CRIT Rate by 30%."
+      ]
     },
     {
       "key": "RetracingBolide",
@@ -415,7 +636,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15015,
+      "bonuses": [
+        "Increases Shield Strength by 35%.",
+        "While protected by a shield, gain an additional 40% Normal and Charged Attack DMG."
+      ]
     },
     {
       "key": "ScarletProof",
@@ -424,7 +650,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15047,
+      "bonuses": [
+        "ATK +18%.",
+        "Increases the equipping character's CRIT Rate by 16%, and their Stellar Swirl reaction DMG dealt by 40%, for 10s after they trigger a Stellar Swirl reaction."
+      ]
     },
     {
       "key": "Scholar",
@@ -433,7 +664,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10012,
+      "bonuses": [
+        "Energy Recharge +20%",
+        "Gaining Elemental Particles or Orbs gives 3 Energy to all party members who have a bow or a catalyst equipped. Can only occur once every 3s."
+      ]
     },
     {
       "key": "ScrollOfTheHeroOfCinderCity",
@@ -442,7 +678,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15037,
+      "bonuses": [
+        "When a nearby party member triggers a Nightsoul Burst, the equipping character regenerates 6 Elemental Energy.",
+        "After the equipping character triggers a reaction related to their Elemental Type, all nearby party members gain a 12% Elemental DMG Bonus for the Elemental Types involved in the elemental reaction for 15s. If the equipping character is in the Nightsoul's Blessing state when triggering this effect, all nearby party members gain an additional 28% Elemental DMG Bonus for the Elemental Types involved in the elemental reaction for 20s. The equipping character can trigger this effect while off-field, and the DMG bonus from Artifact Sets with the same name do not stack."
+      ]
     },
     {
       "key": "ShimenawasReminiscence",
@@ -451,7 +692,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15019,
+      "bonuses": [
+        "ATK +18%.",
+        "When casting an Elemental Skill, if the character has 15 or more Energy, they lose 15 Energy and Normal/Charged/Plunging Attack DMG is increased by 50% for 10s. This effect will not trigger again during that duration."
+      ]
     },
     {
       "key": "SilkenMoonsSerenade",
@@ -460,7 +706,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15042,
+      "bonuses": [
+        "Energy Recharge +20%.",
+        "When dealing Elemental DMG, gain the Gleaming Moon: Devotion effect for 8s: Increases all party members' Elemental Mastery by 60/120 when the party's Moonsign is Nascent Gleam/Ascendant Gleam. The equipping character can trigger this effect while off-field. All party members' Lunar Reaction DMG is increased by 10% for each different Gleaming Moon effect that party members have. Effects from Gleaming Moon cannot stack."
+      ]
     },
     {
       "key": "SongOfDaysPast",
@@ -469,7 +720,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15033,
+      "bonuses": [
+        "Healing Bonus +15%.",
+        "When the equipping character heals a party member, the Yearning effect will be created for 6s, which records the total amount of healing provided (including overflow healing). When the duration expires, the Yearning effect will be transformed into the \"Waves of Days Past\" effect: When your active party member hits an opponent with a Normal Attack, Charged Attack, Plunging Attack, Elemental Skill, or Elemental Burst, the DMG dealt will be increased by 8% of the total healing amount recorded by the Yearning effect. The \"Waves of Days Past\" effect is removed after it has taken effect 5 times or after 10s. A single instance of the Yearning effect can record up to 15,000 healing, and only a single instance can exist at once, but it can record the healing from multiple equipping characters. Equipping characters on standby can still trigger this effect."
+      ]
     },
     {
       "key": "TenacityOfTheMillelith",
@@ -478,7 +734,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15017,
+      "bonuses": [
+        "HP +20%",
+        "When an Elemental Skill hits an opponent, the ATK of all nearby party members is increased by 20% and their Shield Strength is increased by 30% for 3s. This effect can be triggered once every 0.5s. This effect can still be triggered even when the character who is using this artifact set is not on the field."
+      ]
     },
     {
       "key": "TheExile",
@@ -487,7 +748,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10009,
+      "bonuses": [
+        "Energy Recharge +20%",
+        "Using an Elemental Burst regenerates 2 Energy for all party members (excluding the wearer) every 2s for 6s. This effect cannot stack."
+      ]
     },
     {
       "key": "ThunderingFury",
@@ -496,7 +762,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15005,
+      "bonuses": [
+        "Electro DMG Bonus +15%",
+        "Increases the DMG caused by Overloaded, Electro-Charged, Superconduct, and Hyperbloom by 40%, the DMG Bonus conferred by Aggravate by 20%, and the DMG caused by Lunar-Charged and Stellar-Conduct by 20%. When Quicken or the aforementioned Elemental Reactions are triggered, Elemental Skill CD is decreased by 1s. Can only occur once every 0.8s."
+      ]
     },
     {
       "key": "Thundersoother",
@@ -505,7 +776,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 14002,
+      "bonuses": [
+        "Electro RES increased by 40%.",
+        "Increases DMG against opponents affected by Electro by 35%."
+      ]
     },
     {
       "key": "TinyMiracle",
@@ -514,7 +790,12 @@
         3,
         4
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10004,
+      "bonuses": [
+        "All Elemental RES increased by 20%.",
+        "Incoming elemental DMG increases corresponding Elemental RES by 30% for 10s. Can only occur once every 10s."
+      ]
     },
     {
       "key": "TravelingDoctor",
@@ -524,7 +805,12 @@
         2,
         3
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 10013,
+      "bonuses": [
+        "Increases incoming healing by 20%.",
+        "Using Elemental Burst restores 20% HP."
+      ]
     },
     {
       "key": "UnfinishedReverie",
@@ -533,7 +819,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15036,
+      "bonuses": [
+        "ATK +18%.",
+        "After leaving combat for 3s, DMG dealt increased by 50%. In combat, if no Burning opponents are nearby for more than 6s, this DMG Bonus will decrease by 10% per second until it reaches 0%. When a Burning opponent exists, it will increase by 10% instead until it reaches 50%. This effect still triggers if the equipping character is off-field."
+      ]
     },
     {
       "key": "VermillionHereafter",
@@ -542,7 +833,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15023,
+      "bonuses": [
+        "ATK +18%.",
+        "After using an Elemental Burst, this character will gain the Nascent Light effect, increasing their ATK by 8% for 16s. When the character's HP decreases, their ATK will further increase by 10%. This further increase can occur this way a maximum of 4 times. This effect can be triggered once every 0.8s. Nascent Light will be dispelled when the character leaves the field. If an Elemental Burst is used again during the duration of Nascent Light, the original Nascent Light will be dispelled."
+      ]
     },
     {
       "key": "ViridescentVenerer",
@@ -551,7 +847,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15002,
+      "bonuses": [
+        "Anemo DMG Bonus +15%",
+        "Increases Swirl reaction DMG dealt by 60%, and Stellar Swirl reaction DMG dealt by 20%. Decreases opponent's Elemental RES to the element infused in the Swirl by 40% for 10s. Upon triggering a Stellar Swirl in the opponent, will also decrease their Cryo RES by 40%. RES debuffs of the same elemental type do not stack."
+      ]
     },
     {
       "key": "VourukashasGlow",
@@ -560,7 +861,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15030,
+      "bonuses": [
+        "HP +20%",
+        "Elemental Skill and Elemental Burst DMG will be increased by 10%. After the equipping character takes DMG, the aforementioned DMG Bonus is increased by 80% for 5s. This effect increase can have 5 stacks. The duration of each stack is counted independently. These effects can be triggered even when the equipping character is not on the field."
+      ]
     },
     {
       "key": "WanderersTroupe",
@@ -569,7 +875,12 @@
         4,
         5
       ],
-      "inGO": true
+      "inGO": true,
+      "id": 15003,
+      "bonuses": [
+        "Increases Elemental Mastery by 80.",
+        "Increases Charged Attack DMG by 35% if the character uses a Catalyst or a Bow."
+      ]
     }
   ]
 }

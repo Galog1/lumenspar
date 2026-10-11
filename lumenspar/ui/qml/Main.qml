@@ -6,7 +6,7 @@ import Lumenspar
 
 ApplicationWindow {
     id: win
-    // Which page is showing: "menu", "scanner" or "wishes". Every page is
+    // Which page is showing: "menu", "scanner", "wishes" or "cards". Every page is
     // created once and only hidden, so a running scan or import, and its
     // log, carry on while another page is open.
     property string page: "menu"
@@ -110,6 +110,7 @@ ApplicationWindow {
                 Text {
                     text: win.page === "scanner" ? "Inventory scanner · exports .GOOD"
                         : win.page === "wishes" ? "Wish counter · pity and 50/50 from your wish history"
+                        : win.page === "cards" ? "Build cards · your showcase builds via Enka.Network"
                         : "Genshin Impact companion"
                     color: Theme.textDim
                     font.pixelSize: 12
@@ -153,5 +154,9 @@ ApplicationWindow {
     Page {
         name: "wishes"
         WishPage { anchors.fill: parent }
+    }
+    Page {
+        name: "cards"
+        BuildsPage { anchors.fill: parent }
     }
 }
