@@ -61,6 +61,19 @@ jobs:
       - name: Run the tests
         run: .venv/bin/python -m pytest -q
 
+      - name: Add the Google sign-in client
+        # Lumenspar's own Google client, so Drive backup needs no setup. Without
+        # the secret (forks, test builds) users connect a project of their own.
+        env:
+          GOOGLE_CLIENT: ${{ secrets.LUMENSPAR_GOOGLE_CLIENT }}
+        run: |
+          if [ -n "$GOOGLE_CLIENT" ]; then
+            printf '%s' "$GOOGLE_CLIENT" > lumenspar/google_client.json
+            echo "Google sign-in client included"
+          else
+            echo "No LUMENSPAR_GOOGLE_CLIENT secret: users set up their own project"
+          fi
+
       - name: Bundle the app (PyInstaller)
         run: .venv/bin/pyinstaller packaging/linux/lumenspar.spec --noconfirm
 

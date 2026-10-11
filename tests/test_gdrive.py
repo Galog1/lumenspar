@@ -23,7 +23,10 @@ CLIENT = "123-abc.apps.googleusercontent.com"
 
 
 def _state(tmp_path, **kw) -> gdrive.DriveState:
-    s = gdrive.DriveState(client_id=CLIENT, client_secret="shh", path=tmp_path / "drive.json")
+    s = gdrive.DriveState(client_id=CLIENT, client_secret="shh", path=tmp_path / "drive.json",
+                          builtin=("", ""))
+    if kw.get("refresh_token"):
+        kw.setdefault("token_client", CLIENT)
     for k, v in kw.items():
         setattr(s, k, v)
     return s
@@ -46,7 +49,51 @@ def test_state_round_trips_and_is_owner_only(tmp_path):
     assert gdrive.DriveState.load(s.path) == s
     if os.name == "posix":
         assert (s.path.stat().st_mode & 0o777) == 0o600
-    assert gdrive.DriveState.load(tmp_path / "missing.json").signed_in is False
+    assert gdrive.DriveState.load(tmp_path / "missing.json", builtin=("", "")).signed_in is False
+
+
+# -- the built-in client -------------------------------------------------------------
+
+def test_the_console_download_and_a_flat_file_both_work_as_the_builtin_client(tmp_path):
+    f = tmp_path / "google_client.json"
+    f.write_text(json.dumps({"installed": {"client_id": "b.apps.googleusercontent.com",
+                                           "client_secret": "bs", "auth_uri": "x"}}),
+                 encoding="utf-8-sig")       # PowerShell may write a byte-order mark
+    assert gdrive.builtin_client(f) == ("b.apps.googleusercontent.com", "bs")
+    f.write_text(json.dumps({"client_id": "c", "client_secret": "cs"}))
+    assert gdrive.builtin_client(f) == ("c", "cs")
+    assert gdrive.builtin_client(tmp_path / "absent.json") == ("", "")
+
+
+def test_the_users_own_client_wins_and_a_sign_in_belongs_to_its_client(tmp_path):
+    s = gdrive.DriveState(path=tmp_path / "d.json", builtin=("b", "bs"))
+    assert s.configured and s.client == ("b", "bs") and not s.own_client
+    s.refresh_token, s.token_client = "r", "b"
+    assert s.signed_in
+    s.client_id, s.client_secret = CLIENT, "shh"       # switching to their own project
+    assert s.client == (CLIENT, "shh") and not s.signed_in
+    s.client_id = s.client_secret = ""                  # and back
+    assert s.signed_in
+
+
+def test_a_sign_in_saved_before_token_client_existed_still_counts(tmp_path):
+    p = tmp_path / "d.json"
+    p.write_text(json.dumps({"client_id": CLIENT, "client_secret": "shh", "refresh_token": "r"}))
+    assert gdrive.DriveState.load(p, builtin=("", "")).signed_in
+
+
+def test_sign_in_uses_the_builtin_client_when_there_is_no_own_one(tmp_path):
+    open_url, seen = _browser()
+    posted = {}
+
+    def transport(req):
+        posted.update(urllib.parse.parse_qsl(req.data.decode()))
+        return _reply(200, {"refresh_token": "r2", "id_token": _id_token("x@example.com")})
+
+    s = gdrive.DriveState(path=tmp_path / "d.json", builtin=("b", "bs"))
+    gdrive.sign_in(s, open_url, transport=transport, timeout=10)
+    assert seen["client_id"] == "b" and posted["client_secret"] == "bs"
+    assert s.signed_in and s.token_client == "b"
 
 
 # -- sign-in --------------------------------------------------------------------
@@ -104,7 +151,7 @@ def test_sign_in_can_be_cancelled(tmp_path):
 
 
 def test_sign_in_needs_a_client(tmp_path):
-    s = gdrive.DriveState(path=tmp_path / "d.json")
+    s = gdrive.DriveState(path=tmp_path / "d.json", builtin=("", ""))
     with pytest.raises(gdrive.DriveError, match=rf"\(step {gdrive.STEP_CLIENT}\)"):
         gdrive.sign_in(s, lambda url: None)
 

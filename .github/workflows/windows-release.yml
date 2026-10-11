@@ -50,6 +50,17 @@ jobs:
       - name: Run the tests
         run: python -m pytest -q
 
+      - name: Add the Google sign-in client
+        # Lumenspar's own Google client, so Drive backup needs no setup. Without
+        # the secret (forks, test builds) users connect a project of their own.
+        env:
+          GOOGLE_CLIENT: ${{ secrets.LUMENSPAR_GOOGLE_CLIENT }}
+        run: |
+          if ($env:GOOGLE_CLIENT) {
+            Set-Content -Path lumenspar/google_client.json -Value $env:GOOGLE_CLIENT -Encoding utf8NoBOM
+            Write-Host "Google sign-in client included"
+          } else { Write-Host "No LUMENSPAR_GOOGLE_CLIENT secret: users set up their own project" }
+
       - name: Bundle the app (PyInstaller)
         run: pyinstaller packaging/windows/lumenspar.spec --noconfirm
 

@@ -48,6 +48,7 @@ class WishBackend(QObject):
         self._paimon_link = ""
         self._on_success = None      # what to do once the current job has finished
         self._drive_job = False       # the current job is a Drive one (own status line)
+        self._signing_in = False
         self._drive = gdrive.DriveState.load()
         self._drive_status = ""
         self._drive_step = 0          # the guide step the last Drive error points at
@@ -97,6 +98,19 @@ class WishBackend(QObject):
     @Property(bool, notify=driveChanged)
     def driveSignedIn(self) -> bool:
         return self._drive.signed_in
+
+    @Property(bool, constant=True)
+    def driveBuiltin(self) -> bool:
+        """This build carries Lumenspar's own Google client: no setup needed."""
+        return bool(self._drive.builtin[0])
+
+    @Property(bool, notify=driveChanged)
+    def driveOwnClient(self) -> bool:
+        return self._drive.own_client
+
+    @Property(bool, notify=driveChanged)
+    def driveSigningIn(self) -> bool:
+        return self._signing_in
 
     @Property(str, notify=driveChanged)
     def driveEmail(self) -> str:
@@ -223,6 +237,14 @@ class WishBackend(QObject):
         self._drive_message("Client saved -- now sign in with Google.")
 
     @Slot()
+    def clearDriveClient(self) -> None:
+        """Forget the user's own client and go back to the built-in one."""
+        self._drive.client_id = self._drive.client_secret = ""
+        self._drive.save()
+        self._drive_message("Using Lumenspar's own Google sign-in again." if self.driveBuiltin
+                            else "Client removed.")
+
+    @Slot()
     def signInGoogle(self) -> None:
         def job(log) -> None:
             log("Waiting for Google sign-in in the browser…")
@@ -234,6 +256,8 @@ class WishBackend(QObject):
             self._sync("Signed in -- syncing with Google Drive…")
 
         self._start(job, "Google sign-in", "Finish signing in in your browser…", done, drive=True)
+        self._signing_in = self._busy
+        self.driveChanged.emit()
 
     @Slot()
     def signOutGoogle(self) -> None:
@@ -304,6 +328,9 @@ class WishBackend(QObject):
         self._busy = False
         self.busyChanged.emit()
         on_success, self._on_success = self._on_success, None
+        if self._signing_in:
+            self._signing_in = False
+            self.driveChanged.emit()
         if ok and on_success is not None:
             on_success()
         elif not ok and self._drive_job:

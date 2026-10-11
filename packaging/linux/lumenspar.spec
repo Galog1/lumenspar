@@ -29,6 +29,9 @@ a = Analysis(
         (str(root / "lumenspar" / "ui" / "qml"), "lumenspar/ui/qml"),
         (str(root / "lumenspar" / "gamedata"), "lumenspar/gamedata"),
         (str(root / "install" / "lumenspar.svg"), "install"),
+        # Lumenspar's Google sign-in client, when the release workflow wrote one.
+        *([(str(root / "lumenspar" / "google_client.json"), "lumenspar")]
+          if (root / "lumenspar" / "google_client.json").is_file() else []),
         (str(tessdata / "eng.traineddata"), "tesseract/tessdata"),
     ],
     hiddenimports=collect_submodules(

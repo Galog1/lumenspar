@@ -17,11 +17,14 @@ Item {
 
     // The Google Drive setup guide: shown on request, and opened by any
     // Drive error, which also highlights the step that fixes it.
-    property bool guideOpen: !wishes.driveSignedIn && wishes.driveConfigured
+    // With the built-in client the guide is optional (for using a project of
+    // one's own), and its step numbers only matter while one is in use.
+    property bool guideOpen: !wishes.driveSignedIn && wishes.driveOwnClient
+    readonly property bool guideMatters: !wishes.driveBuiltin || wishes.driveOwnClient
 
     Connections {
         target: wishes
-        function onDriveChanged() { if (wishes.driveStep > 0) page.guideOpen = true }
+        function onDriveChanged() { if (wishes.driveStep > 0 && page.guideMatters) page.guideOpen = true }
     }
 
     // ── one step of the Drive setup guide ──────────────────────────────
@@ -33,7 +36,7 @@ Item {
         property string link: ""
         property string linkLabel: "Open"
         default property alias extra: extraArea.data
-        readonly property bool flagged: wishes.driveStep === number
+        readonly property bool flagged: page.guideMatters && wishes.driveStep === number
         Layout.fillWidth: true
         implicitHeight: stepRow.implicitHeight + 24
         radius: 10
@@ -489,6 +492,8 @@ Item {
                 title: "Google Drive backup"
                 subtitle: wishes.driveSignedIn
                     ? "Your wish history is copied to a hidden Lumenspar folder in your Google Drive after every import, and restored from it on any computer you sign in on."
+                    : wishes.driveBuiltin
+                    ? "Keep your wish history in your Google Drive, so a reinstall or a new computer gets it all back. Lumenspar can only see its own hidden folder there, none of your files."
                     : "Keep your wish history in your own Google Drive, so a reinstall or a new computer gets it all back. It needs a free Google Cloud project of your own, set up once with the guide below (about 5 minutes)."
 
                 RowLayout {
@@ -510,14 +515,19 @@ Item {
                         enabledState: !wishes.busy
                         onClicked: wishes.backupNow()
                     }
-                    AccentButton {
-                        visible: !wishes.driveSignedIn && wishes.driveConfigured
-                        label: wishes.busy ? "Cancel" : "Sign in with Google"
-                        pulsing: wishes.busy
-                        onClicked: wishes.busy ? wishes.stop() : wishes.signInGoogle()
+                    GoogleButton {
+                        visible: !wishes.driveSignedIn && wishes.driveConfigured && !wishes.driveSigningIn
+                        enabledState: !wishes.busy
+                        onClicked: wishes.signInGoogle()
                     }
                     GhostButton {
-                        label: page.guideOpen ? "Hide setup guide" : "Setup guide"
+                        visible: wishes.driveSigningIn
+                        label: "Cancel sign-in"
+                        onClicked: wishes.stop()
+                    }
+                    GhostButton {
+                        label: page.guideOpen ? "Hide setup guide"
+                             : wishes.driveBuiltin ? "Use your own Google project" : "Setup guide"
                         onClicked: page.guideOpen = !page.guideOpen
                     }
                     GhostButton {
@@ -532,7 +542,7 @@ Item {
                     Layout.fillWidth: true
                     text: wishes.driveStatus
                     visible: text !== ""
-                    color: wishes.driveStep > 0 ? Theme.danger : Theme.textDim
+                    color: wishes.driveStep > 0 && page.guideMatters ? Theme.danger : Theme.textDim
                     font.pixelSize: 12
                     wrapMode: Text.WordWrap
                 }
@@ -541,6 +551,27 @@ Item {
                     Layout.fillWidth: true
                     spacing: 10
                     visible: page.guideOpen
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        visible: wishes.driveBuiltin
+                        spacing: 10
+                        Text {
+                            Layout.fillWidth: true
+                            text: wishes.driveOwnClient
+                                  ? "You are using your own Google project. You can go back to Lumenspar's own sign-in at any time."
+                                  : "Optional: this version of Lumenspar already signs in through its own Google project. Follow these steps only to use a project of your own instead."
+                            color: Theme.accent
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                        GhostButton {
+                            visible: wishes.driveOwnClient
+                            label: "Use Lumenspar's sign-in"
+                            enabledState: !wishes.busy
+                            onClicked: wishes.clearDriveClient()
+                        }
+                    }
 
                     Text {
                         Layout.fillWidth: true
@@ -640,11 +671,17 @@ Item {
                         heading: "Sign in"
                         body: "Your browser opens Google's sign-in. Choose your account and allow access. If Google warns that it has not verified the app, that is expected — it is your own app: choose <b>Advanced</b>, then <b>Go to Lumenspar</b>. Then come back here; your history is backed up straight away."
 
-                        AccentButton {
-                            label: wishes.driveSignedIn ? "Signed in" : wishes.busy ? "Cancel" : "Sign in with Google"
-                            enabledState: wishes.driveConfigured && !wishes.driveSignedIn
-                            pulsing: wishes.busy && !wishes.driveSignedIn
-                            onClicked: wishes.busy ? wishes.stop() : wishes.signInGoogle()
+                        Row {
+                            spacing: 10
+                            GoogleButton {
+                                enabledState: wishes.driveOwnClient && !wishes.driveSignedIn && !wishes.busy
+                                onClicked: wishes.signInGoogle()
+                            }
+                            GhostButton {
+                                visible: wishes.driveSigningIn
+                                label: "Cancel sign-in"
+                                onClicked: wishes.stop()
+                            }
                         }
                     }
                 }

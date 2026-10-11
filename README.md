@@ -211,22 +211,32 @@ temporary key to your wish history, is never saved.
 ### Google Drive backup (optional)
 
 Like paimon.moe, the wish history can be kept in your Google Drive, so a
-reinstall or another computer gets it back. Lumenspar has no server and no
-shared Google app of its own: you connect a free Google Cloud project of your
-own, once. The **Setup guide** on the wish counter page walks through it step
-by step, with buttons that open each console page, and stays there for later;
-when something goes wrong, the message names the step that fixes it and the
-guide highlights it. Google only publishes a project that has a homepage, a
-privacy policy and terms of service on an authorized domain, so the guide offers Lumenspar's own
+reinstall or another computer gets it back: press **Sign in with Google** on
+the wish counter page. Lumenspar has no server; the backup goes straight from
+your computer to your Drive.
+
+Release builds sign in through Lumenspar's own Google project. Its client is
+written into the build from the `LUMENSPAR_GOOGLE_CLIENT` repository secret
+(the JSON the Google Cloud console downloads for a Desktop app client) and is
+never committed. To use the same client when running from source, save that
+JSON as `lumenspar/google_client.json`, which is git-ignored.
+
+Without it -- in a source checkout or a fork -- or by choice (**Use your own
+Google project**), you connect a free Google Cloud project of your own. The
+setup guide on the wish counter page walks through it step by step, with
+buttons that open each console page; when something goes wrong, the message
+names the step that fixes it and the guide highlights it. Google only
+publishes a project that has a homepage, a privacy policy and terms of
+service on an authorized domain, so the guide offers Lumenspar's own
 ([docs/](docs/), served at https://galog1.github.io/lumenspar/).
 
 Lumenspar only asks for its own hidden app-data folder in Drive (it cannot
 see any of your files) and your email address (to show who is signed in).
 Each account is stored there as `wishes-<uid>.json`. Syncing merges both
 copies by wish id, so neither side loses anything. It runs on startup, after
-every import, and from **Back up now**. The client ID, client secret and
-sign-in are kept in `google_drive.json` in the config folder, readable only
-by you.
+every import, and from **Back up now**. The sign-in, and the client ID and
+secret of a project of your own, are kept in `google_drive.json` in the
+config folder, readable only by you.
 
 ## Characters from Enka.Network
 

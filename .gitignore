@@ -14,6 +14,10 @@ venv/
 /failures/
 /lumenspar.good.json
 
+# Lumenspar's Google sign-in client. Release builds write it from the
+# LUMENSPAR_GOOGLE_CLIENT repository secret; it is never committed.
+/lumenspar/google_client.json
+
 # Test cache
 .pytest_cache/
 

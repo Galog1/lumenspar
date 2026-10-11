@@ -1,7 +1,10 @@
 """Google sign-in and Drive's hidden app-data folder, for backing up data.
 
-Each user connects their *own* Google Cloud OAuth client (Desktop app type);
-the wish counter's setup guide walks through creating one. Lumenspar asks for
+Release builds carry Lumenspar's own Google client (google_client.json, written
+by the release workflow from a repository secret and never committed), so
+signing in is one click. Anyone can instead connect their *own* Google Cloud
+OAuth client (Desktop app type), which a source checkout needs; the wish
+counter's setup guide walks through creating one. Lumenspar asks for
 two non-sensitive permissions only: its own hidden app-data folder in Drive
 (which cannot see any of the user's files) and the email address, to show
 who is signed in. Non-sensitive scopes need no Google review.
@@ -10,8 +13,8 @@ Sign-in is Google's installed-app flow: the browser is sent to Google, which
 redirects back to a one-off loopback address (http://127.0.0.1:<port>/) that
 this module listens on, protected with PKCE. The refresh token that comes
 back is kept in google_drive.json in the config folder, readable by the owner
-only, together with the client ID and secret (which Google itself does not
-treat as secret for Desktop-app clients).
+only, together with any client ID and secret of the user's own (which Google
+itself does not treat as secret for Desktop-app clients).
 """
 
 from __future__ import annotations
@@ -40,6 +43,7 @@ DRIVE_FILES = "https://www.googleapis.com/drive/v3/files"
 DRIVE_UPLOAD = "https://www.googleapis.com/upload/drive/v3/files"
 SCOPES = "openid email https://www.googleapis.com/auth/drive.appdata"
 STATE_PATH = CONFIG_DIR / "google_drive.json"
+BUILTIN_PATH = Path(__file__).with_name("google_client.json")
 SIGN_IN_TIMEOUT = 300.0
 
 # The setup guide's steps, referred to by number in error messages.
@@ -64,39 +68,70 @@ class SignedOut(DriveError):
 
 # -- saved state -------------------------------------------------------------------
 
+def builtin_client(path: Path = BUILTIN_PATH) -> tuple[str, str]:
+    """The client release builds carry, or ("", "") in a source checkout.
+
+    Accepts the JSON the Google Cloud console downloads for a Desktop app
+    client ({"installed": {...}}) as well as a flat {"client_id", ...}.
+    """
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return "", ""
+    raw = raw.get("installed", raw) if isinstance(raw, dict) else {}
+    cid, secret = str(raw.get("client_id", "")), str(raw.get("client_secret", ""))
+    return (cid, secret) if cid and secret else ("", "")
+
+
+_FIELDS = ("client_id", "client_secret", "refresh_token", "token_client", "email", "last_backup")
+
+
 @dataclass
 class DriveState:
-    client_id: str = ""
+    client_id: str = ""            # the user's own client, if they set one up
     client_secret: str = ""
     refresh_token: str = ""
+    token_client: str = ""         # the client the refresh token was issued to
     email: str = ""
     last_backup: str = ""
     path: Path = field(default=STATE_PATH, repr=False, compare=False)
+    builtin: tuple[str, str] = field(default_factory=builtin_client, repr=False, compare=False)
 
     @property
-    def configured(self) -> bool:
+    def own_client(self) -> bool:
         return bool(self.client_id and self.client_secret)
 
     @property
+    def client(self) -> tuple[str, str]:
+        """The client in use: the user's own if they set one up, else the built-in one."""
+        return (self.client_id, self.client_secret) if self.own_client else self.builtin
+
+    @property
+    def configured(self) -> bool:
+        return bool(self.client[0])
+
+    @property
     def signed_in(self) -> bool:
-        return self.configured and bool(self.refresh_token)
+        # A sign-in belongs to the client it was made with.
+        return self.configured and bool(self.refresh_token) \
+            and self.token_client == self.client[0]
 
     @classmethod
-    def load(cls, path: Path = STATE_PATH) -> "DriveState":
+    def load(cls, path: Path = STATE_PATH, **kw) -> "DriveState":
         try:
             raw = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
-            return cls(path=path)
-        return cls(**{k: str(raw.get(k, "")) for k in
-                      ("client_id", "client_secret", "refresh_token", "email", "last_backup")},
-                   path=path)
+            return cls(path=path, **kw)
+        state = cls(**{k: str(raw.get(k, "")) for k in _FIELDS}, path=path, **kw)
+        if state.refresh_token and not state.token_client:
+            state.token_client = state.client_id      # saved before token_client existed
+        return state
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps({k: getattr(self, k) for k in
-                                   ("client_id", "client_secret", "refresh_token", "email",
-                                    "last_backup")}, indent=2), encoding="utf-8")
+        tmp.write_text(json.dumps({k: getattr(self, k) for k in _FIELDS}, indent=2),
+                       encoding="utf-8")
         try:
             os.chmod(tmp, 0o600)      # holds a refresh token
         except OSError:
@@ -200,12 +235,13 @@ def sign_in(state: DriveState, open_url: Callable[[str], None], *,
     """Run the browser sign-in and store the refresh token and email in `state`."""
     if not state.configured:
         raise DriveError(f"Enter the client ID and secret first (step {STEP_CLIENT}).")
+    client_id, client_secret = state.client
     server = http.server.HTTPServer(("127.0.0.1", 0), http.server.BaseHTTPRequestHandler)
     try:
         redirect = f"http://127.0.0.1:{server.server_address[1]}/"
         verifier, challenge = pkce_pair()
         nonce = secrets.token_urlsafe(16)
-        open_url(auth_url(state.client_id, redirect, challenge, nonce))
+        open_url(auth_url(client_id, redirect, challenge, nonce))
         reply = _wait_for_redirect(server, timeout, should_stop)
     finally:
         server.server_close()
@@ -220,13 +256,13 @@ def sign_in(state: DriveState, open_url: Callable[[str], None], *,
                              f"(step {STEP_PUBLISH}).")
         raise DriveError(f"Google sign-in failed ({reply['error']})")
 
-    tokens = _post_token({"code": reply["code"], "client_id": state.client_id,
-                          "client_secret": state.client_secret, "redirect_uri": redirect,
+    tokens = _post_token({"code": reply["code"], "client_id": client_id,
+                          "client_secret": client_secret, "redirect_uri": redirect,
                           "grant_type": "authorization_code", "code_verifier": verifier},
                          transport)
     if not tokens.get("refresh_token"):
         raise DriveError("Google did not return a lasting sign-in; try signing in again.")
-    state.refresh_token = tokens["refresh_token"]
+    state.refresh_token, state.token_client = tokens["refresh_token"], client_id
     state.email = _email_from_id_token(tokens.get("id_token", ""))
     state.save()
 
@@ -280,8 +316,9 @@ class AppData:
             raise SignedOut("Not signed in to Google Drive.")
         if not self._access or time.monotonic() > self._expires - 60:
             try:
-                tokens = _post_token({"client_id": self.state.client_id,
-                                      "client_secret": self.state.client_secret,
+                client_id, client_secret = self.state.client
+                tokens = _post_token({"client_id": client_id,
+                                      "client_secret": client_secret,
                                       "refresh_token": self.state.refresh_token,
                                       "grant_type": "refresh_token"}, self._transport)
             except SignedOut:
