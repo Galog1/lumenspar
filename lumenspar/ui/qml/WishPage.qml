@@ -570,12 +570,13 @@ Item {
                     }
                     GuideStep {
                         number: 4
-                        heading: "Add a homepage and privacy policy"
-                        body: "Google will not publish an app without these. On the <b>Branding</b> page, under <b>App domain</b>, enter the two links below (Lumenspar's own pages; a site of your own works too). Under <b>Authorized domains</b> press <b>Add domain</b> and enter the domain below. Then press <b>Save</b> at the bottom."
+                        heading: "Add a homepage, privacy policy and terms"
+                        body: "Google will not publish an app without these. On the <b>Branding</b> page, under <b>App domain</b>, enter the three links below (Lumenspar's own pages; a site of your own works too). Under <b>Authorized domains</b> press <b>Add domain</b> and enter the domain below. Then press <b>Save</b> at the bottom."
                         link: "https://console.developers.google.com/auth/branding"
 
                         CopyValue { label: "Application home page"; value: wishes.driveSite.homepage }
                         CopyValue { label: "Privacy policy link"; value: wishes.driveSite.privacy }
+                        CopyValue { label: "Terms of service link"; value: wishes.driveSite.terms }
                         CopyValue { label: "Authorized domain"; value: wishes.driveSite.domain }
                     }
                     GuideStep {

@@ -124,7 +124,7 @@ class WishBackend(QObject):
     @Property("QVariantMap", constant=True)
     def driveSite(self) -> dict:
         return {"homepage": gdrive.HOMEPAGE_URL, "privacy": gdrive.PRIVACY_URL,
-                "domain": gdrive.AUTHORIZED_DOMAIN}
+                "terms": gdrive.TERMS_URL, "domain": gdrive.AUTHORIZED_DOMAIN}
 
     # -- actions ----------------------------------------------------------
 
