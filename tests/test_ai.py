@@ -394,7 +394,9 @@ def test_scanner_batches_2_2_1_and_accounts(monkeypatch):
         scanner._read_one(tile, result)
     scanner._flush(result)
     scanner._ai_pipe.drain()          # what scan() does at the end
-    assert sizes == [2, 2, 1]
+    # Batches run on worker threads, so they may *start* in any order; result
+    # order is pinned by test_scanner_keeps_reading_while_a_batch_is_in_flight.
+    assert sorted(sizes, reverse=True) == [2, 2, 1]
     assert result.stats.kept == 5
     assert result.stats.failed == 0
     assert len(result.items) == 5
