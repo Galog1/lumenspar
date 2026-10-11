@@ -1,9 +1,15 @@
 # Lumenspar
 
-An inventory scanner for Genshin Impact (Linux; Windows with the AI reader). It reads your artifacts, weapons,
-characters and materials off the screen with OCR and writes a `.GOOD` JSON file
-that [Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/),
-[SEELIE.me](https://seelie.me) and Aspirine's calculator can import.
+A Genshin Impact companion for Linux and Windows, with two tools on its main
+menu:
+
+- **Wish Counter** -- pity, guarantees and 50/50 results for every banner, read
+  from your in-game wish history (the same method as
+  [paimon.moe](https://paimon.moe)).
+- **Inventory Scanner** -- reads your artifacts, weapons, characters and
+  materials off the screen with OCR and writes a `.GOOD` JSON file that
+  [Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/),
+  [SEELIE.me](https://seelie.me) and Aspirine's calculator can import.
 
 Built for Wayland first: capture goes through the `xdg-desktop-portal`
 ScreenCast API and a PipeWire stream, so it works on KDE, GNOME and wlroots
@@ -170,6 +176,35 @@ python3 tools/ai_eval.py --kind weapons calib/Weapons/*.png
 This makes real Gemini requests (billed against your free quota) and reports
 each panel through the same validation the scanner runs.
 
+## Wish counter
+
+Open the wish history in-game (**Wish → History**), then press **Import from
+game**. Opening it leaves the page's link in the game's web cache for about a
+day; Lumenspar finds it, checks which cached link still works, and reads every
+banner through HoYoverse's wish history API -- the same one the in-game page
+uses. This is paimon.moe's method, done locally instead of with a PowerShell
+script, so it works on Linux too: the game folder is found inside An Anime Game
+Launcher (native or Flatpak), Lutris, Heroic or another Wine prefix, or picked
+by hand with **Choose game folder…**. A link can also be pasted directly.
+
+**Copy link for paimon.moe** finds a working link the same way and puts it on
+the clipboard in exactly the form paimon.moe's own script produces, ready to
+paste into [paimon.moe's wish import](https://paimon.moe/wish/import). Treat it
+like a password until it expires: anyone holding it can read your wish
+history.
+
+Per banner it shows the 5★ and 4★ pity, whether the next 5★ is guaranteed
+to be featured, the 50/50 record, and every 5★ with the pity it came at.
+Won or lost is decided against paimon.moe's banner schedule
+(`lumenspar/gamedata/wish_banners.json`, refreshed by
+`tools/update_gamedata.py`), so a 5★ from a banner newer than that file shows as
+*unknown* until the game data is updated.
+
+The API only goes back about a year, so every imported wish is kept in
+`~/.local/share/lumenspar/wishes/` (`%LOCALAPPDATA%\lumenspar\wishes` on
+Windows) and later imports only add new ones. The link itself, which carries a
+temporary key to your wish history, is never saved.
+
 ## Characters from Enka.Network
 
 Character data can come from your in-game profile showcase via
@@ -302,3 +337,6 @@ to license:
 - `lumenspar/gamedata/` is generated, not authored -- `tools/update_gamedata.py`
   builds it by joining Genshin Optimizer's key vocabulary with Project Amber's
   English names. Check those projects' own terms before redistributing it.
+- The wish counter follows [paimon.moe](https://github.com/MadeBaruna/paimon-moe)'s
+  method, and `lumenspar/gamedata/wish_banners.json` is generated from its
+  banner data: Copyright (c) 2021 Made Baruna, MIT License.

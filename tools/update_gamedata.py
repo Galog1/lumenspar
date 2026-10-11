@@ -39,6 +39,11 @@ AMBER_BASE = "https://gi.yatta.moe/api/v2/en"
 ENKA_AVATARS = (
     "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/gi/avatars.json"
 )
+# paimon.moe's banner schedule (MIT): every event banner with its dates and
+# featured 5★/4★, used by the wish counter to tell a won 50/50 from a lost one.
+PAIMON_BANNERS = (
+    "https://raw.githubusercontent.com/MadeBaruna/paimon-moe/main/src/data/banners.js"
+)
 GO_ARTIFACT_STATS = (
     "https://raw.githubusercontent.com/frzyc/genshin-optimizer/master"
     "/libs/gi/stats/Data/Artifacts"
@@ -183,6 +188,37 @@ def enka_map(avatars: dict) -> tuple[dict, list[str]]:
     return out, skipped
 
 
+def wish_banners(known_names: list[str]) -> tuple[dict, list[str]]:
+    """paimon.moe's banners.js as JSON, plus featured ids no known item matches.
+
+    The file is a JavaScript object literal laid out one key per line, so it
+    becomes a Python literal by quoting the bare keys at line starts and
+    spelling the booleans the Python way. Item ids are paimon.moe's
+    ("primordial_jade_winged-spear"); lumenspar.wishes.stats.item_id derives
+    the same id from an item's display name.
+    """
+    import ast
+
+    src = fetch(PAIMON_BANNERS)
+    body = src[src.index("{"): src.rindex("}") + 1]
+    body = re.sub(r"^\s*//.*$", "", body, flags=re.M)
+    body = re.sub(r"^(\s*)([A-Za-z_]\w*):", r'\1"\2":', body, flags=re.M)
+    body = re.sub(r"\btrue\b", "True", re.sub(r"\bfalse\b", "False", body))
+    data = ast.literal_eval(body)
+
+    def item_id(name: str) -> str:   # mirror of lumenspar.wishes.stats.item_id
+        s = name.lower().replace("'", "").replace("\u2019", "")
+        return re.sub(r"[^a-z0-9]+", "_", s).strip("_")
+
+    keep = ("name", "start", "end", "featured", "featuredRare", "timezoneDependent", "version")
+    out = {section: [{k: b[k] for k in keep if k in b} for b in data.get(section, [])]
+           for section in ("characters", "weapons", "chronicled")}
+    known = {item_id(n) for n in known_names}
+    ids = {i.replace("-", "_") for section in out.values() for b in section
+           for i in b.get("featured", []) + b.get("featuredRare", [])}
+    return out, sorted(ids - known)
+
+
 def main() -> int:
     print("fetching Genshin Optimizer key vocabulary ...")
     go = go_keys()
@@ -307,6 +343,15 @@ def main() -> int:
     print(f"  wrote enka.json: {len(enka)} avatars")
     if enka_skipped:
         notes.append(f"enka: {len(enka_skipped)} ids without usable skills (kept out): {enka_skipped}")
+
+    banners, unmatched = wish_banners([c["name"] for c in chars] + [w["name"] for w in weps])
+    (OUT / "wish_banners.json").write_text(
+        json.dumps({"generated": stamp, "source": "paimon.moe (MIT)", **banners}, indent=1),
+        encoding="utf-8")
+    print(f"  wrote wish_banners.json: {len(banners['characters'])} character, "
+          f"{len(banners['weapons'])} weapon banners")
+    if unmatched:
+        notes.append(f"wish banners: {len(unmatched)} featured ids match no known item: {unmatched}")
 
     stats = artifact_stats()
     (OUT / "artifact_stats.json").write_text(

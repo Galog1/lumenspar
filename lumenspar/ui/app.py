@@ -14,6 +14,7 @@ from PySide6.QtQuickControls2 import QQuickStyle
 
 from .. import hostos
 from .backend import Backend
+from .wish_backend import WishBackend
 
 QML_DIR = Path(__file__).resolve().parent / "qml"
 ICON = Path(__file__).resolve().parents[2] / "install" / "lumenspar.svg"
@@ -43,8 +44,11 @@ def main(argv: list[str] | None = None) -> int:
     # window still holds bindings to it, which surfaces as 'property of null'.
     backend = Backend(app)
     engine.rootContext().setContextProperty("backend", backend)
+    wishes = WishBackend(app)
+    engine.rootContext().setContextProperty("wishes", wishes)
 
     app.aboutToQuit.connect(backend.shutdown)
+    app.aboutToQuit.connect(wishes.shutdown)
 
     engine.load(QUrl.fromLocalFile(str(QML_DIR / "Main.qml")))
     smoke = os.environ.get("LUMENSPAR_SMOKE_TEST")

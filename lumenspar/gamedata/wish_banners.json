@@ -1,0 +1,3886 @@
+{
+ "generated": "2026-10-11T18:36:27+00:00",
+ "source": "paimon.moe (MIT)",
+ "characters": [
+  {
+   "name": "Ballad in Goblets",
+   "start": "2020-09-28 00:00:00",
+   "end": "2020-10-18 18:00:00",
+   "featured": [
+    "venti"
+   ],
+   "featuredRare": [
+    "barbara",
+    "fischl",
+    "xiangling"
+   ],
+   "timezoneDependent": true,
+   "version": "1.0"
+  },
+  {
+   "name": "Sparkling Steps",
+   "start": "2020-10-20 18:00:00",
+   "end": "2020-11-10 16:00:00",
+   "featured": [
+    "klee"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "sucrose",
+    "noelle"
+   ],
+   "version": "1.0"
+  },
+  {
+   "name": "Farewell of Snezhnaya",
+   "start": "2020-11-11 06:00:00",
+   "end": "2020-12-01 16:00:00",
+   "featured": [
+    "tartaglia"
+   ],
+   "featuredRare": [
+    "ningguang",
+    "beidou",
+    "diona"
+   ],
+   "timezoneDependent": true,
+   "version": "1.1"
+  },
+  {
+   "name": "Gentry of Hermitage",
+   "start": "2020-12-01 18:00:00",
+   "end": "2020-12-22 15:00:00",
+   "featured": [
+    "zhongli"
+   ],
+   "featuredRare": [
+    "xinyan",
+    "razor",
+    "chongyun"
+   ],
+   "version": "1.1"
+  },
+  {
+   "name": "Secretum Secretorum",
+   "start": "2020-12-23 06:00:00",
+   "end": "2021-01-12 16:00:00",
+   "featured": [
+    "albedo"
+   ],
+   "featuredRare": [
+    "fischl",
+    "bennett",
+    "sucrose"
+   ],
+   "timezoneDependent": true,
+   "version": "1.2"
+  },
+  {
+   "name": "Adrift in the Harbor",
+   "start": "2021-01-12 18:00:00",
+   "end": "2021-02-02 15:00:00",
+   "featured": [
+    "ganyu"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "xiangling",
+    "noelle"
+   ],
+   "version": "1.2"
+  },
+  {
+   "name": "Invitation to Mundane Life",
+   "start": "2021-02-03 06:00:00",
+   "end": "2021-02-17 16:00:00",
+   "featured": [
+    "xiao"
+   ],
+   "featuredRare": [
+    "diona",
+    "xinyan",
+    "beidou"
+   ],
+   "timezoneDependent": true,
+   "version": "1.3"
+  },
+  {
+   "name": "Dance of Lanterns",
+   "start": "2021-02-17 18:00:00",
+   "end": "2021-03-02 16:00:00",
+   "featured": [
+    "keqing"
+   ],
+   "featuredRare": [
+    "barbara",
+    "bennett",
+    "ningguang"
+   ],
+   "version": "1.3"
+  },
+  {
+   "name": "Moment of Bloom",
+   "start": "2021-03-02 18:00:00",
+   "end": "2021-03-16 15:00:00",
+   "featured": [
+    "hu_tao"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "xiangling",
+    "chongyun"
+   ],
+   "version": "1.3"
+  },
+  {
+   "name": "Ballad in Goblets",
+   "start": "2021-03-17 06:00:00",
+   "end": "2021-04-06 16:00:00",
+   "featured": [
+    "venti"
+   ],
+   "featuredRare": [
+    "sucrose",
+    "razor",
+    "noelle"
+   ],
+   "timezoneDependent": true,
+   "version": "1.4"
+  },
+  {
+   "name": "Farewell of Snezhnaya",
+   "start": "2021-04-06 18:00:00",
+   "end": "2021-04-27 15:00:00",
+   "featured": [
+    "tartaglia"
+   ],
+   "featuredRare": [
+    "rosaria",
+    "fischl",
+    "barbara"
+   ],
+   "version": "1.4"
+  },
+  {
+   "name": "Gentry of Hermitage",
+   "start": "2021-04-28 06:00:00",
+   "end": "2021-05-18 17:59:59",
+   "featured": [
+    "zhongli"
+   ],
+   "featuredRare": [
+    "yanfei",
+    "noelle",
+    "diona"
+   ],
+   "timezoneDependent": true,
+   "version": "1.5"
+  },
+  {
+   "name": "Born of Ocean Swell",
+   "start": "2021-05-18 18:00:00",
+   "end": "2021-06-08 15:00:00",
+   "featured": [
+    "eula"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "beidou",
+    "xinyan"
+   ],
+   "version": "1.5"
+  },
+  {
+   "name": "Sparkling Steps",
+   "start": "2021-06-09 06:00:00",
+   "end": "2021-06-29 17:59:59",
+   "featured": [
+    "klee"
+   ],
+   "featuredRare": [
+    "fischl",
+    "sucrose",
+    "barbara"
+   ],
+   "timezoneDependent": true,
+   "version": "1.6"
+  },
+  {
+   "name": "Leaves in the Wind",
+   "start": "2021-06-29 18:00:00",
+   "end": "2021-07-20 14:59:59",
+   "featured": [
+    "kaedehara_kazuha"
+   ],
+   "featuredRare": [
+    "bennett",
+    "razor",
+    "rosaria"
+   ],
+   "version": "1.6"
+  },
+  {
+   "name": "The Herons Court",
+   "start": "2021-07-21 06:00:00",
+   "end": "2021-08-10 17:59:59",
+   "featured": [
+    "kamisato_ayaka"
+   ],
+   "featuredRare": [
+    "chongyun",
+    "ningguang",
+    "yanfei"
+   ],
+   "timezoneDependent": true,
+   "version": "2.0"
+  },
+  {
+   "name": "Tapestry of Golden Flames",
+   "start": "2021-08-10 18:00:00",
+   "end": "2021-08-31 14:59:59",
+   "featured": [
+    "yoimiya"
+   ],
+   "featuredRare": [
+    "sayu",
+    "diona",
+    "xinyan"
+   ],
+   "version": "2.0"
+  },
+  {
+   "name": "Reign of Serenity",
+   "start": "2021-09-01 06:00:00",
+   "end": "2021-09-21 17:59:59",
+   "featured": [
+    "raiden_shogun"
+   ],
+   "featuredRare": [
+    "xiangling",
+    "sucrose",
+    "kujou_sara"
+   ],
+   "timezoneDependent": true,
+   "version": "2.1"
+  },
+  {
+   "name": "Drifting Luminescence",
+   "start": "2021-09-21 18:00:00",
+   "end": "2021-10-12 14:59:59",
+   "featured": [
+    "sangonomiya_kokomi"
+   ],
+   "featuredRare": [
+    "rosaria",
+    "beidou",
+    "xingqiu"
+   ],
+   "version": "2.1"
+  },
+  {
+   "name": "Farewell of Snezhnaya",
+   "start": "2021-10-13 06:00:00",
+   "end": "2021-11-02 17:59:59",
+   "featured": [
+    "tartaglia"
+   ],
+   "featuredRare": [
+    "ningguang",
+    "chongyun",
+    "yanfei"
+   ],
+   "timezoneDependent": true,
+   "version": "2.2"
+  },
+  {
+   "name": "Moment of Bloom",
+   "start": "2021-11-02 18:00:00",
+   "end": "2021-11-23 14:59:59",
+   "featured": [
+    "hu_tao"
+   ],
+   "featuredRare": [
+    "thoma",
+    "diona",
+    "sayu"
+   ],
+   "version": "2.2"
+  },
+  {
+   "name": "Secretum Secretorum",
+   "start": "2021-11-24 06:00:00",
+   "end": "2021-12-14 17:59:59",
+   "featured": [
+    "albedo",
+    "eula"
+   ],
+   "featuredRare": [
+    "rosaria",
+    "noelle",
+    "bennett"
+   ],
+   "timezoneDependent": true,
+   "version": "2.3"
+  },
+  {
+   "name": "Oni's Royale",
+   "start": "2021-12-14 18:00:00",
+   "end": "2022-01-04 17:59:59",
+   "featured": [
+    "arataki_itto"
+   ],
+   "featuredRare": [
+    "gorou",
+    "xiangling",
+    "barbara"
+   ],
+   "version": "2.3"
+  },
+  {
+   "name": "The Transcendent One Returns",
+   "start": "2022-01-05 06:00:00",
+   "end": "2022-01-25 17:59:59",
+   "featured": [
+    "shenhe",
+    "xiao"
+   ],
+   "featuredRare": [
+    "yun_jin",
+    "ningguang",
+    "chongyun"
+   ],
+   "timezoneDependent": true,
+   "version": "2.4"
+  },
+  {
+   "name": "Gentry of Hermitage",
+   "start": "2022-01-25 18:00:00",
+   "end": "2022-02-15 14:59:59",
+   "featured": [
+    "zhongli",
+    "ganyu"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "beidou",
+    "yanfei"
+   ],
+   "version": "2.4"
+  },
+  {
+   "name": "Everbloom Violet",
+   "start": "2022-02-16 06:00:00",
+   "end": "2022-03-08 17:59:59",
+   "featured": [
+    "yae_miko"
+   ],
+   "featuredRare": [
+    "thoma",
+    "diona",
+    "fischl"
+   ],
+   "timezoneDependent": true,
+   "version": "2.5"
+  },
+  {
+   "name": "Reign of Serenity",
+   "start": "2022-03-08 18:00:00",
+   "end": "2022-03-29 14:59:59",
+   "featured": [
+    "raiden_shogun",
+    "sangonomiya_kokomi"
+   ],
+   "featuredRare": [
+    "bennett",
+    "xinyan",
+    "kujou_sara"
+   ],
+   "version": "2.5"
+  },
+  {
+   "name": "Azure Excursion",
+   "start": "2022-03-30 06:00:00",
+   "end": "2022-04-19 17:59:59",
+   "featured": [
+    "kamisato_ayato",
+    "venti"
+   ],
+   "featuredRare": [
+    "yun_jin",
+    "xiangling",
+    "sucrose"
+   ],
+   "timezoneDependent": true,
+   "version": "2.6"
+  },
+  {
+   "name": "The Herons Court",
+   "start": "2022-04-19 18:00:00",
+   "end": "2022-05-31 05:59:59",
+   "featured": [
+    "kamisato_ayaka"
+   ],
+   "featuredRare": [
+    "sayu",
+    "razor",
+    "rosaria"
+   ],
+   "version": "2.6"
+  },
+  {
+   "name": "Discerner of Enigmas",
+   "start": "2022-05-31 09:00:00",
+   "end": "2022-06-21 17:59:59",
+   "featured": [
+    "yelan",
+    "xiao"
+   ],
+   "featuredRare": [
+    "barbara",
+    "noelle",
+    "yanfei"
+   ],
+   "timezoneDependent": true,
+   "version": "2.7"
+  },
+  {
+   "name": "Oni's Royale",
+   "start": "2022-06-21 18:00:00",
+   "end": "2022-07-12 14:59:59",
+   "featured": [
+    "arataki_itto"
+   ],
+   "featuredRare": [
+    "chongyun",
+    "gorou",
+    "kuki_shinobu"
+   ],
+   "version": "2.7"
+  },
+  {
+   "name": "Leaves in the Wind",
+   "start": "2022-07-13 06:00:00",
+   "end": "2022-08-02 17:59:59",
+   "featured": [
+    "kaedehara_kazuha",
+    "klee"
+   ],
+   "featuredRare": [
+    "ningguang",
+    "thoma",
+    "shikanoin_heizou"
+   ],
+   "timezoneDependent": true,
+   "version": "2.8"
+  },
+  {
+   "name": "Tapestry of Golden Flames",
+   "start": "2022-08-02 18:00:00",
+   "end": "2022-08-23 14:59:59",
+   "featured": [
+    "yoimiya"
+   ],
+   "featuredRare": [
+    "yun_jin",
+    "xinyan",
+    "bennett"
+   ],
+   "version": "2.8"
+  },
+  {
+   "name": "Viridescent Vigil",
+   "start": "2022-08-24 06:00:00",
+   "end": "2022-09-09 17:59:59",
+   "featured": [
+    "tighnari",
+    "zhongli"
+   ],
+   "featuredRare": [
+    "collei",
+    "fischl",
+    "diona"
+   ],
+   "timezoneDependent": true,
+   "version": "3.0"
+  },
+  {
+   "name": "Adrift in the Harbor",
+   "start": "2022-09-09 18:00:00",
+   "end": "2022-09-27 14:59:59",
+   "featured": [
+    "ganyu",
+    "sangonomiya_kokomi"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "sucrose",
+    "dori"
+   ],
+   "version": "3.0"
+  },
+  {
+   "name": "Twilight Arbiter",
+   "start": "2022-09-28 06:00:00",
+   "end": "2022-10-14 17:59:59",
+   "featured": [
+    "cyno",
+    "venti"
+   ],
+   "featuredRare": [
+    "sayu",
+    "candace",
+    "kuki_shinobu"
+   ],
+   "timezoneDependent": true,
+   "version": "3.1"
+  },
+  {
+   "name": "Twirling Lotus",
+   "start": "2022-10-14 18:00:00",
+   "end": "2022-11-01 14:59:59",
+   "featured": [
+    "nilou",
+    "albedo"
+   ],
+   "featuredRare": [
+    "barbara",
+    "xiangling",
+    "beidou"
+   ],
+   "version": "3.1"
+  },
+  {
+   "name": "The Moongrass' Enlightenment",
+   "start": "2022-11-02 06:00:00",
+   "end": "2022-11-18 17:59:59",
+   "featured": [
+    "nahida",
+    "yoimiya"
+   ],
+   "featuredRare": [
+    "bennett",
+    "razor",
+    "noelle"
+   ],
+   "timezoneDependent": true,
+   "version": "3.2"
+  },
+  {
+   "name": "Everbloom Violet",
+   "start": "2022-11-18 18:00:00",
+   "end": "2022-12-06 14:59:59",
+   "featured": [
+    "yae_miko",
+    "tartaglia"
+   ],
+   "featuredRare": [
+    "thoma",
+    "shikanoin_heizou",
+    "layla"
+   ],
+   "version": "3.2"
+  },
+  {
+   "name": "From Ashes Reborn",
+   "start": "2022-12-07 06:00:00",
+   "end": "2022-12-27 17:59:59",
+   "featured": [
+    "wanderer",
+    "arataki_itto"
+   ],
+   "featuredRare": [
+    "faruzan",
+    "yanfei",
+    "gorou"
+   ],
+   "timezoneDependent": true,
+   "version": "3.3"
+  },
+  {
+   "name": "Reign of Serenity",
+   "start": "2022-12-27 18:00:00",
+   "end": "2023-01-17 14:59:59",
+   "featured": [
+    "raiden_shogun",
+    "kamisato_ayato"
+   ],
+   "featuredRare": [
+    "sayu",
+    "rosaria",
+    "kujou_sara"
+   ],
+   "version": "3.3"
+  },
+  {
+   "name": "Caution in Confidence",
+   "start": "2023-01-18 06:00:00",
+   "end": "2023-02-07 17:59:59",
+   "featured": [
+    "alhaitham",
+    "xiao"
+   ],
+   "featuredRare": [
+    "xinyan",
+    "yun_jin",
+    "yaoyao"
+   ],
+   "timezoneDependent": true,
+   "version": "3.4"
+  },
+  {
+   "name": "Moment of Bloom",
+   "start": "2023-02-07 18:00:00",
+   "end": "2023-02-28 14:59:59",
+   "featured": [
+    "hu_tao",
+    "yelan"
+   ],
+   "featuredRare": [
+    "beidou",
+    "ningguang",
+    "xingqiu"
+   ],
+   "version": "3.4"
+  },
+  {
+   "name": "Auric Blaze",
+   "start": "2023-03-01 06:00:00",
+   "end": "2023-03-21 17:59:59",
+   "featured": [
+    "dehya",
+    "cyno"
+   ],
+   "featuredRare": [
+    "bennett",
+    "collei",
+    "barbara"
+   ],
+   "timezoneDependent": true,
+   "version": "3.5"
+  },
+  {
+   "name": "The Transcendent One Returns",
+   "start": "2023-03-21 18:00:00",
+   "end": "2023-04-11 14:59:59",
+   "featured": [
+    "shenhe",
+    "kamisato_ayaka"
+   ],
+   "featuredRare": [
+    "diona",
+    "sucrose",
+    "mika"
+   ],
+   "version": "3.5"
+  },
+  {
+   "name": "The Moongrass' Enlightenment",
+   "start": "2023-04-12 06:00:00",
+   "end": "2023-05-02 17:59:59",
+   "featured": [
+    "nahida",
+    "nilou"
+   ],
+   "featuredRare": [
+    "kuki_shinobu",
+    "dori",
+    "layla"
+   ],
+   "timezoneDependent": true,
+   "version": "3.6"
+  },
+  {
+   "name": "Immaculate Pulse",
+   "start": "2023-05-02 18:00:00",
+   "end": "2023-05-23 14:59:59",
+   "featured": [
+    "baizhu",
+    "ganyu"
+   ],
+   "featuredRare": [
+    "kaveh",
+    "candace",
+    "fischl"
+   ],
+   "version": "3.6"
+  },
+  {
+   "name": "Tapestry of Golden Flames",
+   "start": "2023-05-24 06:00:00",
+   "end": "2023-06-13 17:59:59",
+   "featured": [
+    "yoimiya",
+    "yae_miko"
+   ],
+   "featuredRare": [
+    "kirara",
+    "yun_jin",
+    "chongyun"
+   ],
+   "timezoneDependent": true,
+   "version": "3.7"
+  },
+  {
+   "name": "Caution in Confidence",
+   "start": "2023-06-13 18:00:00",
+   "end": "2023-07-04 14:59:59",
+   "featured": [
+    "alhaitham",
+    "kaedehara_kazuha"
+   ],
+   "featuredRare": [
+    "yaoyao",
+    "shikanoin_heizou",
+    "xiangling"
+   ],
+   "version": "3.7"
+  },
+  {
+   "name": "Born of Ocean Swell",
+   "start": "2023-07-05 06:00:00",
+   "end": "2023-07-25 17:59:59",
+   "featured": [
+    "eula",
+    "klee"
+   ],
+   "featuredRare": [
+    "mika",
+    "razor",
+    "thoma"
+   ],
+   "timezoneDependent": true,
+   "version": "3.8"
+  },
+  {
+   "name": "Drifting Luminescence",
+   "start": "2023-07-25 18:00:00",
+   "end": "2023-08-15 17:59:59",
+   "featured": [
+    "sangonomiya_kokomi",
+    "wanderer"
+   ],
+   "featuredRare": [
+    "yanfei",
+    "faruzan",
+    "rosaria"
+   ],
+   "version": "3.8"
+  },
+  {
+   "name": "Conjuring Chiaroscuro",
+   "start": "2023-08-16 06:00:00",
+   "end": "2023-09-05 17:59:59",
+   "featured": [
+    "lyney",
+    "yelan"
+   ],
+   "featuredRare": [
+    "bennett",
+    "barbara",
+    "lynette"
+   ],
+   "timezoneDependent": true,
+   "version": "4.0"
+  },
+  {
+   "name": "Gentry of Hermitage",
+   "start": "2023-09-05 18:00:00",
+   "end": "2023-09-26 14:59:59",
+   "featured": [
+    "tartaglia",
+    "zhongli"
+   ],
+   "featuredRare": [
+    "freminet",
+    "sayu",
+    "noelle"
+   ],
+   "version": "4.0"
+  },
+  {
+   "name": "Decree of the Deeps",
+   "start": "2023-09-27 06:00:00",
+   "end": "2023-10-17 17:59:59",
+   "featured": [
+    "neuvillette",
+    "hu_tao"
+   ],
+   "featuredRare": [
+    "fischl",
+    "xingqiu",
+    "diona"
+   ],
+   "timezoneDependent": true,
+   "version": "4.1"
+  },
+  {
+   "name": "Tempestuous Destiny",
+   "start": "2023-10-17 18:00:00",
+   "end": "2023-11-07 14:59:59",
+   "featured": [
+    "wriothesley",
+    "venti"
+   ],
+   "featuredRare": [
+    "chongyun",
+    "thoma",
+    "dori"
+   ],
+   "version": "4.1"
+  },
+  {
+   "name": "Chanson of Many Waters",
+   "start": "2023-11-08 06:00:00",
+   "end": "2023-11-28 17:59:59",
+   "featured": [
+    "furina",
+    "baizhu"
+   ],
+   "featuredRare": [
+    "charlotte",
+    "collei",
+    "beidou"
+   ],
+   "timezoneDependent": true,
+   "version": "4.2"
+  },
+  {
+   "name": "Twilight Arbiter",
+   "start": "2023-11-28 18:00:00",
+   "end": "2023-12-19 14:59:59",
+   "featured": [
+    "cyno",
+    "kamisato_ayato"
+   ],
+   "featuredRare": [
+    "kuki_shinobu",
+    "xiangling",
+    "kirara"
+   ],
+   "version": "4.2"
+  },
+  {
+   "name": "In the Name of the Rosula",
+   "start": "2023-12-20 06:00:00",
+   "end": "2024-01-09 17:59:59",
+   "featured": [
+    "navia",
+    "kamisato_ayaka"
+   ],
+   "featuredRare": [
+    "sucrose",
+    "candace",
+    "rosaria"
+   ],
+   "timezoneDependent": true,
+   "version": "4.3"
+  },
+  {
+   "name": "Reign of Serenity",
+   "start": "2024-01-09 18:00:00",
+   "end": "2024-01-30 14:59:00",
+   "featured": [
+    "raiden_shogun",
+    "yoimiya"
+   ],
+   "featuredRare": [
+    "bennett",
+    "kujou_sara",
+    "chevreuse"
+   ],
+   "version": "4.3"
+  },
+  {
+   "name": "The Crane Soars Skyward",
+   "start": "2024-01-31 06:00:00",
+   "end": "2024-02-20 17:59:00",
+   "featured": [
+    "xianyun",
+    "nahida"
+   ],
+   "featuredRare": [
+    "gaming",
+    "faruzan",
+    "noelle"
+   ],
+   "timezoneDependent": true,
+   "version": "4.4"
+  },
+  {
+   "name": "Invitation to Mundane Life",
+   "start": "2024-02-20 18:00:00",
+   "end": "2024-03-12 14:59:00",
+   "featured": [
+    "xiao",
+    "yae_miko"
+   ],
+   "featuredRare": [
+    "yaoyao",
+    "xinyan",
+    "ningguang"
+   ],
+   "version": "4.4"
+  },
+  {
+   "name": "Of Silken Clouds Woven",
+   "start": "2024-03-13 06:00:00",
+   "end": "2024-04-02 17:59:00",
+   "featured": [
+    "chiori",
+    "arataki_itto"
+   ],
+   "featuredRare": [
+    "yun_jin",
+    "gorou",
+    "dori"
+   ],
+   "timezoneDependent": true,
+   "version": "4.5"
+  },
+  {
+   "name": "Decree of the Deeps",
+   "start": "2024-04-02 18:00:00",
+   "end": "2024-04-23 14:59:00",
+   "featured": [
+    "neuvillette",
+    "kaedehara_kazuha"
+   ],
+   "featuredRare": [
+    "barbara",
+    "xingqiu",
+    "yanfei"
+   ],
+   "version": "4.5"
+  },
+  {
+   "name": "The Hearth's Ashen Shadow",
+   "start": "2024-04-24 06:00:00",
+   "end": "2024-05-14 17:59:00",
+   "featured": [
+    "arlecchino",
+    "lyney"
+   ],
+   "featuredRare": [
+    "freminet",
+    "lynette",
+    "xiangling"
+   ],
+   "timezoneDependent": true,
+   "version": "4.6"
+  },
+  {
+   "name": "From Ashes Reborn",
+   "start": "2024-05-14 18:00:00",
+   "end": "2024-06-04 14:59:00",
+   "featured": [
+    "wanderer",
+    "baizhu"
+   ],
+   "featuredRare": [
+    "layla",
+    "faruzan",
+    "beidou"
+   ],
+   "version": "4.6"
+  },
+  {
+   "name": "Illuminating Lightning",
+   "start": "2024-06-05 06:00:00",
+   "end": "2024-06-25 17:59:00",
+   "featured": [
+    "clorinde",
+    "alhaitham"
+   ],
+   "featuredRare": [
+    "sethos",
+    "bennett",
+    "thoma"
+   ],
+   "timezoneDependent": true,
+   "version": "4.7"
+  },
+  {
+   "name": "Romaritime Meluserenity",
+   "start": "2024-06-25 18:00:00",
+   "end": "2024-07-16 14:59:00",
+   "featured": [
+    "sigewinne",
+    "furina"
+   ],
+   "featuredRare": [
+    "noelle",
+    "gaming",
+    "rosaria"
+   ],
+   "version": "4.7"
+  },
+  {
+   "name": "In the Name of the Rosula",
+   "start": "2024-07-17 06:00:00",
+   "end": "2024-08-06 17:59:00",
+   "featured": [
+    "navia",
+    "nilou"
+   ],
+   "featuredRare": [
+    "kirara",
+    "kaveh",
+    "ningguang"
+   ],
+   "timezoneDependent": true,
+   "version": "4.8"
+  },
+  {
+   "name": "Ambrosial Essence",
+   "start": "2024-08-06 18:00:00",
+   "end": "2024-08-27 14:59:00",
+   "featured": [
+    "emilie",
+    "yelan"
+   ],
+   "featuredRare": [
+    "yanfei",
+    "xiangling",
+    "razor"
+   ],
+   "version": "4.8"
+  },
+  {
+   "name": "Sharktacular Surfari",
+   "start": "2024-08-28 06:00:00",
+   "end": "2024-09-17 17:59:00",
+   "featured": [
+    "mualani",
+    "kaedehara_kazuha"
+   ],
+   "featuredRare": [
+    "kachina",
+    "xinyan",
+    "bennett"
+   ],
+   "timezoneDependent": true,
+   "version": "5.0"
+  },
+  {
+   "name": "Seeker of Flame-Wrought Secrets",
+   "start": "2024-09-17 18:00:00",
+   "end": "2024-10-08 14:59:00",
+   "featured": [
+    "kinich",
+    "raiden_shogun"
+   ],
+   "featuredRare": [
+    "thoma",
+    "kujou_sara",
+    "chevreuse"
+   ],
+   "version": "5.0"
+  },
+  {
+   "name": "Forgefire's Blessing",
+   "start": "2024-10-09 06:00:00",
+   "end": "2024-10-29 17:59:00",
+   "featured": [
+    "xilonen",
+    "chiori"
+   ],
+   "featuredRare": [
+    "dori",
+    "candace",
+    "collei"
+   ],
+   "timezoneDependent": true,
+   "version": "5.1"
+  },
+  {
+   "name": "The Moongrass' Enlightenment",
+   "start": "2024-10-29 18:00:00",
+   "end": "2024-11-19 14:59:00",
+   "featured": [
+    "nahida",
+    "hu_tao"
+   ],
+   "featuredRare": [
+    "sethos",
+    "xingqiu",
+    "kuki_shinobu"
+   ],
+   "version": "5.1"
+  },
+  {
+   "name": "Piercing Shot's Crimson Wake",
+   "start": "2024-11-20 06:00:00",
+   "end": "2024-12-10 17:59:00",
+   "featured": [
+    "chasca",
+    "lyney"
+   ],
+   "featuredRare": [
+    "ororon",
+    "sucrose",
+    "barbara"
+   ],
+   "timezoneDependent": true,
+   "version": "5.2"
+  },
+  {
+   "name": "Decree of the Deeps",
+   "start": "2024-12-10 18:00:00",
+   "end": "2024-12-31 14:59:00",
+   "featured": [
+    "neuvillette",
+    "zhongli"
+   ],
+   "featuredRare": [
+    "shikanoin_heizou",
+    "fischl",
+    "yaoyao"
+   ],
+   "version": "5.2"
+  },
+  {
+   "name": "Ancient Flame Ablaze",
+   "start": "2025-01-01 06:00:00",
+   "end": "2025-01-21 17:59:00",
+   "featured": [
+    "mavuika",
+    "citlali"
+   ],
+   "featuredRare": [
+    "kachina",
+    "bennett",
+    "diona"
+   ],
+   "timezoneDependent": true,
+   "version": "5.3"
+  },
+  {
+   "name": "The Hearth's Ashen Shadow",
+   "start": "2025-01-21 18:00:00",
+   "end": "2025-02-11 14:59:00",
+   "featured": [
+    "arlecchino",
+    "clorinde"
+   ],
+   "featuredRare": [
+    "lan_yan",
+    "chevreuse",
+    "rosaria"
+   ],
+   "version": "5.3"
+  },
+  {
+   "name": "Dawn's Drifting Reverie",
+   "start": "2025-02-12 06:00:00",
+   "end": "2025-03-04 17:59:00",
+   "featured": [
+    "yumemizuki_mizuki",
+    "sigewinne"
+   ],
+   "featuredRare": [
+    "gorou",
+    "sayu",
+    "xiangling"
+   ],
+   "timezoneDependent": true,
+   "version": "5.4"
+  },
+  {
+   "name": "Tempestuous Destiny",
+   "start": "2025-03-04 18:00:00",
+   "end": "2025-03-25 14:59:00",
+   "featured": [
+    "wriothesley",
+    "furina"
+   ],
+   "featuredRare": [
+    "charlotte",
+    "chongyun",
+    "mika"
+   ],
+   "version": "5.4"
+  },
+  {
+   "name": "Cornucopia of Contention",
+   "start": "2025-03-26 06:00:00",
+   "end": "2025-04-15 17:59:00",
+   "featured": [
+    "varesa",
+    "xianyun"
+   ],
+   "featuredRare": [
+    "iansan",
+    "chevreuse",
+    "gaming"
+   ],
+   "timezoneDependent": true,
+   "version": "5.5"
+  },
+  {
+   "name": "Forgefire's Blessing",
+   "start": "2025-04-15 18:00:00",
+   "end": "2025-05-06 14:59:00",
+   "featured": [
+    "xilonen",
+    "venti"
+   ],
+   "featuredRare": [
+    "faruzan",
+    "beidou",
+    "yanfei"
+   ],
+   "version": "5.5"
+  },
+  {
+   "name": "La Chanson Cerise",
+   "start": "2025-05-07 06:00:00",
+   "end": "2025-05-27 17:59:00",
+   "featured": [
+    "escoffier",
+    "navia"
+   ],
+   "featuredRare": [
+    "ifa",
+    "ororon",
+    "layla"
+   ],
+   "timezoneDependent": true,
+   "version": "5.6"
+  },
+  {
+   "name": "Seeker of Flame-Wrought Secrets",
+   "start": "2025-05-27 18:00:00",
+   "end": "2025-06-17 14:59:00",
+   "featured": [
+    "kinich",
+    "raiden_shogun"
+   ],
+   "featuredRare": [
+    "thoma",
+    "kujou_sara",
+    "lynette"
+   ],
+   "version": "5.6"
+  },
+  {
+   "name": "Void Star's Advent",
+   "start": "2025-06-18 06:00:00",
+   "end": "2025-07-08 17:59:00",
+   "featured": [
+    "skirk",
+    "shenhe"
+   ],
+   "featuredRare": [
+    "dahlia",
+    "candace",
+    "diona"
+   ],
+   "timezoneDependent": true,
+   "version": "5.7"
+  },
+  {
+   "name": "Ancient Flame Ablaze",
+   "start": "2025-07-08 18:00:00",
+   "end": "2025-07-29 14:59:00",
+   "featured": [
+    "mavuika",
+    "emilie"
+   ],
+   "featuredRare": [
+    "iansan",
+    "yaoyao",
+    "xiangling"
+   ],
+   "version": "5.7"
+  },
+  {
+   "name": "Astral Actuation",
+   "start": "2025-07-30 06:00:00",
+   "end": "2025-08-19 17:59:00",
+   "featured": [
+    "ineffa",
+    "citlali"
+   ],
+   "featuredRare": [
+    "sethos",
+    "xingqiu",
+    "fischl"
+   ],
+   "timezoneDependent": true,
+   "version": "5.8"
+  },
+  {
+   "name": "Sharktacular Surfari",
+   "start": "2025-08-19 18:00:00",
+   "end": "2025-09-09 14:59:00",
+   "featured": [
+    "mualani",
+    "chasca"
+   ],
+   "featuredRare": [
+    "ifa",
+    "ororon",
+    "bennett"
+   ],
+   "version": "5.8"
+  },
+  {
+   "name": "Moonsong of the Groves",
+   "start": "2025-09-10 06:00:00",
+   "end": "2025-09-30 17:59:00",
+   "featured": [
+    "lauma",
+    "nahida"
+   ],
+   "featuredRare": [
+    "barbara",
+    "kuki_shinobu",
+    "kaveh"
+   ],
+   "timezoneDependent": true,
+   "version": "6.0"
+  },
+  {
+   "name": "The Lone Light Knocks at Night",
+   "start": "2025-09-30 18:00:00",
+   "end": "2025-10-21 17:59:00",
+   "featured": [
+    "flins",
+    "yelan"
+   ],
+   "featuredRare": [
+    "aino",
+    "sucrose",
+    "dori"
+   ],
+   "version": "6.0"
+  },
+  {
+   "name": "Temptation of the Crimson Sands",
+   "start": "2025-10-22 06:00:00",
+   "end": "2025-11-11 17:59:00",
+   "featured": [
+    "nefer",
+    "furina"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "collei",
+    "yaoyao"
+   ],
+   "timezoneDependent": true,
+   "version": "6.1"
+  },
+  {
+   "name": "The Hearth's Ashen Shadow",
+   "start": "2025-11-11 18:00:00",
+   "end": "2025-12-02 14:59:00",
+   "featured": [
+    "arlecchino",
+    "zhongli"
+   ],
+   "featuredRare": [
+    "lan_yan",
+    "rosaria",
+    "yun_jin"
+   ],
+   "version": "6.1"
+  },
+  {
+   "name": "Rubedo, of White Stone Born",
+   "start": "2025-12-03 06:00:00",
+   "end": "2025-12-23 17:59:00",
+   "featured": [
+    "durin",
+    "venti"
+   ],
+   "featuredRare": [
+    "bennett",
+    "faruzan",
+    "jahoda"
+   ],
+   "timezoneDependent": true,
+   "version": "6.2"
+  },
+  {
+   "name": "Cornucopia of Contention",
+   "start": "2025-12-23 18:00:00",
+   "end": "2026-01-13 14:59:00",
+   "featured": [
+    "varesa",
+    "xilonen"
+   ],
+   "featuredRare": [
+    "iansan",
+    "chevreuse",
+    "gaming"
+   ],
+   "version": "6.2"
+  },
+  {
+   "name": "Somnias a Luna",
+   "start": "2026-01-14 06:00:00",
+   "end": "2026-02-03 17:59:00",
+   "featured": [
+    "columbina",
+    "ineffa"
+   ],
+   "featuredRare": [
+    "fischl",
+    "sethos",
+    "ifa"
+   ],
+   "timezoneDependent": true,
+   "version": "6.3"
+  },
+  {
+   "name": "Harmonious Abundance",
+   "start": "2026-02-03 18:00:00",
+   "end": "2026-02-24 14:59:00",
+   "featured": [
+    "zibai",
+    "neuvillette"
+   ],
+   "featuredRare": [
+    "illuga",
+    "aino",
+    "gorou"
+   ],
+   "version": "6.3"
+  },
+  {
+   "name": "The Northerly Wind's Song of Triumph",
+   "start": "2026-02-25 06:00:00",
+   "end": "2026-03-17 17:59:00",
+   "featured": [
+    "varka",
+    "flins"
+   ],
+   "featuredRare": [
+    "bennett",
+    "xiangling",
+    "sucrose"
+   ],
+   "timezoneDependent": true,
+   "version": "6.4"
+  },
+  {
+   "name": "Void Star's Advent",
+   "start": "2026-03-17 18:00:00",
+   "end": "2026-04-07 14:59:00",
+   "featured": [
+    "skirk",
+    "escoffier"
+   ],
+   "featuredRare": [
+    "dahlia",
+    "candace",
+    "charlotte"
+   ],
+   "version": "6.4"
+  },
+  {
+   "name": "Ya-hoho! Compendium",
+   "start": "2026-04-08 06:00:00",
+   "end": "2026-04-28 17:59:00",
+   "featured": [
+    "linnea",
+    "chasca"
+   ],
+   "featuredRare": [
+    "illuga",
+    "aino",
+    "noelle"
+   ],
+   "timezoneDependent": true,
+   "version": "6.5"
+  },
+  {
+   "name": "Moonsong of the Groves",
+   "start": "2026-04-28 18:00:00",
+   "end": "2026-05-19 14:59:00",
+   "featured": [
+    "lauma",
+    "nefer"
+   ],
+   "featuredRare": [
+    "xingqiu",
+    "kirara",
+    "jahoda"
+   ],
+   "version": "6.5"
+  },
+  {
+   "name": "Angel's Reverie",
+   "start": "2026-05-20 06:00:00",
+   "end": "2026-06-09 17:59:00",
+   "featured": [
+    "nicole",
+    "durin"
+   ],
+   "featuredRare": [
+    "prune",
+    "fischl",
+    "razor"
+   ],
+   "timezoneDependent": true,
+   "version": "6.6"
+  },
+  {
+   "name": "Frostedge Nocturne",
+   "start": "2026-06-09 18:00:00",
+   "end": "2026-06-30 14:59:00",
+   "featured": [
+    "lohen",
+    "mavuika"
+   ],
+   "featuredRare": [
+    "mika",
+    "xiangling",
+    "bennett"
+   ],
+   "version": "6.6"
+  },
+  {
+   "name": "To the Looking-Glass the Mademoiselle Said",
+   "start": "2026-07-01 06:00:00",
+   "end": "2026-07-21 17:59:00",
+   "featured": [
+    "sandrone",
+    "citlali"
+   ],
+   "featuredRare": [
+    "beidou",
+    "diona",
+    "freminet"
+   ],
+   "timezoneDependent": true,
+   "version": "6.7"
+  },
+  {
+   "name": "Somnias a Luna",
+   "start": "2026-07-21 18:00:00",
+   "end": "2026-08-11 14:59:00",
+   "featured": [
+    "columbina",
+    "raiden_shogun"
+   ],
+   "featuredRare": [
+    "jahoda",
+    "ororon",
+    "sethos"
+   ],
+   "version": "6.7"
+  },
+  {
+   "name": "Swan's Shadow in Silken Ice",
+   "start": "2026-08-12 06:00:00",
+   "end": "2026-09-01 17:59:00",
+   "featured": [
+    "odette",
+    "arlecchino"
+   ],
+   "featuredRare": [
+    "alyosha",
+    "sucrose",
+    "lynette"
+   ],
+   "timezoneDependent": true,
+   "version": "7.0"
+  },
+  {
+   "name": "The Lone Light Knocks at Night",
+   "start": "2026-09-01 18:00:00",
+   "end": "2026-09-22 14:59:00",
+   "featured": [
+    "flins",
+    "ineffa"
+   ],
+   "featuredRare": [
+    "aino",
+    "iansan",
+    "lan_yan"
+   ],
+   "version": "7.0"
+  },
+  {
+   "name": "When Warm Winds Cavort",
+   "start": "2026-09-23 06:00:00",
+   "end": "2026-10-13 17:59:59",
+   "featured": [
+    "vesna",
+    "vodyanitsa"
+   ],
+   "featuredRare": [
+    "diona",
+    "faruzan",
+    "chongyun"
+   ],
+   "timezoneDependent": true,
+   "version": "7.1"
+  }
+ ],
+ "weapons": [
+  {
+   "name": "Epitome Invocation",
+   "start": "2020-09-28 00:00:00",
+   "end": "2020-10-18 18:00:00",
+   "featured": [
+    "aquila_favonia",
+    "amos_bow"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "the_bell",
+    "the_widsith",
+    "the_stringless",
+    "favonius_lance"
+   ],
+   "timezoneDependent": true,
+   "version": "1.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2020-10-20 18:00:00",
+   "end": "2020-11-10 16:00:00",
+   "featured": [
+    "lost_prayer_to_the_sacred_winds",
+    "wolfs_gravestone"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "sacrificial_bow",
+    "sacrificial_greatsword",
+    "sacrificial_fragments",
+    "dragons_bane"
+   ],
+   "version": "1.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2020-11-11 06:00:00",
+   "end": "2020-12-01 16:00:00",
+   "featured": [
+    "skyward_harp",
+    "memory_of_dust"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "rainslasher",
+    "eye_of_perception",
+    "rust",
+    "favonius_lance"
+   ],
+   "timezoneDependent": true,
+   "version": "1.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2020-12-01 18:00:00",
+   "end": "2020-12-22 15:00:00",
+   "featured": [
+    "vortex_vanquisher",
+    "the_unforged"
+   ],
+   "featuredRare": [
+    "lions_roar",
+    "the_bell",
+    "favonius_codex",
+    "favonius_warbow",
+    "dragons_bane"
+   ],
+   "version": "1.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2020-12-23 06:00:00",
+   "end": "2021-01-12 16:00:00",
+   "featured": [
+    "summit_shaper",
+    "skyward_atlas"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "favonius_greatsword",
+    "favonius_lance",
+    "sacrificial_fragments",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "1.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-01-12 18:00:00",
+   "end": "2021-02-02 15:00:00",
+   "featured": [
+    "amos_bow",
+    "skyward_pride"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "the_bell",
+    "dragons_bane",
+    "eye_of_perception",
+    "favonius_warbow"
+   ],
+   "version": "1.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-02-03 06:00:00",
+   "end": "2021-02-23 16:00:00",
+   "featured": [
+    "primordial_jade_winged-spear",
+    "primordial_jade_cutter"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "sacrificial_greatsword",
+    "rust",
+    "eye_of_perception",
+    "favonius_lance"
+   ],
+   "timezoneDependent": true,
+   "version": "1.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-02-23 18:00:00",
+   "end": "2021-03-16 15:00:00",
+   "featured": [
+    "wolfs_gravestone",
+    "staff_of_homa"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "lithic_spear",
+    "lions_roar",
+    "sacrificial_bow",
+    "the_widsith"
+   ],
+   "version": "1.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-03-17 06:00:00",
+   "end": "2021-04-06 16:00:00",
+   "featured": [
+    "elegy_for_the_end",
+    "skyward_blade"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "wine_and_song",
+    "favonius_greatsword",
+    "favonius_warbow",
+    "dragons_bane"
+   ],
+   "timezoneDependent": true,
+   "version": "1.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-04-06 18:00:00",
+   "end": "2021-04-27 15:00:00",
+   "featured": [
+    "skyward_harp",
+    "lost_prayer_to_the_sacred_winds"
+   ],
+   "featuredRare": [
+    "alley_hunter",
+    "favonius_codex",
+    "favonius_lance",
+    "sacrificial_greatsword",
+    "favonius_sword"
+   ],
+   "version": "1.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-04-28 06:00:00",
+   "end": "2021-05-18 17:59:59",
+   "featured": [
+    "summit_shaper",
+    "memory_of_dust"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "lithic_spear",
+    "sacrificial_bow",
+    "eye_of_perception",
+    "the_flute"
+   ],
+   "timezoneDependent": true,
+   "version": "1.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-05-18 18:00:00",
+   "end": "2021-06-08 15:00:00",
+   "featured": [
+    "song_of_broken_pines",
+    "aquila_favonia"
+   ],
+   "featuredRare": [
+    "rust",
+    "sacrificial_fragments",
+    "dragons_bane",
+    "rainslasher",
+    "sacrificial_sword"
+   ],
+   "version": "1.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-06-09 06:00:00",
+   "end": "2021-06-29 17:59:59",
+   "featured": [
+    "lost_prayer_to_the_sacred_winds",
+    "skyward_pride"
+   ],
+   "featuredRare": [
+    "mitternachts_waltz",
+    "lions_roar",
+    "the_bell",
+    "favonius_lance",
+    "the_widsith"
+   ],
+   "timezoneDependent": true,
+   "version": "1.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-06-29 18:00:00",
+   "end": "2021-07-20 14:59:59",
+   "featured": [
+    "freedom-sworn",
+    "skyward_atlas"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "wine_and_song",
+    "alley_hunter",
+    "favonius_greatsword",
+    "dragons_bane"
+   ],
+   "version": "1.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-07-21 06:00:00",
+   "end": "2021-08-10 17:59:59",
+   "featured": [
+    "mistsplitter_reforged",
+    "skyward_spine"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "sacrificial_greatsword",
+    "favonius_lance",
+    "favonius_codex",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "2.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-08-10 18:00:00",
+   "end": "2021-08-31 14:59:59",
+   "featured": [
+    "thundering_pulse",
+    "skyward_blade"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "rainslasher",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "favonius_warbow"
+   ],
+   "version": "2.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-09-01 06:00:00",
+   "end": "2021-09-21 17:59:59",
+   "featured": [
+    "engulfing_lightning",
+    "the_unforged"
+   ],
+   "featuredRare": [
+    "lions_roar",
+    "the_bell",
+    "favonius_lance",
+    "the_widsith",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "2.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-09-21 18:00:00",
+   "end": "2021-10-12 14:59:59",
+   "featured": [
+    "primordial_jade_cutter",
+    "everlasting_moonglow"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "favonius_greatsword",
+    "dragons_bane",
+    "favonius_codex",
+    "the_stringless"
+   ],
+   "version": "2.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-10-13 06:00:00",
+   "end": "2021-11-02 17:59:59",
+   "featured": [
+    "polar_star",
+    "memory_of_dust"
+   ],
+   "featuredRare": [
+    "akuoumaru",
+    "favonius_sword",
+    "favonius_lance",
+    "eye_of_perception",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "2.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-11-02 18:00:00",
+   "end": "2021-11-23 14:59:59",
+   "featured": [
+    "staff_of_homa",
+    "elegy_for_the_end"
+   ],
+   "featuredRare": [
+    "wavebreakers_fin",
+    "mouuns_moon",
+    "sacrificial_sword",
+    "rainslasher",
+    "the_widsith"
+   ],
+   "version": "2.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-11-24 06:00:00",
+   "end": "2021-12-14 17:59:59",
+   "featured": [
+    "freedom-sworn",
+    "song_of_broken_pines"
+   ],
+   "featuredRare": [
+    "wine_and_song",
+    "alley_hunter",
+    "lions_roar",
+    "sacrificial_greatsword",
+    "dragons_bane"
+   ],
+   "timezoneDependent": true,
+   "version": "2.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2021-12-14 18:00:00",
+   "end": "2022-01-04 17:59:59",
+   "featured": [
+    "redhorn_stonethresher",
+    "skyward_harp"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "mitternachts_waltz",
+    "the_bell",
+    "favonius_lance",
+    "sacrificial_fragments"
+   ],
+   "timezoneDependent": true,
+   "version": "2.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-01-05 06:00:00",
+   "end": "2022-01-25 17:59:59",
+   "featured": [
+    "calamity_queller",
+    "primordial_jade_winged-spear"
+   ],
+   "featuredRare": [
+    "lithic_spear",
+    "the_flute",
+    "favonius_greatsword",
+    "the_widsith",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "2.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-01-25 18:00:00",
+   "end": "2022-02-15 14:59:59",
+   "featured": [
+    "amos_bow",
+    "vortex_vanquisher"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "favonius_sword",
+    "dragons_bane",
+    "favonius_codex",
+    "sacrificial_bow"
+   ],
+   "version": "2.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-02-16 06:00:00",
+   "end": "2022-03-08 17:59:59",
+   "featured": [
+    "kaguras_verity",
+    "primordial_jade_cutter"
+   ],
+   "featuredRare": [
+    "wavebreakers_fin",
+    "sacrificial_sword",
+    "rainslasher",
+    "eye_of_perception",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "2.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-03-08 18:00:00",
+   "end": "2022-03-29 14:59:59",
+   "featured": [
+    "engulfing_lightning",
+    "everlasting_moonglow"
+   ],
+   "featuredRare": [
+    "akuoumaru",
+    "mouuns_moon",
+    "lions_roar",
+    "favonius_lance",
+    "sacrificial_fragments"
+   ],
+   "version": "2.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-03-30 06:00:00",
+   "end": "2022-04-19 17:59:59",
+   "featured": [
+    "haran_geppaku_futsu",
+    "elegy_for_the_end"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "sacrificial_greatsword",
+    "dragons_bane",
+    "the_widsith",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "2.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-04-19 18:00:00",
+   "end": "2022-05-31 05:59:59",
+   "featured": [
+    "mistsplitter_reforged",
+    "the_unforged"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "the_bell",
+    "favonius_lance",
+    "favonius_codex",
+    "favonius_warbow"
+   ],
+   "version": "2.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-05-31 09:00:00",
+   "end": "2022-06-21 17:59:59",
+   "featured": [
+    "aqua_simulacra",
+    "primordial_jade_winged-spear"
+   ],
+   "featuredRare": [
+    "lithic_spear",
+    "sacrificial_sword",
+    "favonius_greatsword",
+    "eye_of_perception",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "2.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-06-21 18:00:00",
+   "end": "2022-07-12 14:59:59",
+   "featured": [
+    "redhorn_stonethresher",
+    "memory_of_dust"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "lions_roar",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "the_stringless"
+   ],
+   "version": "2.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-07-13 06:00:00",
+   "end": "2022-08-02 17:59:59",
+   "featured": [
+    "freedom-sworn",
+    "lost_prayer_to_the_sacred_winds"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "mitternachts_waltz",
+    "rainslasher",
+    "favonius_lance",
+    "the_widsith"
+   ],
+   "timezoneDependent": true,
+   "version": "2.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-08-02 18:00:00",
+   "end": "2022-08-23 14:59:59",
+   "featured": [
+    "thundering_pulse",
+    "summit_shaper"
+   ],
+   "featuredRare": [
+    "wine_and_song",
+    "alley_hunter",
+    "the_flute",
+    "sacrificial_greatsword",
+    "dragons_bane"
+   ],
+   "version": "2.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-08-24 06:00:00",
+   "end": "2022-09-09 17:59:59",
+   "featured": [
+    "hunters_path",
+    "vortex_vanquisher"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "the_bell",
+    "favonius_lance",
+    "favonius_codex",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "3.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-09-09 18:00:00",
+   "end": "2022-09-27 14:59:59",
+   "featured": [
+    "amos_bow",
+    "everlasting_moonglow"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "favonius_greatsword",
+    "dragons_bane",
+    "eye_of_perception",
+    "rust"
+   ],
+   "version": "3.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-09-28 06:00:00",
+   "end": "2022-10-14 17:59:59",
+   "featured": [
+    "staff_of_the_scarlet_sands",
+    "elegy_for_the_end"
+   ],
+   "featuredRare": [
+    "makhaira_aquamarine",
+    "lions_roar",
+    "favonius_lance",
+    "sacrificial_fragments",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "3.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-10-14 18:00:00",
+   "end": "2022-11-01 14:59:59",
+   "featured": [
+    "key_of_khaj-nisut",
+    "primordial_jade_cutter"
+   ],
+   "featuredRare": [
+    "xiphos_moonlight",
+    "wandering_evenstar",
+    "rainslasher",
+    "dragons_bane",
+    "sacrificial_bow"
+   ],
+   "version": "3.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-11-02 06:00:00",
+   "end": "2022-11-18 17:59:59",
+   "featured": [
+    "a_thousand_floating_dreams",
+    "thundering_pulse"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "sacrificial_greatsword",
+    "favonius_lance",
+    "the_widsith",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "3.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-11-18 18:00:00",
+   "end": "2022-12-06 14:59:59",
+   "featured": [
+    "kaguras_verity",
+    "polar_star"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "the_bell",
+    "dragons_bane",
+    "favonius_codex",
+    "the_stringless"
+   ],
+   "version": "3.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-12-07 06:00:00",
+   "end": "2022-12-27 17:59:59",
+   "featured": [
+    "tulaytullahs_remembrance",
+    "redhorn_stonethresher"
+   ],
+   "featuredRare": [
+    "wavebreakers_fin",
+    "sacrificial_sword",
+    "favonius_greatsword",
+    "eye_of_perception",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "3.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2022-12-27 18:00:00",
+   "end": "2023-01-17 14:59:59",
+   "featured": [
+    "engulfing_lightning",
+    "haran_geppaku_futsu"
+   ],
+   "featuredRare": [
+    "akuoumaru",
+    "mouuns_moon",
+    "lions_roar",
+    "favonius_lance",
+    "sacrificial_fragments"
+   ],
+   "version": "3.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-01-18 06:00:00",
+   "end": "2023-02-07 17:59:59",
+   "featured": [
+    "light_of_foliar_incision",
+    "primordial_jade_winged-spear"
+   ],
+   "featuredRare": [
+    "lithic_spear",
+    "the_flute",
+    "rainslasher",
+    "the_widsith",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "3.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-02-07 18:00:00",
+   "end": "2023-02-28 14:59:59",
+   "featured": [
+    "staff_of_homa",
+    "aqua_simulacra"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "favonius_sword",
+    "dragons_bane",
+    "favonius_codex",
+    "rust"
+   ],
+   "version": "3.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-03-01 06:00:00",
+   "end": "2023-03-21 17:59:59",
+   "featured": [
+    "beacon_of_the_reed_sea",
+    "staff_of_the_scarlet_sands"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "alley_hunter",
+    "sacrificial_greatsword",
+    "dragons_bane",
+    "eye_of_perception"
+   ],
+   "timezoneDependent": true,
+   "version": "3.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-03-21 18:00:00",
+   "end": "2023-04-11 14:59:59",
+   "featured": [
+    "calamity_queller",
+    "mistsplitter_reforged"
+   ],
+   "featuredRare": [
+    "wine_and_song",
+    "sacrificial_sword",
+    "the_bell",
+    "favonius_lance",
+    "favonius_warbow"
+   ],
+   "version": "3.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-04-12 06:00:00",
+   "end": "2023-05-02 17:59:59",
+   "featured": [
+    "key_of_khaj-nisut",
+    "a_thousand_floating_dreams"
+   ],
+   "featuredRare": [
+    "xiphos_moonlight",
+    "favonius_greatsword",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "3.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-05-02 18:00:00",
+   "end": "2023-05-23 14:59:59",
+   "featured": [
+    "jadefalls_splendor",
+    "amos_bow"
+   ],
+   "featuredRare": [
+    "makhaira_aquamarine",
+    "wandering_evenstar",
+    "lions_roar",
+    "favonius_lance",
+    "sacrificial_bow"
+   ],
+   "version": "3.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-05-24 06:00:00",
+   "end": "2023-06-13 17:59:59",
+   "featured": [
+    "thundering_pulse",
+    "kaguras_verity"
+   ],
+   "featuredRare": [
+    "akuoumaru",
+    "the_flute",
+    "dragons_bane",
+    "the_widsith",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "3.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-06-13 18:00:00",
+   "end": "2023-07-04 14:59:59",
+   "featured": [
+    "freedom-sworn",
+    "light_of_foliar_incision"
+   ],
+   "featuredRare": [
+    "wavebreakers_fin",
+    "mouuns_moon",
+    "favonius_sword",
+    "sacrificial_greatsword",
+    "favonius_codex"
+   ],
+   "version": "3.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-07-05 06:00:00",
+   "end": "2023-07-25 17:59:59",
+   "featured": [
+    "song_of_broken_pines",
+    "lost_prayer_to_the_sacred_winds"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "alley_hunter",
+    "rainslasher",
+    "favonius_lance",
+    "eye_of_perception"
+   ],
+   "timezoneDependent": true,
+   "version": "3.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-07-25 18:00:00",
+   "end": "2023-08-15 17:59:59",
+   "featured": [
+    "everlasting_moonglow",
+    "tulaytullahs_remembrance"
+   ],
+   "featuredRare": [
+    "wine_and_song",
+    "lions_roar",
+    "the_bell",
+    "dragons_bane",
+    "favonius_warbow"
+   ],
+   "version": "3.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-08-16 06:00:00",
+   "end": "2023-09-05 17:59:59",
+   "featured": [
+    "the_first_great_magic",
+    "aqua_simulacra"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "favonius_greatsword",
+    "favonius_lance",
+    "sacrificial_fragments",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "4.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-09-05 18:00:00",
+   "end": "2023-09-26 14:59:59",
+   "featured": [
+    "polar_star",
+    "vortex_vanquisher"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "sacrificial_greatsword",
+    "dragons_bane",
+    "the_widsith",
+    "rust"
+   ],
+   "version": "4.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-09-27 06:00:00",
+   "end": "2023-10-17 17:59:59",
+   "featured": [
+    "tome_of_the_eternal_flow",
+    "staff_of_homa"
+   ],
+   "featuredRare": [
+    "the_dockhands_assistant",
+    "portable_power_saw",
+    "mitternachts_waltz",
+    "favonius_lance",
+    "favonius_codex"
+   ],
+   "timezoneDependent": true,
+   "version": "4.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-10-17 18:00:00",
+   "end": "2023-11-07 14:59:59",
+   "featured": [
+    "cashflow_supervision",
+    "elegy_for_the_end"
+   ],
+   "featuredRare": [
+    "prospectors_drill",
+    "range_gauge",
+    "favonius_sword",
+    "rainslasher",
+    "eye_of_perception"
+   ],
+   "version": "4.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-11-08 06:00:00",
+   "end": "2023-11-28 17:59:59",
+   "featured": [
+    "splendor_of_tranquil_waters",
+    "jadefalls_splendor"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "the_bell",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "4.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-11-28 18:00:00",
+   "end": "2023-12-19 14:59:59",
+   "featured": [
+    "staff_of_the_scarlet_sands",
+    "haran_geppaku_futsu"
+   ],
+   "featuredRare": [
+    "lions_roar",
+    "the_widsith",
+    "favonius_warbow",
+    "favonius_greatsword",
+    "favonius_lance"
+   ],
+   "version": "4.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2023-12-20 06:00:00",
+   "end": "2024-01-09 17:59:59",
+   "featured": [
+    "verdict",
+    "mistsplitter_reforged"
+   ],
+   "featuredRare": [
+    "akuoumaru",
+    "mouuns_moon",
+    "the_flute",
+    "dragons_bane",
+    "favonius_codex"
+   ],
+   "timezoneDependent": true,
+   "version": "4.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-01-09 18:00:00",
+   "end": "2024-01-30 14:59:00",
+   "featured": [
+    "engulfing_lightning",
+    "thundering_pulse"
+   ],
+   "featuredRare": [
+    "wavebreakers_fin",
+    "favonius_sword",
+    "rainslasher",
+    "eye_of_perception",
+    "rust"
+   ],
+   "version": "4.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-01-31 06:00:00",
+   "end": "2024-02-20 17:59:00",
+   "featured": [
+    "cranes_echoing_call",
+    "a_thousand_floating_dreams"
+   ],
+   "featuredRare": [
+    "lithic_spear",
+    "sacrificial_sword",
+    "sacrificial_greatsword",
+    "sacrificial_fragments",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "4.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-02-20 18:00:00",
+   "end": "2024-03-12 14:59:00",
+   "featured": [
+    "primordial_jade_winged-spear",
+    "kaguras_verity"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "lions_roar",
+    "favonius_lance",
+    "the_widsith",
+    "the_stringless"
+   ],
+   "version": "4.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-03-13 06:00:00",
+   "end": "2024-04-02 17:59:00",
+   "featured": [
+    "uraku_misugiri",
+    "redhorn_stonethresher"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "alley_hunter",
+    "the_bell",
+    "dragons_bane",
+    "favonius_codex"
+   ],
+   "timezoneDependent": true,
+   "version": "4.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-04-02 18:00:00",
+   "end": "2024-04-23 14:59:00",
+   "featured": [
+    "tome_of_the_eternal_flow",
+    "freedom-sworn"
+   ],
+   "featuredRare": [
+    "wine_and_song",
+    "mitternachts_waltz",
+    "the_flute",
+    "favonius_greatsword",
+    "favonius_lance"
+   ],
+   "version": "4.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-04-24 06:00:00",
+   "end": "2024-05-14 17:59:00",
+   "featured": [
+    "crimson_moons_semblance",
+    "the_first_great_magic"
+   ],
+   "featuredRare": [
+    "the_dockhands_assistant",
+    "portable_power_saw",
+    "dragons_bane",
+    "eye_of_perception",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "4.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-05-14 18:00:00",
+   "end": "2024-06-04 14:59:00",
+   "featured": [
+    "tulaytullahs_remembrance",
+    "jadefalls_splendor"
+   ],
+   "featuredRare": [
+    "prospectors_drill",
+    "range_gauge",
+    "favonius_sword",
+    "rainslasher",
+    "sacrificial_fragments"
+   ],
+   "version": "4.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-06-05 06:00:00",
+   "end": "2024-06-25 17:59:00",
+   "featured": [
+    "absolution",
+    "light_of_foliar_incision"
+   ],
+   "featuredRare": [
+    "lithic_spear",
+    "sacrificial_sword",
+    "sacrificial_greatsword",
+    "the_widsith",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "4.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-06-25 18:00:00",
+   "end": "2024-07-16 14:59:00",
+   "featured": [
+    "silvershower_heartstrings",
+    "splendor_of_tranquil_waters"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "lions_roar",
+    "favonius_lance",
+    "favonius_codex",
+    "sacrificial_bow"
+   ],
+   "version": "4.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-07-17 06:00:00",
+   "end": "2024-08-06 17:59:00",
+   "featured": [
+    "verdict",
+    "key_of_khaj-nisut"
+   ],
+   "featuredRare": [
+    "xiphos_moonlight",
+    "the_bell",
+    "dragons_bane",
+    "eye_of_perception",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "4.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-08-06 18:00:00",
+   "end": "2024-08-27 14:59:00",
+   "featured": [
+    "lumidouce_elegy",
+    "aqua_simulacra"
+   ],
+   "featuredRare": [
+    "makhaira_aquamarine",
+    "wandering_evenstar",
+    "the_flute",
+    "favonius_lance",
+    "favonius_warbow"
+   ],
+   "version": "4.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-08-28 06:00:00",
+   "end": "2024-09-17 17:59:00",
+   "featured": [
+    "surfs_up",
+    "freedom-sworn"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "favonius_greatsword",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "5.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-09-17 18:00:00",
+   "end": "2024-10-08 14:59:00",
+   "featured": [
+    "fang_of_the_mountain_king",
+    "engulfing_lightning"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "rainslasher",
+    "favonius_lance",
+    "the_widsith",
+    "sacrificial_bow"
+   ],
+   "version": "5.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-10-09 06:00:00",
+   "end": "2024-10-29 17:59:00",
+   "featured": [
+    "peak_patrol_song",
+    "uraku_misugiri"
+   ],
+   "featuredRare": [
+    "sturdy_bone",
+    "mountain-bracing_bolt",
+    "sacrificial_greatsword",
+    "favonius_codex",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "5.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-10-29 18:00:00",
+   "end": "2024-11-19 14:59:00",
+   "featured": [
+    "a_thousand_floating_dreams",
+    "staff_of_homa"
+   ],
+   "featuredRare": [
+    "fruitful_hook",
+    "lions_roar",
+    "dragons_bane",
+    "eye_of_perception",
+    "favonius_warbow"
+   ],
+   "version": "5.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-11-20 06:00:00",
+   "end": "2024-12-10 17:59:00",
+   "featured": [
+    "astral_vultures_crimson_plumage",
+    "the_first_great_magic"
+   ],
+   "featuredRare": [
+    "waveriding_whirl",
+    "flower-wreathed_feathers",
+    "the_flute",
+    "the_bell",
+    "favonius_lance"
+   ],
+   "timezoneDependent": true,
+   "version": "5.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2024-12-10 18:00:00",
+   "end": "2024-12-31 14:59:00",
+   "featured": [
+    "tome_of_the_eternal_flow",
+    "vortex_vanquisher"
+   ],
+   "featuredRare": [
+    "mitternachts_waltz",
+    "favonius_sword",
+    "favonius_greatsword",
+    "dragons_bane",
+    "sacrificial_fragments"
+   ],
+   "version": "5.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-01-01 06:00:00",
+   "end": "2025-01-21 17:59:00",
+   "featured": [
+    "a_thousand_blazing_suns",
+    "starcallers_watch"
+   ],
+   "featuredRare": [
+    "lithic_blade",
+    "sacrificial_sword",
+    "favonius_lance",
+    "favonius_codex",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "5.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-01-21 18:00:00",
+   "end": "2025-02-11 14:59:00",
+   "featured": [
+    "crimson_moons_semblance",
+    "absolution"
+   ],
+   "featuredRare": [
+    "lithic_spear",
+    "lions_roar",
+    "rainslasher",
+    "the_widsith",
+    "sacrificial_bow"
+   ],
+   "version": "5.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-02-12 06:00:00",
+   "end": "2025-03-04 17:59:00",
+   "featured": [
+    "sunny_morning_sleep-in",
+    "silvershower_heartstrings"
+   ],
+   "featuredRare": [
+    "akuoumaru",
+    "wavebreakers_fin",
+    "mouuns_moon",
+    "the_flute",
+    "eye_of_perception"
+   ],
+   "timezoneDependent": true,
+   "version": "5.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-03-04 18:00:00",
+   "end": "2025-03-25 14:59:00",
+   "featured": [
+    "splendor_of_tranquil_waters",
+    "cashflow_supervision"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "sacrificial_greatsword",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "rust"
+   ],
+   "version": "5.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-03-26 06:00:00",
+   "end": "2025-04-15 17:59:00",
+   "featured": [
+    "vivid_notions",
+    "cranes_echoing_call"
+   ],
+   "featuredRare": [
+    "sturdy_bone",
+    "fruitful_hook",
+    "mountain-bracing_bolt",
+    "waveriding_whirl",
+    "flower-wreathed_feathers"
+   ],
+   "timezoneDependent": true,
+   "version": "5.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-04-15 18:00:00",
+   "end": "2025-05-06 14:59:00",
+   "featured": [
+    "peak_patrol_song",
+    "elegy_for_the_end"
+   ],
+   "featuredRare": [
+    "sacrificial_sword",
+    "the_bell",
+    "favonius_lance",
+    "favonius_codex",
+    "favonius_warbow"
+   ],
+   "version": "5.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-05-07 06:00:00",
+   "end": "2025-05-27 17:59:00",
+   "featured": [
+    "symphonist_of_scents",
+    "verdict"
+   ],
+   "featuredRare": [
+    "the_dockhands_assistant",
+    "portable_power_saw",
+    "prospectors_drill",
+    "range_gauge",
+    "the_widsith"
+   ],
+   "timezoneDependent": true,
+   "version": "5.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-05-27 18:00:00",
+   "end": "2025-06-17 14:59:00",
+   "featured": [
+    "fang_of_the_mountain_king",
+    "engulfing_lightning"
+   ],
+   "featuredRare": [
+    "lions_roar",
+    "favonius_greatsword",
+    "dragons_bane",
+    "eye_of_perception",
+    "the_stringless"
+   ],
+   "version": "5.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-06-18 06:00:00",
+   "end": "2025-07-08 17:59:00",
+   "featured": [
+    "azurelight",
+    "calamity_queller"
+   ],
+   "featuredRare": [
+    "xiphos_moonlight",
+    "makhaira_aquamarine",
+    "wandering_evenstar",
+    "favonius_lance",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "5.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-07-08 18:00:00",
+   "end": "2025-07-29 14:59:00",
+   "featured": [
+    "a_thousand_blazing_suns",
+    "calamity_queller"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "rainslasher",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "rust"
+   ],
+   "version": "5.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-07-30 06:00:00",
+   "end": "2025-08-19 17:59:00",
+   "featured": [
+    "fractured_halo",
+    "starcallers_watch"
+   ],
+   "featuredRare": [
+    "sturdy_bone",
+    "mountain-bracing_bolt",
+    "sacrificial_greatsword",
+    "favonius_codex",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "5.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-08-19 18:00:00",
+   "end": "2025-09-09 14:59:00",
+   "featured": [
+    "surfs_up",
+    "astral_vultures_crimson_plumage"
+   ],
+   "featuredRare": [
+    "fruitful_hook",
+    "waveriding_whirl",
+    "flower-wreathed_feathers",
+    "favonius_sword",
+    "favonius_lance"
+   ],
+   "version": "5.8"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-09-10 06:00:00",
+   "end": "2025-09-30 17:59:00",
+   "featured": [
+    "nightweavers_looking_glass",
+    "a_thousand_floating_dreams"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "sacrificial_greatsword",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "6.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-09-30 18:00:00",
+   "end": "2025-10-21 17:59:00",
+   "featured": [
+    "bloodsoaked_ruins",
+    "aqua_simulacra"
+   ],
+   "featuredRare": [
+    "lions_roar",
+    "favonius_greatsword",
+    "favonius_lance",
+    "favonius_codex",
+    "sacrificial_bow"
+   ],
+   "version": "6.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-10-22 06:00:00",
+   "end": "2025-11-11 17:59:00",
+   "featured": [
+    "reliquary_of_truth",
+    "splendor_of_tranquil_waters"
+   ],
+   "featuredRare": [
+    "moonweavers_dawn",
+    "sacrificers_staff",
+    "dawning_frost",
+    "the_bell",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "6.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-11-11 18:00:00",
+   "end": "2025-12-02 14:59:00",
+   "featured": [
+    "crimson_moons_semblance",
+    "vortex_vanquisher"
+   ],
+   "featuredRare": [
+    "the_dockhands_assistant",
+    "portable_power_saw",
+    "range_gauge",
+    "dragons_bane",
+    "sacrificial_fragments"
+   ],
+   "version": "6.1"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-12-03 06:00:00",
+   "end": "2025-12-23 17:59:00",
+   "featured": [
+    "athame_artis",
+    "the_daybreak_chronicles"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "prospectors_drill",
+    "wine_and_song",
+    "rainslasher",
+    "the_stringless"
+   ],
+   "timezoneDependent": true,
+   "version": "6.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2025-12-23 18:00:00",
+   "end": "2026-01-13 14:59:00",
+   "featured": [
+    "vivid_notions",
+    "peak_patrol_song"
+   ],
+   "featuredRare": [
+    "fruitful_hook",
+    "alley_hunter",
+    "favonius_sword",
+    "favonius_lance",
+    "the_widsith"
+   ],
+   "version": "6.2"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-01-14 06:00:00",
+   "end": "2026-02-03 17:59:00",
+   "featured": [
+    "nocturnes_curtain_call",
+    "fractured_halo"
+   ],
+   "featuredRare": [
+    "mountain-bracing_bolt",
+    "waveriding_whirl",
+    "mitternachts_waltz",
+    "the_flute",
+    "sacrificial_greatsword"
+   ],
+   "timezoneDependent": true,
+   "version": "6.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-02-03 18:00:00",
+   "end": "2026-02-24 14:59:00",
+   "featured": [
+    "lightbearing_moonshard",
+    "tome_of_the_eternal_flow"
+   ],
+   "featuredRare": [
+    "xiphos_moonlight",
+    "favonius_greatsword",
+    "dragons_bane",
+    "eye_of_perception",
+    "favonius_warbow"
+   ],
+   "version": "6.3"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-02-25 06:00:00",
+   "end": "2026-03-17 17:59:00",
+   "featured": [
+    "gest_of_the_mighty_wolf",
+    "bloodsoaked_ruins"
+   ],
+   "featuredRare": [
+    "sacrificers_staff",
+    "favonius_sword",
+    "favonius_greatsword",
+    "sacrificial_fragments",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "6.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-03-17 18:00:00",
+   "end": "2026-04-07 14:59:00",
+   "featured": [
+    "azurelight",
+    "symphonist_of_scents"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "the_bell",
+    "favonius_lance",
+    "favonius_codex",
+    "rust"
+   ],
+   "version": "6.4"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-04-08 06:00:00",
+   "end": "2026-04-28 17:59:00",
+   "featured": [
+    "golden_frostbound_oath",
+    "astral_vultures_crimson_plumage"
+   ],
+   "featuredRare": [
+    "flower-wreathed_feathers",
+    "lions_roar",
+    "sacrificial_greatsword",
+    "dragons_bane",
+    "eye_of_perception"
+   ],
+   "timezoneDependent": true,
+   "version": "6.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-04-28 18:00:00",
+   "end": "2026-05-19 14:59:00",
+   "featured": [
+    "nightweavers_looking_glass",
+    "reliquary_of_truth"
+   ],
+   "featuredRare": [
+    "dawning_frost",
+    "sacrificial_sword",
+    "rainslasher",
+    "favonius_lance",
+    "favonius_warbow"
+   ],
+   "version": "6.5"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-05-20 06:00:00",
+   "end": "2026-06-09 17:59:00",
+   "featured": [
+    "angelos_heptades",
+    "athame_artis"
+   ],
+   "featuredRare": [
+    "moonweavers_dawn",
+    "mitternachts_waltz",
+    "the_bell",
+    "dragons_bane",
+    "the_widsith"
+   ],
+   "timezoneDependent": true,
+   "version": "6.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-06-09 18:00:00",
+   "end": "2026-06-30 14:59:00",
+   "featured": [
+    "disaster_and_remorse",
+    "a_thousand_blazing_suns"
+   ],
+   "featuredRare": [
+    "the_alley_flash",
+    "wine_and_song",
+    "alley_hunter",
+    "rainslasher",
+    "favonius_lance"
+   ],
+   "version": "6.6"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-07-01 06:00:00",
+   "end": "2026-07-21 17:59:00",
+   "featured": [
+    "a_teaspoon_of_transcendence",
+    "starcallers_watch"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "rainslasher",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "sacrificial_bow"
+   ],
+   "timezoneDependent": true,
+   "version": "6.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-07-21 18:00:00",
+   "end": "2026-08-11 14:59:00",
+   "featured": [
+    "nocturnes_curtain_call",
+    "engulfing_lightning"
+   ],
+   "featuredRare": [
+    "waveriding_whirl",
+    "sacrificial_sword",
+    "the_bell",
+    "favonius_lance",
+    "favonius_warbow"
+   ],
+   "version": "6.7"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-08-12 06:00:00",
+   "end": "2026-09-01 17:59:00",
+   "featured": [
+    "whitelake_frostfeather",
+    "crimson_moons_semblance"
+   ],
+   "featuredRare": [
+    "favonius_sword",
+    "the_bell",
+    "dragons_bane",
+    "sacrificial_fragments",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "7.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-09-01 18:00:00",
+   "end": "2026-09-22 14:59:00",
+   "featured": [
+    "bloodsoaked_ruins",
+    "fractured_halo"
+   ],
+   "featuredRare": [
+    "the_flute",
+    "favonius_greatsword",
+    "favonius_lance",
+    "eye_of_perception",
+    "the_stringless"
+   ],
+   "version": "7.0"
+  },
+  {
+   "name": "Epitome Invocation",
+   "start": "2026-09-23 06:00:00",
+   "end": "2026-10-13 17:59:59",
+   "featured": [
+    "beyond_the_chrysalis",
+    "hymn_of_the_maelstrom"
+   ],
+   "featuredRare": [
+    "new_bough",
+    "winters_heavy_heart",
+    "breezeborne_refrain",
+    "favonius_greatsword",
+    "dragons_bane"
+   ],
+   "timezoneDependent": true,
+   "version": "7.1"
+  }
+ ],
+ "chronicled": [
+  {
+   "name": "Ode to the Dawn Breeze",
+   "start": "2024-03-13 06:00:00",
+   "end": "2024-04-02 17:59:00",
+   "featured": [
+    "eula",
+    "mona",
+    "albedo",
+    "klee",
+    "diluc",
+    "jean",
+    "skyward_blade",
+    "aquila_favonia",
+    "beacon_of_the_reed_sea",
+    "song_of_broken_pines",
+    "wolfs_gravestone",
+    "skyward_pride",
+    "skyward_spine",
+    "lost_prayer_to_the_sacred_winds",
+    "skyward_atlas",
+    "hunters_path",
+    "skyward_harp"
+   ],
+   "featuredRare": [
+    "mika",
+    "rosaria",
+    "sucrose",
+    "diona",
+    "noelle",
+    "bennett",
+    "fischl",
+    "amber",
+    "razor",
+    "kaeya",
+    "barbara",
+    "lisa",
+    "the_alley_flash",
+    "lions_roar",
+    "sacrificial_sword",
+    "the_flute",
+    "favonius_sword",
+    "rainslasher",
+    "sacrificial_greatsword",
+    "the_bell",
+    "favonius_greatsword",
+    "favonius_lance",
+    "dragons_bane",
+    "wine_and_song",
+    "eye_of_perception",
+    "sacrificial_fragments",
+    "the_widsith",
+    "favonius_codex",
+    "mitternachts_waltz",
+    "alley_hunter",
+    "rust",
+    "sacrificial_bow",
+    "the_stringless",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "4.5"
+  },
+  {
+   "name": "Remembrance of Jade and Stone",
+   "start": "2025-01-21 18:00:00",
+   "end": "2025-02-11 14:59:00",
+   "featured": [
+    "baizhu",
+    "shenhe",
+    "keqing",
+    "ganyu",
+    "qiqi",
+    "tartaglia",
+    "xiao",
+    "primordial_jade_cutter",
+    "summit_shaper",
+    "the_unforged",
+    "calamity_queller",
+    "primordial_jade_winged_spear",
+    "jadefalls_splendor",
+    "memory_of_dust",
+    "polar_star",
+    "amos_bow"
+   ],
+   "featuredRare": [
+    "gaming",
+    "yaoyao",
+    "yun_jin",
+    "yanfei",
+    "xinyan",
+    "chongyun",
+    "ningguang",
+    "xingqiu",
+    "beidou",
+    "xiangling",
+    "lions_roar",
+    "sacrificial_sword",
+    "the_flute",
+    "favonius_sword",
+    "lithic_blade",
+    "rainslasher",
+    "sacrificial_greatsword",
+    "the_bell",
+    "favonius_greatsword",
+    "favonius_lance",
+    "lithic_spear",
+    "dragons_bane",
+    "eye_of_perception",
+    "sacrificial_fragments",
+    "the_widsith",
+    "favonius_codex",
+    "rust",
+    "sacrificial_bow",
+    "the_stringless",
+    "favonius_warbow"
+   ],
+   "version": "5.3"
+  },
+  {
+   "name": "Thunder Rends the Plains on High",
+   "start": "2025-05-27 18:00:00",
+   "end": "2025-06-17 14:59:00",
+   "featured": [
+    "kamisato_ayaka",
+    "kamisato_ayato",
+    "yoimiya",
+    "chiori",
+    "yae_miko",
+    "arataki_itto",
+    "sangonomiya_kokomi",
+    "kaedehara_kazuha",
+    "uraku_misugiri",
+    "haran_geppaku_futsu",
+    "mistsplitter_reforged",
+    "freedom-sworn",
+    "redhorn_stonethresher",
+    "kaguras_verity",
+    "everlasting_moonglow",
+    "thundering_pulse"
+   ],
+   "featuredRare": [
+    "kuki_shinobu",
+    "kirara",
+    "shikanoin_heizou",
+    "kujou_sara",
+    "gorou",
+    "sayu",
+    "thoma",
+    "lions_roar",
+    "sacrificial_sword",
+    "the_flute",
+    "favonius_sword",
+    "akuoumaru",
+    "rainslasher",
+    "sacrificial_greatsword",
+    "the_bell",
+    "favonius_greatsword",
+    "wavebreakers_fin",
+    "favonius_lance",
+    "dragons_bane",
+    "eye_of_perception",
+    "sacrificial_fragments",
+    "the_widsith",
+    "favonius_codex",
+    "mouuns_moon",
+    "rust",
+    "sacrificial_bow",
+    "the_stringless",
+    "favonius_warbow"
+   ],
+   "version": "5.6"
+  },
+  {
+   "name": "Roving Chalice of Dewgrass",
+   "start": "2025-09-10 06:00:00",
+   "end": "2025-09-30 17:59:00",
+   "featured": [
+    "dehya",
+    "alhaitham",
+    "wanderer",
+    "cyno",
+    "nilou",
+    "tighnari",
+    "light_of_foliar_incision",
+    "key_of_khaj-nisut",
+    "beacon_of_the_reed_sea",
+    "staff_of_the_scarlet_sands",
+    "tulaytullahs_remembrance",
+    "hunters_path"
+   ],
+   "featuredRare": [
+    "sethos",
+    "kaveh",
+    "faruzan",
+    "layla",
+    "candace",
+    "dori",
+    "collei",
+    "xiphos_moonlight",
+    "lions_roar",
+    "sacrificial_sword",
+    "the_flute",
+    "favonius_sword",
+    "makhaira_aquamarine",
+    "rainslasher",
+    "sacrificial_greatsword",
+    "the_bell",
+    "favonius_greatsword",
+    "favonius_lance",
+    "dragons_bane",
+    "wandering_evenstar",
+    "eye_of_perception",
+    "sacrificial_fragments",
+    "the_widsith",
+    "favonius_codex",
+    "rust",
+    "sacrificial_bow",
+    "the_stringless",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "6.0"
+  },
+  {
+   "name": "Ode to the Dawn Breeze",
+   "start": "2026-02-25 06:00:00",
+   "end": "2026-03-17 17:59:00",
+   "featured": [
+    "eula",
+    "mona",
+    "albedo",
+    "klee",
+    "diluc",
+    "jean",
+    "skyward_blade",
+    "aquila_favonia",
+    "song_of_broken_pines",
+    "wolfs_gravestone",
+    "skyward_pride",
+    "skyward_spine",
+    "lost_prayer_to_the_sacred_winds",
+    "skyward_atlas",
+    "elegy_for_the_end",
+    "skyward_harp"
+   ],
+   "featuredRare": [
+    "dahlia",
+    "mika",
+    "rosaria",
+    "sucrose",
+    "diona",
+    "noelle",
+    "bennett",
+    "fischl",
+    "amber",
+    "razor",
+    "kaeya",
+    "barbara",
+    "lisa",
+    "the_alley_flash",
+    "lions_roar",
+    "sacrificial_sword",
+    "the_flute",
+    "favonius_sword",
+    "rainslasher",
+    "sacrificial_greatsword",
+    "the_bell",
+    "favonius_greatsword",
+    "favonius_lance",
+    "dragons_bane",
+    "wine_and_song",
+    "eye_of_perception",
+    "sacrificial_fragments",
+    "the_widsith",
+    "favonius_codex",
+    "mitternachts_waltz",
+    "alley_hunter",
+    "rust",
+    "sacrificial_bow",
+    "the_stringless",
+    "favonius_warbow"
+   ],
+   "timezoneDependent": true,
+   "version": "6.0"
+  },
+  {
+   "name": "Dewlit Tranquility",
+   "start": "2026-04-28 18:00:00",
+   "end": "2026-05-19 14:59:00",
+   "featured": [
+    "emilie",
+    "clorinde",
+    "sigewinne",
+    "navia",
+    "lyney",
+    "absolution",
+    "verdict",
+    "lumidouce_elegy",
+    "silvershower_heartstrings",
+    "the_first_great_magic"
+   ],
+   "featuredRare": [
+    "chevreuse",
+    "charlotte",
+    "freminet",
+    "lynette",
+    "the_dockhands_assistant",
+    "lions_roar",
+    "sacrificial_sword",
+    "the_flute",
+    "favonius_sword",
+    "portable_power_saw",
+    "rainslasher",
+    "sacrificial_greatsword",
+    "the_bell",
+    "favonius_greatsword",
+    "prospectors_drill",
+    "favonius_lance",
+    "dragons_bane",
+    "eye_of_perception",
+    "sacrificial_fragments",
+    "the_widsith",
+    "favonius_codex",
+    "range_gauge",
+    "rust",
+    "sacrificial_bow",
+    "the_stringless",
+    "favonius_warbow"
+   ],
+   "version": "6.5"
+  },
+  {
+   "name": "Heavenlit Prophecy",
+   "start": "2026-07-01 06:00:00",
+   "end": "2026-07-21 17:59:00",
+   "featured": [
+    "yumemizuki_mizuki",
+    "wriothesley",
+    "cyno",
+    "yae_miko",
+    "qiqi",
+    "sunny_morning_sleep-in",
+    "cashflow_supervision",
+    "staff_of_the_scarlet_sands",
+    "kaguras_verity",
+    "skyward_blade"
+   ],
+   "featuredRare": [
+    "aino",
+    "amber",
+    "barbara",
+    "beidou",
+    "bennett",
+    "candace",
+    "charlotte",
+    "chevreuse",
+    "chongyun",
+    "collei",
+    "dahlia",
+    "diona",
+    "dori",
+    "faruzan",
+    "fischl",
+    "freminet",
+    "gaming",
+    "gorou",
+    "iansan",
+    "ifa",
+    "illuga",
+    "jahoda",
+    "kachina",
+    "kaeya",
+    "kaveh",
+    "kirara",
+    "kujou_sara",
+    "kuki_shinobu",
+    "lan_yan",
+    "layla",
+    "lisa",
+    "lynette",
+    "mika",
+    "ningguang",
+    "noelle",
+    "ororon",
+    "prune",
+    "razor",
+    "rosaria",
+    "sayu",
+    "sethos",
+    "shikanoin_heizou",
+    "sucrose",
+    "thoma",
+    "xiangling",
+    "xingqiu",
+    "xinyan",
+    "yanfei",
+    "yaoyao",
+    "yun_jin",
+    "favonius_sword",
+    "the_flute",
+    "sacrificial_sword",
+    "lions_roar",
+    "favonius_greatsword",
+    "the_bell",
+    "sacrificial_greatsword",
+    "rainslasher",
+    "dragons_bane",
+    "favonius_lance",
+    "favonius_codex",
+    "the_widsith",
+    "sacrificial_fragments",
+    "eye_of_perception",
+    "favonius_warbow",
+    "the_stringless",
+    "sacrificial_bow",
+    "rust"
+   ],
+   "timezoneDependent": true,
+   "version": "6.7"
+  }
+ ]
+}
