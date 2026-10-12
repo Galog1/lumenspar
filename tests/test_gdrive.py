@@ -339,3 +339,25 @@ def test_a_removed_card_stays_removed_after_syncing(tmp_path):
     stale.save()
     backup.sync(app, lambda m: None, tmp_path / "w2", other)
     assert builds.Collection("111", other).builds.keys() == {"2"}
+
+
+def test_a_sign_in_without_the_drive_permission_is_refused(tmp_path):
+    open_url, _ = _browser()
+    s = _state(tmp_path)
+    with pytest.raises(gdrive.DriveError, match="tick the box"):
+        gdrive.sign_in(s, open_url, timeout=10, transport=lambda r: _reply(
+            200, {"refresh_token": "r", "scope": "openid https://www.googleapis.com/auth/userinfo.email"}))
+    assert not s.signed_in
+
+
+def test_missing_drive_permission_signs_out_with_an_explanation(tmp_path):
+    s = _state(tmp_path, refresh_token="r")
+
+    def transport(req):
+        if req.full_url == gdrive.TOKEN_URL:
+            return _reply(200, {"access_token": "tok", "expires_in": 3600})
+        return _reply(403, {"error": {"message": "Request had insufficient authentication scopes.",
+                                      "errors": [{"reason": "insufficientPermissions"}]}})
+    with pytest.raises(gdrive.SignedOut, match="tick the box"):
+        gdrive.AppData(s, transport).list()
+    assert not s.signed_in and not gdrive.DriveState.load(s.path).refresh_token

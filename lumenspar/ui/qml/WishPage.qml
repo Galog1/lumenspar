@@ -669,7 +669,7 @@ Item {
                     GuideStep {
                         number: 7
                         heading: "Sign in"
-                        body: "Your browser opens Google's sign-in. Choose your account and allow access. If Google warns that it has not verified the app, that is expected — it is your own app: choose <b>Advanced</b>, then <b>Go to Lumenspar</b>. Then come back here; your history is backed up straight away."
+                        body: "Your browser opens Google's sign-in. Choose your account and allow access; if Google lists permissions with checkboxes, tick the one for your Google Drive. If Google warns that it has not verified the app, that is expected — it is your own app: choose <b>Advanced</b>, then <b>Go to Lumenspar</b>. Then come back here; your history is backed up straight away."
 
                         Row {
                             spacing: 10

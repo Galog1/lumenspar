@@ -41,7 +41,13 @@ TOKEN_URL = "https://oauth2.googleapis.com/token"
 REVOKE_URL = "https://oauth2.googleapis.com/revoke"
 DRIVE_FILES = "https://www.googleapis.com/drive/v3/files"
 DRIVE_UPLOAD = "https://www.googleapis.com/upload/drive/v3/files"
-SCOPES = "openid email https://www.googleapis.com/auth/drive.appdata"
+DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata"
+SCOPES = f"openid email {DRIVE_SCOPE}"
+# Google's consent screen lists each permission with its own checkbox, and the
+# Drive one can be left unticked: the sign-in then works but every backup fails.
+NO_DRIVE_ACCESS = ("Google sign-in did not include access to Lumenspar's Drive folder. "
+                   "Sign in again, and on Google's screen tick the box for \"See, create, "
+                   "and delete its own configuration data in your Google Drive\".")
 STATE_PATH = CONFIG_DIR / "google_drive.json"
 BUILTIN_PATH = Path(__file__).with_name("google_client.json")
 SIGN_IN_TIMEOUT = 300.0
@@ -262,6 +268,8 @@ def sign_in(state: DriveState, open_url: Callable[[str], None], *,
                          transport)
     if not tokens.get("refresh_token"):
         raise DriveError("Google did not return a lasting sign-in; try signing in again.")
+    if DRIVE_SCOPE not in str(tokens.get("scope", DRIVE_SCOPE)).split():
+        raise DriveError(NO_DRIVE_ACCESS)
     state.refresh_token, state.token_client = tokens["refresh_token"], client_id
     state.email = _email_from_id_token(tokens.get("id_token", ""))
     state.save()
@@ -345,6 +353,12 @@ class AppData:
             raise DriveError("The Google Drive API is not enabled in your Google Cloud "
                              f"project (step {STEP_API}). It can take a few minutes to "
                              "take effect after enabling.")
+        if status == 403 and ("insufficientPermissions" in reasons
+                              or "insufficient authentication scopes" in str(err.get("message", ""))):
+            # Signed in without the Drive permission: only a new sign-in fixes it.
+            self.state.refresh_token = ""
+            self.state.save()
+            raise SignedOut(NO_DRIVE_ACCESS)
         if status == 401:
             self._access = ""
         raise DriveError(f"Google Drive refused the request ({status}: "
