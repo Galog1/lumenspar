@@ -3,7 +3,8 @@
 from types import SimpleNamespace
 
 from lumenspar import optimizer as O
-from lumenspar.ui.optimizer_backend import deltas, four_piece, goal_from_qml, same_build, score_text
+from lumenspar.ui.optimizer_backend import (akasha_info, deltas, four_piece, goal_from_qml, merge_results,
+                                            same_build, score_text, top1_targets)
 
 
 def _result(damage=1000.0, score=2.0) -> O.Result:
@@ -80,8 +81,76 @@ def test_four_piece():
 
 def test_same_build():
     card = {"artifacts": [{"setKey": "GoldenTroupe"}] * 4 + [{"setKey": "EmblemOfSeveredFate"}]}
-    match = SimpleNamespace(sets={"Golden Troupe": 4, "Emblem of Severed Fate": 1, "Other": 0})
-    other = SimpleNamespace(sets={"Golden Troupe": 2, "Emblem of Severed Fate": 3})
+    match = {"Golden Troupe": 4, "Emblem of Severed Fate": 1, "Other": 0}
+    other = {"Golden Troupe": 2, "Emblem of Severed Fate": 3}
     assert same_build(card, match) is True
     assert same_build(card, other) is False
-    assert same_build(card, SimpleNamespace(sets={})) is False
+    assert same_build(card, {}) is False
+
+
+def test_top1_targets_atk():
+    stats = {"critRate_": 70.123, "critDMG_": 150.46, "atk": 2345.6, "enerRech_": 110.04,
+             "eleMas": 306.2, "hp": 20000}
+    targets, keys = top1_targets(stats, "atk")
+    assert keys == ["critRate_", "critDMG_", "atk", "enerRech_", "eleMas"]
+    assert targets == {"critRate_": 70.1, "critDMG_": 150.5, "atk": 2346,
+                       "enerRech_": 110.0, "eleMas": 306}
+
+
+def test_top1_targets_hp_without_er_em():
+    stats = {"critRate_": 60.0, "critDMG_": 120.0, "hp": 40000.4, "enerRech_": 100.0, "eleMas": 0}
+    targets, keys = top1_targets(stats, "hp")
+    assert keys == ["critRate_", "critDMG_", "hp"]
+    assert targets["hp"] == 40000
+
+
+def test_top1_targets_elemas_once():
+    stats = {"critRate_": 50.0, "critDMG_": 100.0, "eleMas": 900.4, "enerRech_": 100.0}
+    targets, keys = top1_targets(stats, "eleMas")
+    assert keys == ["critRate_", "critDMG_", "eleMas"]
+    assert targets["eleMas"] == 900
+
+
+def test_top1_targets_offsets_shift_to_panel_scale():
+    stats = {"critRate_": 70.123, "critDMG_": 150.46, "atk": 2345.6, "enerRech_": 110.04,
+             "eleMas": 306.2}
+    targets, keys = top1_targets(stats, "atk", {"atk": 337.0, "critRate_": -3.04, "critDMG_": 10.0})
+    assert keys == ["critRate_", "critDMG_", "atk", "enerRech_", "eleMas"]
+    assert targets == {"critRate_": 67.1, "critDMG_": 160.5, "atk": 2683,
+                       "enerRech_": 110.0, "eleMas": 306}
+    assert top1_targets(stats, "atk", None) == top1_targets(stats, "atk", {})
+
+
+def _piece(i):
+    return SimpleNamespace(id=i)
+
+
+def _res(ids, score):
+    return SimpleNamespace(pieces=[_piece(i) for i in ids], score=score)
+
+
+def test_merge_results_dedupes_orders_and_trims():
+    a, b, c, d = _res([1, 2], 5.0), _res([3, 4], 9.0), _res([1, 2], 7.0), _res([5, 6], 1.0)
+    merged = merge_results([a, b, c, d], 3)
+    assert merged == [b, c, d]
+    assert merge_results([a, b, c, d], 2) == [b, c]
+    assert merge_results([], 5) == []
+
+
+def test_akasha_info_text():
+    model = SimpleNamespace(n=180, rms=0.012)
+    sets = [("A", 0.62), ("B", 0.25), ("C", 0.08), ("D", 0.05)]
+    mains = {"sands": [("atk_", 0.8), ("enerRech_", 0.2)], "goblet": [("pyro_dmg_", 0.9)],
+             "circlet": []}
+    names = {"A": "Alpha", "B": "Beta"}
+    text = akasha_info(model, sets, mains, True, names)
+    assert "from 180 builds" in text and "within about 1.2%" in text
+    assert "Calibrated on your build's Akasha result." in text
+    assert "Alpha 62%, Beta 25%, C 8%" in text and "D 5%" not in text
+    assert "sands ATK%/Energy Recharge" in text and "goblet Pyro DMG Bonus" in text
+    assert "circlet" not in text
+    assert "rough" not in text
+    plain = akasha_info(model, sets, mains, False, names)
+    assert "not calibrated" in plain and "Calibrated on" not in plain
+    rough = akasha_info(SimpleNamespace(n=100, rms=0.05), sets, mains, False, names)
+    assert "treat the ranks as rough" in rough

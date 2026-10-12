@@ -10,6 +10,7 @@ import dataclasses
 import json
 import math
 import threading
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -129,11 +130,77 @@ def four_piece(card: dict) -> str:
     return ""
 
 
-def same_build(card: dict, calc) -> bool:
-    """Whether Akasha's last-seen build has the same sets as the card's artifacts."""
+def same_build(card: dict, sets: dict[str, int]) -> bool:
+    """Whether Akasha's live build has the same sets as the card's artifacts."""
     names = builds._items("artifact_sets.json", "key")
     mine = Counter(names.get(a["setKey"], {}).get("name", a["setKey"]) for a in card["artifacts"])
-    return dict(mine) == {k: v for k, v in calc.sets.items() if v} and bool(calc.sets)
+    return dict(mine) == {k: v for k, v in sets.items() if v} and bool(sets)
+
+
+def top1_targets(stats: dict[str, float], scaling: str, offsets: dict[str, float] | None = None
+                 ) -> tuple[dict[str, float], list[str]]:
+    """Target values from Akasha's top-1% average stats: crit, the scaling stat's
+    total, and ER/EM when the top builds carry any. offsets (panel minus Akasha's
+    own view of the player's build) move them onto the in-game panel's scale."""
+    keys = ["critRate_", "critDMG_", {"atk": "atk", "hp": "hp", "def": "def", "eleMas": "eleMas"}[scaling]]
+    if stats.get("enerRech_", 0) > 100.5:
+        keys.append("enerRech_")
+    if scaling != "eleMas" and stats.get("eleMas", 0) >= 40:
+        keys.append("eleMas")
+    keys = [k for k in keys if k in stats]
+    off = offsets or {}
+    values = {k: stats[k] + off.get(k, 0.0) for k in keys}
+    targets = {k: round(values[k], 1) if k.endswith("_") else round(values[k]) for k in keys}
+    return targets, keys
+
+
+def merge_results(results: list[O.Result], top: int) -> list[O.Result]:
+    """Results of several searches as one list: repeated piece sets dropped, best score first."""
+    seen: set = set()
+    out: list[O.Result] = []
+    for r in sorted(results, key=lambda x: x.score, reverse=True):
+        ids = tuple(p.id for p in r.pieces)
+        if ids in seen:
+            continue
+        seen.add(ids)
+        out.append(r)
+        if len(out) == top:
+            break
+    return out
+
+
+def akasha_info(model, sets: list, mains: dict, calibrated: bool, set_names: dict) -> str:
+    """What was learned from a leaderboard, in words."""
+    text = (f"Learned this leaderboard's formula from {model.n} builds; it reproduces them to "
+            f"within about {model.rms * 100:.1f}%.")
+    text += (" Calibrated on your build's Akasha result." if calibrated else
+             " Your build isn't on this leaderboard (or Akasha has an older one), so results "
+             "are not calibrated to it.")
+    parts = [", ".join(f"{set_names.get(k, k)} {share:.0%}" for k, share in sets[:3])]
+    parts += [f"{slot} " + "/".join(LABELS.get(k, k) for k, _ in mains.get(slot, [])[:3])
+              for slot in _MAIN_SLOTS if mains.get(slot)]
+    parts = [x for x in parts if x]
+    if parts:
+        text += " Top builds use " + "; ".join(parts) + "."
+    if model.rms > 0.025:
+        text += (" This leaderboard couldn't be learned closely (calculations that combine "
+                 "several characters, such as Lunar reactions), so treat the ranks as rough.")
+    return text
+
+
+def _akasha_for(uid: str, card: dict) -> tuple[akasha.Calc, dict, akasha.BuildInfo]:
+    """The leaderboard entry, live build and per-build data Akasha holds for the card."""
+    lb = akasha.live_builds(uid)
+    entry = lb.get(card["avatarId"])
+    if entry is None:
+        raise akasha.AkashaError(
+            f"Akasha has no live build of {card['name']} for this UID yet: look up your UID on "
+            "akasha.cv and refresh your profile there, then try again.")
+    info = akasha.build_info(uid, card["avatarId"], entry["md5"])
+    calc = akasha.pick(info.calcs, (card.get("weapon") or {}).get("name", ""))
+    if calc is None:
+        raise akasha.AkashaError(f"Akasha has no leaderboard for {card['name']}'s build yet.")
+    return calc, entry, info
 
 
 def _weapon_text(card: dict) -> str:
@@ -143,16 +210,15 @@ def _weapon_text(card: dict) -> str:
     return passives.weapon_passive(weapon["id"], int(weapon.get("refinement") or 1))
 
 
-_AK_IDLE = {"state": "idle", "calc": "", "rank": "", "message": "", "trusted": False, "fitted": False}
-
-
 class OptimizerBackend(QObject):
     changed = Signal()
     busyChanged = Signal()
     statusChanged = Signal()
     resultsChanged = Signal()
     critChanged = Signal()
-    akashaChanged = Signal()
+    akashaTop1Changed = Signal()
+    akashaBoardsChanged = Signal()
+    akashaInfoChanged = Signal()
     _critReady = Signal(object)
     _artArrived = Signal()
 
@@ -174,11 +240,13 @@ class OptimizerBackend(QObject):
         self._stop = False
         self._worker: _Worker | None = None
         self._on_done = None          # what to run, on the GUI thread, when the job ends
-        self._ak_calc = None
-        self._ak_model = None
-        self._ak_top = 0.0
-        self._ak_same = False
-        self._ak: dict = dict(_AK_IDLE)
+        self._akasha_top1: dict = {}
+        self._boards: list[akasha.Board] = []
+        self._mine_calcs: list[akasha.Calc] = []
+        self._mine_sets: dict = {}
+        self._akasha_boards: list = []
+        self._akasha_boards_note = ""
+        self._akasha_info = ""
         self._art_fetch = False
         self._art_tried: set[str] = set()
         self._critReady.connect(self._on_crit)
@@ -251,9 +319,21 @@ class OptimizerBackend(QObject):
     def current(self) -> dict:
         return self._current
 
-    @Property("QVariantMap", notify=akashaChanged)
-    def akasha(self) -> dict:
-        return self._ak
+    @Property("QVariantList", notify=akashaBoardsChanged)
+    def akashaBoards(self) -> list:
+        return self._akasha_boards
+
+    @Property(str, notify=akashaBoardsChanged)
+    def akashaBoardsNote(self) -> str:
+        return self._akasha_boards_note
+
+    @Property(str, notify=akashaInfoChanged)
+    def akashaInfo(self) -> str:
+        return self._akasha_info
+
+    @Property("QVariantMap", notify=akashaTop1Changed)
+    def akashaTop1(self) -> dict:
+        return self._akasha_top1
 
     @Property(bool, notify=busyChanged)
     def busy(self) -> bool:
@@ -266,12 +346,12 @@ class OptimizerBackend(QObject):
     # -- actions ------------------------------------------------------------
 
     def _reset_akasha(self) -> None:
-        self._ak_calc = None
-        self._ak_model = None
-        self._ak_top = 0.0
-        self._ak_same = False
-        self._ak = dict(_AK_IDLE)
-        self.akashaChanged.emit()
+        self._akasha_top1 = {}
+        self.akashaTop1Changed.emit()
+        self._boards, self._mine_calcs, self._mine_sets = [], [], {}
+        self._akasha_boards, self._akasha_boards_note, self._akasha_info = [], "", ""
+        self.akashaBoardsChanged.emit()
+        self.akashaInfoChanged.emit()
 
     @Slot(str)
     def setCharacter(self, avatar_id: str) -> None:
@@ -341,13 +421,8 @@ class OptimizerBackend(QObject):
             return
         goal = goal_from_qml(dict(goal_map))
         if goal.mode == "akasha":
-            if self._ak_model is None:
-                self._set_status("Learn Akasha's formula first (the button in Akasha ranking).")
-                return
-            goal.akasha = self._ak_model
-            er = self._ak_calc.min_er()
-            if er and "enerRech_" not in goal.minimums:
-                goal.minimums["enerRech_"] = er
+            self._set_status("Pick an Akasha leaderboard, then Optimize.")
+            return
         source = self._source
         out: list = []
 
@@ -377,45 +452,16 @@ class OptimizerBackend(QObject):
                 self._set_status(err or "Search failed")
                 return
             count, results, cur = out[0]
-            element = card["element"]
-            self._raw_cards = [O.result_card(r, card) for r in results]
-            ak = goal.mode == "akasha"
-            cur_text = score_text(goal.mode, cur)
-            if ak and self._ak_same:
-                cur_text = f"Akasha {self._ak_calc.result:,.0f} · {self._ak_calc.rank_text()}"
-
-            def score_of(r) -> str:
-                if not ak:
-                    return score_text(goal.mode, r)
-                rank, pct = akasha.estimate_rank(self._ak_calc, self._ak_top, r.score)
-                if rank == 0:
-                    return f"Akasha ≈ {r.score:,.0f}"
-                return f"Akasha ≈ {r.score:,.0f} · ≈ top {pct:.1f}% (#{rank:,})"
-
-            def change_of(r) -> str:
-                if ak:
-                    return f"{(r.score / cur.score - 1) * 100:+.1f}%" if cur.score else ""
-                return f"{(r.damage / cur.damage - 1) * 100:+.1f}%" if cur.damage else ""
-
-            self._current = {"damage": cur.damage, "damageText": f"{cur.damage:,.0f}",
-                             "scoreText": cur_text,
-                             "card": {**decorate(card), "inShowcase": True}}
-            self._results = [
-                {"rank": i + 1, "setName": _set_name(r.set_key), "damage": r.damage,
-                 "damageText": f"{r.damage:,.0f}",
-                 "change": change_of(r),
-                 "scoreText": score_of(r),
-                 "deltas": deltas(cur.stats, r.stats, element),
-                 "card": {**decorate(self._raw_cards[i]), "inShowcase": True}}
-                for i, r in enumerate(results)]
-            self.resultsChanged.emit()
+            self._publish(card, results, cur, score_text(goal.mode, cur),
+                          [score_text(goal.mode, r) for r in results],
+                          [f"{(r.damage / cur.damage - 1) * 100:+.1f}%" if cur.damage else ""
+                           for r in results])
             text = f"Searched {count} artifacts"
             if results:
                 text += f" · best: {self._results[0]['setName']}, {self._results[0]['change']}"
             else:
                 text += " · no build meets the requirements"
             self._set_status(text)
-            self._fetch_art()
 
         self._stop = False
         self._busy = True
@@ -428,67 +474,248 @@ class OptimizerBackend(QObject):
         self._worker = w
         w.start()
 
+    def _publish(self, card: dict, results: list, cur: O.Result, cur_text: str,
+                 texts: list[str], changes: list[str]) -> None:
+        """Show a search's results next to the current build."""
+        element = card["element"]
+        self._raw_cards = [O.result_card(r, card) for r in results]
+        self._current = {"damage": cur.damage, "damageText": f"{cur.damage:,.0f}",
+                         "scoreText": cur_text,
+                         "card": {**decorate(card), "inShowcase": True}}
+        self._results = [
+            {"rank": i + 1, "setName": _set_name(r.set_key), "damage": r.damage,
+             "damageText": f"{r.damage:,.0f}",
+             "change": changes[i],
+             "scoreText": texts[i],
+             "deltas": deltas(cur.stats, r.stats, element),
+             "card": {**decorate(self._raw_cards[i]), "inShowcase": True}}
+            for i, r in enumerate(results)]
+        self.resultsChanged.emit()
+        self._fetch_art()
+
+    def _start(self, job, done, status: str) -> None:
+        self._stop = False
+        self._busy = True
+        self.busyChanged.emit()
+        if status:
+            self._set_status(status)
+        w = _Worker(job, self)
+        self._on_done = done
+        w.done.connect(self._job_done)
+        self._worker = w
+        w.start()
+
     @Slot()
-    def learnAkasha(self) -> None:
-        """Learn the selected character's Akasha leaderboard formula (network, off the GUI thread)."""
+    def loadBoards(self) -> None:
+        """List the Akasha leaderboards for the selected character's weapon (network)."""
         card = self._card()
         if self._busy or card is None:
             return
         uid = self._collection.uid
         out: list = []
-        self._ak = {**self._ak, "state": "working", "message": "Reading Akasha.cv…"}
-        self.akashaChanged.emit()
 
         def job(log) -> None:
-            element = card["element"]
-            calcs = akasha.profile(uid)
-            calc = calcs.get(card["avatarId"])
-            if calc is None:
-                raise akasha.AkashaError(
-                    f"Akasha has no {card['name']} for this UID yet: look up your UID on "
-                    "akasha.cv and refresh your profile there, then try again.")
-            rows, top = akasha.sample(calc)
-            model = akasha.fit(rows, element)
-            base = O.base_from_card(card)
-            cur = O.current(card, base, element, O.Goal(), 0.0)
-            pred = model.predict_stats(cur.stats, four_piece(card))
-            same = same_build(card, calc)
-            cal = calc.result / pred if same and pred > 0 else 1.0
-            shift = math.log(cal)
-            model = dataclasses.replace(
-                model, default=model.default + shift,
-                factors={k: v + shift for k, v in model.factors.items()})
-            out.append((calc, model, top, same))
+            all_boards = akasha.boards(card["avatarId"])
+            weapon = (card.get("weapon") or {}).get("name", "")
+            mine_calcs, mine_sets = [], {}
+            try:
+                calc, entry, info = _akasha_for(uid, card)
+                mine_calcs, mine_sets = info.calcs, entry["sets"]
+            except akasha.AkashaError:
+                pass
+            out.append((all_boards, akasha.boards_for_weapon(all_boards, weapon), weapon,
+                        mine_calcs, mine_sets))
 
         def done(ok: bool, err: str) -> None:
             self._finish()
             if not ok:
-                self._ak = {**_AK_IDLE, "state": "unavailable", "message": err}
-                self.akashaChanged.emit()
+                self._set_status(err or "Akasha leaderboards unavailable")
                 return
-            calc, model, top, same = out[0]
-            trusted = model.rms <= 0.025
-            self._ak_calc, self._ak_model, self._ak_top, self._ak_same = calc, model, top, same
-            message = (f"Learned from {model.n} Akasha builds; it reproduces them to within "
-                       f"about {model.rms * 100:.1f}%.")
-            if same:
-                message += f" Calibrated on your current build (Akasha {calc.result:,.0f})."
+            all_boards, boards_, weapon, mine_calcs, mine_sets = out[0]
+            self._boards, self._mine_calcs, self._mine_sets = boards_, mine_calcs, mine_sets
+            note = ""
+            if not all_boards:
+                note = "Akasha has no leaderboards for this character yet."
+            elif not boards_:
+                note = (f"Akasha's {card['name']} leaderboards are per weapon and none uses "
+                        f"{weapon}: " + ", ".join(sorted({b.weapon for b in all_boards})))
+            self._akasha_boards = [
+                {"calcId": b.calculation_id, "name": b.name, "short": b.short,
+                 "details": b.details, "weapon": b.weapon,
+                 "variants": [{"name": v.name, "label": v.label} for v in b.variants],
+                 # The ER filter the player's own build is ranked under ("" = all
+                 # builds): Akasha's suggested filter can exclude the build, and
+                 # then every suggestion would be measured against builds it
+                 # cannot match.
+                 "defaultVariant": next((c.variant for c in mine_calcs
+                                         if c.calculation_id == b.calculation_id),
+                                        b.default_variant),
+                 "yourRank": next((c.rank_text() for c in mine_calcs
+                                   if c.calculation_id == b.calculation_id), "")}
+                for b in boards_]
+            self._akasha_boards_note = note
+            self.akashaBoardsChanged.emit()
+            self._set_status(note or f"{len(boards_)} Akasha leaderboards for {card['name']}")
+
+        self._start(job, done, "Reading Akasha.cv…")
+
+    @Slot(str, str, int, bool)
+    def runAkasha(self, calc_id: str, variant: str, min_level: int, use_equipped: bool) -> None:
+        """Find the best build for one Akasha leaderboard, learning everything from its top builds."""
+        card = self._card()
+        if self._busy:
+            self._set_status("Another job is running.")
+            return
+        if card is None:
+            self._set_status("Choose a character first.")
+            return
+        board = next((b for b in self._boards if b.calculation_id == calc_id), None)
+        if board is None:
+            self._set_status("Pick an Akasha leaderboard first.")
+            return
+        source = self._source
+        mine_calcs, mine_sets = self._mine_calcs, self._mine_sets
+        out: list = []
+
+        def job(log) -> None:
+            element = card["element"]
+            calc = akasha.calc_for_board(board, variant, mine_calcs)
+            rows, _top = akasha.sample(calc)
+            model = akasha.fit(rows, element)
+            sets, mains = akasha.common(rows)
+            try:
+                good = json.loads(Path(source).read_text(encoding="utf-8"))
+            except (OSError, ValueError) as exc:
+                raise RuntimeError("Could not read the artifact file … scan your inventory "
+                                   "first, or choose a .GOOD file.") from exc
+            pieces = O.load_pieces(good)
+            base = O.base_from_card(card)
+            calibrated = calc.result > 0 and same_build(card, mine_sets)
+            if calibrated:
+                pred = model.predict_stats(O.current(card, base, element, O.Goal(), 0.0).stats,
+                                           four_piece(card))
+                shift = math.log(calc.result / pred) if pred > 0 else 0.0
+                model = dataclasses.replace(
+                    model, default=model.default + shift,
+                    factors={k: v + shift for k, v in model.factors.items()})
+            set_keys = [k for k, _ in sets if k in model.factors][:4] or [k for k, _ in sets][:3]
+            allowed = {slot: [k for k, _ in mains.get(slot, [])] for slot in _MAIN_SLOTS}
+            minimums: dict[str, float] = {}
+            v = next((x for x in board.variants if x.name == variant), None)
+            if v is not None and variant:
+                minimums["enerRech_"] = v.min_er
+            found: list[O.Result] = []
+            for key in set_keys:
+                if self._stop:
+                    break
+                goal = O.Goal(scaling=model.scaling, mode="akasha", akasha=model, set_key=key,
+                              mains=allowed, minimums=dict(minimums), use_equipped=use_equipped,
+                              min_level=min_level, top=5)
+                found += O.search(pieces, base, element, goal, lambda s: 0.0,
+                                  owner=card["name"], should_stop=lambda: self._stop)
+            results = merge_results(found, 5)
+            cur = O.current(card, base, element, O.Goal(mode="akasha", akasha=model), 0.0)
+            ranks: list = []
+            for r in results:
+                if self._stop:
+                    break
+                try:
+                    ranks.append(akasha.rank_of(calc, r.score))
+                except akasha.AkashaError:
+                    ranks.append(None)
+                time.sleep(akasha.PAUSE)
+            cur_rank = None
+            if calibrated and calc.ranking:
+                cur_rank = calc.ranking
+            elif not self._stop:
+                try:
+                    cur_rank = akasha.rank_of(calc, cur.score)
+                except akasha.AkashaError:
+                    pass
+            names = {k: _set_name(k) for k, _ in sets}
+            out.append((calc, model, sets, mains, calibrated, results, cur, ranks, cur_rank,
+                        names, len(pieces)))
+
+        def done(ok: bool, err: str) -> None:
+            self._finish()
+            if not ok:
+                self._set_status(err or "Akasha search failed")
+                return
+            calc, model, sets, mains, calibrated, results, cur, ranks, cur_rank, names, _n = out[0]
+
+            def score_of(i: int, r: O.Result) -> str:
+                rank = ranks[i] if i < len(ranks) else None
+                text = f"Akasha ≈ {r.score:,.0f}"
+                if rank:
+                    text += f" · #{rank:,}"
+                    if calc.out_of:
+                        text += f" · top {rank / calc.out_of * 100:.1f}%"
+                return text
+
+            if calibrated:
+                rt = calc.rank_text()
+                cur_text = f"Akasha {calc.result:,.0f}" + (f" · {rt}" if rt else "")
             else:
-                message += (" Akasha last saw a different build of this character, so predictions "
-                            "aren't calibrated to yours: refresh your profile on akasha.cv for exact ranks.")
-            if not trusted:
-                message += (" This leaderboard couldn't be learned closely (reaction calculations "
-                            "such as Lunar ones combine several characters' damage), so treat its "
-                            "ranking as rough.")
-            self._ak = {"state": "ready",
-                        "calc": calc.name + (" · " + calc.variant_label if calc.variant_label else ""),
-                        "rank": calc.rank_text(), "message": message,
-                        "trusted": trusted, "fitted": True}
-            self.akashaChanged.emit()
+                cur_text = f"Akasha ≈ {cur.score:,.0f}" + (f" · #{cur_rank:,}" if cur_rank else "")
+            self._publish(card, results, cur, cur_text,
+                          [score_of(i, r) for i, r in enumerate(results)],
+                          [f"{(r.score / cur.score - 1) * 100:+.1f}%" if cur.score else ""
+                           for r in results])
+            self._akasha_info = akasha_info(model, sets, mains, calibrated, names)
+            self.akashaInfoChanged.emit()
+            if results:
+                best = ranks[0] if ranks else None
+                text = f"Best on {board.name}: {self._results[0]['setName']}"
+                text += f" · ≈ #{best:,}" if best else ""
+            else:
+                text = f"No build meets the requirements on {board.name}"
+            self._set_status(text)
+
+        self._start(job, done, "Learning the leaderboard and searching…")
+
+    @Slot(str)
+    def akashaTargets(self, scaling: str) -> None:
+        """Fill the target values from the top 1% of the character's Akasha leaderboard."""
+        card = self._card()
+        if self._busy or card is None:
+            return
+        uid = self._collection.uid
+        out: list = []
+
+        def job(log) -> None:
+            calc, entry, info = _akasha_for(uid, card)
+            stats = info.top1.get(calc.calculation_id)
+            if not stats:
+                raise akasha.AkashaError("Akasha has no top-1% averages for this leaderboard yet.")
+            base = O.base_from_card(card)
+            panel = O.current(card, base, card["element"], O.Goal(), 0.0).stats
+            mine = info.mine.get(calc.calculation_id, {})
+            offsets = ({k: panel[k] - mine[k] for k in mine if k in panel}
+                       if same_build(card, entry["sets"]) else {})
+            targets, keys = top1_targets(stats, scaling, offsets)
+            out.append((calc, targets, keys, bool(offsets)))
+
+        def done(ok: bool, err: str) -> None:
+            self._finish()
+            if not ok:
+                self._set_status(err or "Akasha targets unavailable")
+                return
+            calc, targets, keys, shifted = out[0]
+            self._akasha_top1 = {
+                "calc": calc.name + (" · " + calc.variant_label if calc.variant_label else ""),
+                "rank": calc.rank_text(), "targets": targets, "priority": keys}
+            self.akashaTop1Changed.emit()
+            note = (" (shifted to your panel: Akasha measures a standardised C0 character with "
+                    "an R1 weapon)" if shifted else
+                    " (not shifted: Akasha last saw a different build — refresh your profile "
+                    "on akasha.cv)")
+            self._set_status(f"Targets set to the top 1% of Akasha's {calc.name} leaderboard."
+                             + note)
 
         self._stop = False
         self._busy = True
         self.busyChanged.emit()
+        self._set_status("Reading Akasha.cv…")
         w = _Worker(job, self)
         self._on_done = done
         w.done.connect(self._job_done)

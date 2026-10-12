@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 import threading
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -305,7 +306,17 @@ class BuildsBackend(QObject):
 
         def fetch() -> None:
             try:
-                calcs, status = akasha.profile(uid), ""
+                lb = akasha.live_builds(uid)
+                calcs, status = {}, ""
+                for b in list(self._collection.builds.values()):
+                    entry = lb.get(b["avatarId"])
+                    if entry is None:
+                        continue
+                    info = akasha.build_info(uid, b["avatarId"], entry["md5"])
+                    calc = akasha.pick(info.calcs, (b.get("weapon") or {}).get("name", ""))
+                    if calc:
+                        calcs[b["avatarId"]] = calc
+                    time.sleep(akasha.PAUSE)
             except akasha.AkashaError as e:
                 calcs, status = {}, f"Akasha ranks unavailable: {e}"
             self._akashaArrived.emit((calcs, status))

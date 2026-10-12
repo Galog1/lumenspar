@@ -26,6 +26,8 @@ Item {
     property int minLevel: 16
     property int shown: 0       // result on show; -1 = the current build
     property string lastSelected: ""
+    property string boardId: ""
+    property string boardVariant: ""
 
     readonly property var substats: optimizer.substats || []
     readonly property var results: optimizer.results || []
@@ -89,11 +91,27 @@ Item {
         }
     }
 
-    onModeChanged: {
-        if (mode === "akasha" && optimizer.akasha && optimizer.akasha.state === "idle"
-                && optimizer.card && optimizer.card.name !== undefined)
-            optimizer.learnAkasha()
+    readonly property var boards: optimizer.akashaBoards || []
+    readonly property var selectedBoard: {
+        for (let i = 0; i < boards.length; i++)
+            if (boards[i].calcId === boardId) return boards[i]
+        return null
     }
+
+    function ensureBoard() {
+        if (selectedBoard === null) {
+            boardId = boards.length > 0 ? boards[0].calcId : ""
+            boardVariant = boards.length > 0 ? boards[0].defaultVariant : ""
+        }
+    }
+
+    function loadBoardsIfNeeded() {
+        if (mode === "akasha" && boards.length === 0 && !optimizer.akashaBoardsNote
+                && optimizer.card && optimizer.card.name !== undefined)
+            optimizer.loadBoards()
+    }
+
+    onModeChanged: loadBoardsIfNeeded()
 
     // a new character resets the goal to sensible defaults for its element
     Component.onCompleted: {
@@ -103,6 +121,20 @@ Item {
 
     Connections {
         target: optimizer
+        function onAkashaBoardsChanged() { page.ensureBoard() }
+    }
+    Connections {
+        target: optimizer
+        function onAkashaTop1Changed() {
+            const t = optimizer.akashaTop1
+            if (t && t.targets) {
+                page.priority = Array.from(t.priority)
+                page.targets = Object.assign({}, t.targets)
+            }
+        }
+    }
+    Connections {
+        target: optimizer
         // The backend reports every change through one signal; only a new
         // character resets the goal to that character's defaults.
         function onChanged() {
@@ -110,6 +142,7 @@ Item {
             page.lastSelected = optimizer.selected
             page.shown = 0
             page.resetForScaling()
+            page.loadBoardsIfNeeded()
         }
     }
 
@@ -298,6 +331,7 @@ Item {
                 // 1. scaling stat
                 RowLayout {
                     Layout.fillWidth: true
+                    visible: page.mode !== "akasha"
                     spacing: 10
                     RowLabel { text: "Scaling stat" }
                     Flow {
@@ -341,6 +375,7 @@ Item {
                 // 3. priority stats
                 RowLayout {
                     Layout.fillWidth: true
+                    visible: page.mode !== "akasha"
                     spacing: 10
                     RowLabel { text: "Priority stats" }
                     Flow {
@@ -401,6 +436,25 @@ Item {
                     Layout.fillWidth: true
                     visible: page.mode === "targets"
                     spacing: 6
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        GhostButton {
+                            label: "Use Akasha's top 1% averages"
+                            implicitHeight: 32
+                            enabledState: !optimizer.busy
+                            onClicked: optimizer.akashaTargets(page.scaling)
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: optimizer.akashaTop1.calc
+                                  ? "Top 1% of " + optimizer.akashaTop1.calc + " (your build: " + optimizer.akashaTop1.rank + ")"
+                                  : "Fills the targets with the average stats of the top 1% of this character's Akasha leaderboard."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
                     Repeater {
                         model: page.priority
                         delegate: RowLayout {
@@ -490,48 +544,127 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     visible: page.mode === "akasha"
-                    spacing: 6
+                    spacing: 8
                     Text {
                         Layout.fillWidth: true
-                        text: "Ranks builds the way this character's Akasha leaderboard does, with its formula learned from a sample of that leaderboard (Akasha's formulas aren't public). Akasha resets everyone to the same level, talents, weapon and team, so only the artifacts count."
+                        text: "Pick one of this character's Akasha leaderboards. Lumenspar learns its formula from a sample of it, takes the sets and main stats its top builds use, and finds your best build for it."
                         color: Theme.textDim
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
                     }
                     Text {
                         Layout.fillWidth: true
-                        visible: ((optimizer.akasha && optimizer.akasha.calc) || "") !== ""
-                        text: (optimizer.akasha && optimizer.akasha.calc) || ""
-                        color: Theme.text
-                        font.pixelSize: 13
-                        font.weight: Font.DemiBold
+                        visible: !!optimizer.akashaBoardsNote
+                        text: optimizer.akashaBoardsNote || ""
+                        color: Theme.danger
+                        font.pixelSize: 12
                         wrapMode: Text.WordWrap
                     }
-                    Text {
+                    Column {
                         Layout.fillWidth: true
-                        visible: ((optimizer.akasha && optimizer.akasha.rank) || "") !== ""
-                        text: "Your rank: " + ((optimizer.akasha && optimizer.akasha.rank) || "")
-                        color: Theme.accent
-                        font.pixelSize: 12
+                        spacing: 6
+                        Repeater {
+                            model: page.boards
+                            delegate: Rectangle {
+                                id: boardRow
+                                required property var modelData
+                                readonly property bool selected: modelData.calcId === page.boardId
+                                width: parent.width
+                                height: 54
+                                radius: 10
+                                color: Theme.bgAlt
+                                border.width: 1
+                                border.color: selected ? Theme.accent : Theme.border
+
+                                HoverHandler { id: boardHover; cursorShape: Qt.PointingHandCursor }
+                                TapHandler {
+                                    onTapped: {
+                                        page.boardId = boardRow.modelData.calcId
+                                        page.boardVariant = boardRow.modelData.defaultVariant
+                                    }
+                                }
+                                ToolTip.visible: boardHover.hovered && !!modelData.details
+                                ToolTip.delay: 400
+                                ToolTip.text: modelData.details
+
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 14
+                                    anchors.rightMargin: 14
+                                    spacing: 10
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 2
+                                        RowLayout {
+                                            spacing: 8
+                                            Text {
+                                                text: boardRow.modelData.name
+                                                color: Theme.text
+                                                font.pixelSize: 13
+                                                font.weight: Font.DemiBold
+                                            }
+                                            Rectangle {
+                                                visible: !!boardRow.modelData.short
+                                                implicitWidth: shortText.implicitWidth + 12
+                                                implicitHeight: 18
+                                                radius: 9
+                                                color: Theme.surface
+                                                border.width: 1
+                                                border.color: Theme.border
+                                                Text {
+                                                    id: shortText
+                                                    anchors.centerIn: parent
+                                                    text: boardRow.modelData.short
+                                                    color: Theme.textDim
+                                                    font.pixelSize: 10
+                                                }
+                                            }
+                                        }
+                                        Text {
+                                            Layout.fillWidth: true
+                                            text: boardRow.modelData.weapon
+                                            color: Theme.textDim
+                                            font.pixelSize: 11
+                                            elide: Text.ElideRight
+                                        }
+                                    }
+                                    Text {
+                                        text: boardRow.modelData.yourRank
+                                        color: Theme.accent
+                                        font.pixelSize: 12
+                                    }
+                                }
+                            }
+                        }
                     }
                     RowLayout {
                         Layout.fillWidth: true
+                        visible: page.selectedBoard !== null
                         spacing: 10
-                        GhostButton {
-                            label: (optimizer.akasha && optimizer.akasha.fitted) ? "Learn again" : "Learn Akasha's formula"
-                            implicitHeight: 32
-                            enabledState: !optimizer.busy
-                            onClicked: optimizer.learnAkasha()
+                        RowLabel { text: "ER requirement" }
+                        Combo {
+                            id: variantBox
+                            readonly property var variantList: page.selectedBoard ? page.selectedBoard.variants : []
+                            Layout.preferredWidth: 240
+                            model: ["All builds"].concat(variantList.map(function(v) { return v.label || v.name }))
+                            currentIndex: {
+                                for (let i = 0; i < variantList.length; i++)
+                                    if (variantList[i].name === page.boardVariant) return i + 1
+                                return 0
+                            }
+                            onActivated: function(i) {
+                                page.boardVariant = i === 0 ? "" : variantList[i - 1].name
+                            }
                         }
-                        Text {
-                            Layout.fillWidth: true
-                            text: (optimizer.akasha && optimizer.akasha.message) || ""
-                            color: ((optimizer.akasha && optimizer.akasha.fitted && !optimizer.akasha.trusted)
-                                    || (optimizer.akasha && optimizer.akasha.state === "unavailable"))
-                                   ? Theme.danger : Theme.textDim
-                            font.pixelSize: 12
-                            wrapMode: Text.WordWrap
-                        }
+                        Item { Layout.fillWidth: true }
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        visible: !!optimizer.akashaInfo
+                        text: optimizer.akashaInfo || ""
+                        color: Theme.textDim
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
                     }
                 }
 
@@ -543,6 +676,7 @@ Item {
                         id: mrow
                         required property var modelData
                         Layout.fillWidth: true
+                        visible: page.mode !== "akasha"
                         spacing: 10
                         RowLabel { text: mrow.modelData.name + " main stat" }
                         Flow {
@@ -568,6 +702,7 @@ Item {
                 // 6. set
                 RowLayout {
                     Layout.fillWidth: true
+                    visible: page.mode !== "akasha"
                     spacing: 10
                     RowLabel { text: "Set" }
                     Combo {
@@ -591,6 +726,7 @@ Item {
                 // 7. minimums
                 RowLayout {
                     Layout.fillWidth: true
+                    visible: page.mode !== "akasha"
                     spacing: 10
                     RowLabel { text: "Minimums" }
                     ColumnLayout {
@@ -763,9 +899,15 @@ Item {
                     AccentButton {
                         label: optimizer.busy ? "Stop" : "Optimize"
                         pulsing: optimizer.busy
-                        enabledState: optimizer.busy || (!!optimizer.card && optimizer.card.name !== undefined)
+                        enabledState: optimizer.busy
+                                      || (page.mode === "akasha" ? page.boardId !== ""
+                                          : (!!optimizer.card && optimizer.card.name !== undefined))
                         onClicked: {
                             if (optimizer.busy) optimizer.stop()
+                            else if (page.mode === "akasha") {
+                                page.shown = 0
+                                optimizer.runAkasha(page.boardId, page.boardVariant, page.minLevel, page.useEquipped)
+                            }
                             else { page.shown = 0; optimizer.run(page.goal()) }
                         }
                     }
