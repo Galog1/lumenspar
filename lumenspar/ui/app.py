@@ -50,6 +50,8 @@ def main(argv: list[str] | None = None) -> int:
     engine.rootContext().setContextProperty("wishes", wishes)
     cards = BuildsBackend(backend._s, app)
     engine.rootContext().setContextProperty("cards", cards)
+    cards.collected.connect(wishes.syncSoon)
+    wishes.restoredFromDrive.connect(cards.reload)
 
     app.aboutToQuit.connect(backend.shutdown)
     app.aboutToQuit.connect(wishes.shutdown)

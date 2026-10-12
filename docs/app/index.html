@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumenspar Viewer</title>
+<meta name="description" content="Your Lumenspar wish counter and build cards, from your Google Drive backup.">
+<meta name="application-name" content="Lumenspar">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../lumenspar.svg">
+<link rel="stylesheet" href="app.css">
+<script src="config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><img src="../lumenspar-logo.png" alt="Lumenspar logo" width="36" height="36"><span>Lumenspar</span></a>
+  <div class="top-right">
+    <select id="account" hidden aria-label="Account"></select>
+    <button id="signout" class="ghost" hidden>Sign out</button>
+  </div>
+</header>
+
+<main>
+  <section id="welcome" class="panel">
+    <h1>Your wishes and builds, anywhere</h1>
+    <p>This page shows what the Lumenspar desktop app backs up to your Google
+    Drive: pity and 50/50 results for every banner, and your build cards. It
+    runs entirely in your browser and reads only Lumenspar's own hidden folder
+    in your Drive, which holds none of your other files. Nothing is sent
+    anywhere else.</p>
+    <p class="dim">First sign in with Google in the desktop app (Wish Counter →
+    Google Drive backup) and let it back up. Then sign in here with the same account.</p>
+    <button id="signin" class="gbtn" type="button" disabled>
+      <img src="google-g.svg" alt="" width="20" height="20"><span>Sign in with Google</span>
+    </button>
+    <p id="signin-note" class="dim small"></p>
+    <details id="own-client">
+      <summary>Use your own Google project</summary>
+      <p class="dim small">If your desktop app uses a Google Cloud project of your own, create a
+      <b>Web application</b> client in that project with
+      <code>https://galog1.github.io</code> as an authorized JavaScript origin, and enter its client ID
+      here. It is remembered in this browser only.</p>
+      <div class="row">
+        <input id="client-id" type="text" placeholder="…apps.googleusercontent.com" autocomplete="off" spellcheck="false">
+        <button id="client-save" class="ghost" type="button">Use</button>
+      </div>
+    </details>
+  </section>
+
+  <p id="status" class="status" role="status"></p>
+
+  <section id="diag" class="panel" hidden></section>
+
+  <section id="content" hidden>
+    <div id="player" class="player"></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="wishes" aria-selected="true">Wish counter</button>
+      <button role="tab" data-tab="builds" aria-selected="false">Build cards</button>
+    </nav>
+    <div id="tab-wishes"></div>
+    <div id="tab-builds" hidden></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <a href="../">Lumenspar</a> · <a href="../privacy.html">Privacy policy</a> · <a href="../terms.html">Terms</a>
+</footer>
+</body>
+</html>

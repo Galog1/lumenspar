@@ -265,11 +265,15 @@ class Collection:
         self.path = root / f"{self.uid}.json"
         self.player: dict = {}
         self.builds: dict[str, dict] = {}
+        # Cards the player removed, and when: so a Drive sync does not bring
+        # them back from another copy (a later reading of that character does).
+        self.removed: dict[str, int] = {}
         self.next_fetch = 0.0
         try:
             raw = json.loads(self.path.read_text(encoding="utf-8"))
             self.player = raw.get("player", {})
             self.builds = raw.get("builds", {})
+            self.removed = {k: int(v) for k, v in (raw.get("removed") or {}).items()}
             self.next_fetch = float(raw.get("next_fetch", 0.0))
         except (OSError, ValueError):
             pass
@@ -292,6 +296,7 @@ class Collection:
                 updated.append(b["name"])
             if not same:
                 self.builds[b["avatarId"]] = b
+            self.removed.pop(b["avatarId"], None)
         self.save()
         return new, updated
 
@@ -304,13 +309,15 @@ class Collection:
 
     def remove(self, avatar_id: str) -> None:
         self.builds.pop(avatar_id, None)
+        self.removed[avatar_id] = int(time.time())
         self.save()
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp")
         tmp.write_text(json.dumps({"uid": self.uid, "player": self.player,
-                                   "next_fetch": self.next_fetch, "builds": self.builds},
+                                   "next_fetch": self.next_fetch, "builds": self.builds,
+                                   "removed": self.removed},
                                   indent=1, ensure_ascii=False), encoding="utf-8")
         tmp.replace(self.path)
 

@@ -234,10 +234,20 @@ publishes a project that has a homepage, a privacy policy and terms of
 service on an authorized domain, so the guide offers Lumenspar's own
 ([docs/](docs/), served at https://galog1.github.io/lumenspar/).
 
+The backup also holds the build cards and a ready-to-show summary per
+account, which the [web viewer](https://galog1.github.io/lumenspar/app/)
+([docs/app/](docs/app/)) renders in any browser, phone included: it signs in
+with Google in the browser, reads that summary from the same hidden folder
+and has no server of its own. It needs a *Web application* OAuth client in
+the same Google project (authorized JavaScript origin
+`https://galog1.github.io`), whose public client ID goes in
+`docs/app/config.js`.
+
 Lumenspar only asks for its own hidden app-data folder in Drive (it cannot
 see any of your files) and your email address (to show who is signed in).
 Each account is stored there as `wishes-<uid>.json`. Syncing merges both
-copies by wish id, so neither side loses anything. It runs on startup, after
+copies by wish id (build cards: the newest reading of each character), so
+neither side loses anything. It runs on startup, after
 every import, and from **Back up now**. The sign-in, and the client ID and
 secret of a project of your own, are kept in `google_drive.json` in the
 config folder, readable only by you.

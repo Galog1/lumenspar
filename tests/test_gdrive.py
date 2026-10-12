@@ -224,9 +224,9 @@ def test_first_backup_uploads_every_local_account(tmp_path):
     drive = FakeDrive()
     logs = []
     assert backup.sync(gdrive.AppData(_state(tmp_path, refresh_token="r"), drive),
-                       logs.append, root) == (0, 2)
+                       logs.append, root, tmp_path / "builds") == (0, 2)
     names = sorted(n for n, _ in drive.files.values())
-    assert names == ["wishes-111.json", "wishes-222.json"]
+    assert names == ["view-111.json", "view-222.json", "wishes-111.json", "wishes-222.json"]
     up = json.loads(next(d for n, d in drive.files.values() if n == "wishes-111.json"))
     assert [w["id"] for w in up["wishes"]["character"]] == ["1", "2"]
 
@@ -235,8 +235,9 @@ def test_a_fresh_install_restores_from_drive(tmp_path):
     root = tmp_path / "wishes"
     drive = FakeDrive({"x": ("wishes-111.json", _remote(_history("111", [1, 2, 3])))})
     restored, uploaded = backup.sync(gdrive.AppData(_state(tmp_path, refresh_token="r"), drive),
-                                     lambda m: None, root)
-    assert (restored, uploaded) == (3, 0) and drive.uploads == 0
+                                     lambda m: None, root, tmp_path / "builds")
+    assert (restored, uploaded) == (3, 0)
+    assert [n for n, _ in drive.files.values()] == ["wishes-111.json", "view-111.json"]
     local = store.load("111", root)
     assert local.total() == 3 and local.complete == {"character"}
 
@@ -246,7 +247,7 @@ def test_both_sides_end_up_with_the_union(tmp_path):
     store.save(_history("111", [1, 2, 4], complete=()), root)          # imported here
     drive = FakeDrive({"x": ("wishes-111.json", _remote(_history("111", [1, 2, 3])))})
     restored, uploaded = backup.sync(gdrive.AppData(_state(tmp_path, refresh_token="r"), drive),
-                                     lambda m: None, root)
+                                     lambda m: None, root, tmp_path / "builds")
     assert (restored, uploaded) == (1, 1)
     assert [w["id"] for w in store.load("111", root).wishes["character"]] == ["1", "2", "3", "4"]
     remote = json.loads(drive.files["x"][1])
@@ -258,9 +259,9 @@ def test_nothing_is_uploaded_when_drive_is_current(tmp_path):
     root = tmp_path / "wishes"
     h = _history("111", [1, 2])
     store.save(h, root)
-    drive = FakeDrive({"x": ("wishes-111.json", _remote(h))})
+    drive = FakeDrive({"x": ("wishes-111.json", _remote(h)), "v": ("view-111.json", b"{}")})
     assert backup.sync(gdrive.AppData(_state(tmp_path, refresh_token="r"), drive),
-                       lambda m: None, root) == (0, 0)
+                       lambda m: None, root, tmp_path / "builds") == (0, 0)
     assert drive.uploads == 0
 
 
@@ -274,3 +275,67 @@ def test_an_expired_sign_in_is_forgotten_and_says_so(tmp_path):
 def test_a_disabled_drive_api_points_at_the_api_step(tmp_path):
     with pytest.raises(gdrive.DriveError, match=rf"\(step {gdrive.STEP_API}\)"):
         gdrive.AppData(_state(tmp_path, refresh_token="r"), FakeDrive(api_enabled=False)).list()
+
+
+# -- build cards and the web viewer's summary ----------------------------------------
+
+def _card(aid, name, fetched, level=90):
+    return {"avatarId": aid, "name": name, "level": level, "fetchedAt": fetched}
+
+
+def test_build_cards_merge_both_ways_newest_reading_winning(tmp_path):
+    from lumenspar import builds
+    broot = tmp_path / "builds"
+    col = builds.Collection("111", broot)
+    col.player = {"nickname": "Here"}
+    col.builds = {"1": _card("1", "Furina", 200, level=90), "2": _card("2", "Nahida", 100)}
+    col.save()
+    there = {"uid": "111", "player": {"nickname": "There"},
+             "builds": {"1": _card("1", "Furina", 100, level=80),      # older: loses
+                        "3": _card("3", "Xiao", 300)}}                 # only there
+    drive = FakeDrive({"b": ("builds-111.json", json.dumps(there).encode())})
+    restored, uploaded = backup.sync(gdrive.AppData(_state(tmp_path, refresh_token="r"), drive),
+                                     lambda m: None, tmp_path / "wishes", broot)
+    assert (restored, uploaded) == (1, 1)
+    local = builds.Collection("111", broot)
+    assert sorted(local.builds) == ["1", "2", "3"] and local.builds["1"]["level"] == 90
+    remote = json.loads(drive.files["b"][1])
+    assert sorted(remote["builds"]) == ["1", "2", "3"]
+    view = json.loads(next(d for n, d in drive.files.values() if n == "view-111.json"))
+    assert [b["name"] for b in view["builds"]] == ["Xiao", "Furina", "Nahida"]   # newest first
+
+
+def test_the_view_carries_computed_wish_stats_with_portrait_names(tmp_path):
+    root = tmp_path / "wishes"
+    h = _history("111", [1, 2])
+    h.add("character", [{"id": "3", "time": "2026-01-02 00:00:00", "name": "Furina",
+                         "item_type": "Character", "rank_type": "5", "gacha_type": "301"}])
+    store.save(h, root)
+    v = backup.view("111", root, tmp_path / "builds")
+    assert v["format"] == backup.VIEW_FORMAT and v["totalWishes"] == 3 and v["builds"] == []
+    (char,) = [b for b in v["banners"] if b["key"] == "character"]
+    assert char["fives"][0]["name"] == "Furina" and char["fives"][0]["iconName"] == "UI_AvatarIcon_Furina"
+
+
+def test_a_removed_card_stays_removed_after_syncing(tmp_path):
+    from lumenspar import builds
+    broot = tmp_path / "builds"
+    col = builds.Collection("111", broot)
+    col.builds = {"1": _card("1", "Furina", 100), "2": _card("2", "Nahida", 100)}
+    col.save()
+    drive = FakeDrive()
+    app = gdrive.AppData(_state(tmp_path, refresh_token="r"), drive)
+    backup.sync(app, lambda m: None, tmp_path / "wishes", broot)
+    col = builds.Collection("111", broot)
+    col.remove("1")                                     # removed here...
+    backup.sync(app, lambda m: None, tmp_path / "wishes", broot)
+    assert sorted(builds.Collection("111", broot).builds) == ["2"]
+    remote = json.loads(next(d for n, d in drive.files.values() if n == "builds-111.json"))
+    assert sorted(remote["builds"]) == ["2"] and "1" in remote["removed"]
+    # ...and another computer that still has it drops it on its next sync.
+    other = tmp_path / "other"
+    stale = builds.Collection("111", other)
+    stale.builds = {"1": _card("1", "Furina", 100)}
+    stale.save()
+    backup.sync(app, lambda m: None, tmp_path / "w2", other)
+    assert builds.Collection("111", other).builds.keys() == {"2"}

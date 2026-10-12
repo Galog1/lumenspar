@@ -31,6 +31,7 @@ class WishBackend(QObject):
     paimonLinkChanged = Signal()
     _iconsArrived = Signal()      # from the download thread, delivered on the GUI thread
     driveChanged = Signal()
+    restoredFromDrive = Signal()  # a sync brought data in: other pages reload
     _browserWanted = Signal(str)  # from the sign-in thread, opened on the GUI thread
 
     def __init__(self, parent: QObject | None = None) -> None:
@@ -49,6 +50,7 @@ class WishBackend(QObject):
         self._on_success = None      # what to do once the current job has finished
         self._drive_job = False       # the current job is a Drive one (own status line)
         self._signing_in = False
+        self._sync_pending = False    # a sync was asked for while another job ran
         self._drive = gdrive.DriveState.load()
         self._drive_status = ""
         self._drive_step = 0          # the guide step the last Drive error points at
@@ -273,6 +275,16 @@ class WishBackend(QObject):
     def backupNow(self) -> None:
         self._sync("Syncing with Google Drive…")
 
+    @Slot()
+    def syncSoon(self) -> None:
+        """Back up after something changed elsewhere (new build cards)."""
+        if not self._drive.signed_in:
+            return
+        if self._busy:
+            self._sync_pending = True
+        else:
+            self._sync("Backing up to Google Drive…")
+
     def _sync(self, status: str) -> None:
         result: list[tuple[int, int]] = []
 
@@ -285,8 +297,9 @@ class WishBackend(QObject):
             restored, uploaded = result[0]
             if restored:
                 self._reload()
+                self.restoredFromDrive.emit()
             self._drive_message(
-                f"Restored {restored} wish(es) from Google Drive" if restored else
+                f"Restored {restored} item(s) from Google Drive" if restored else
                 "Backed up" if uploaded else "Google Drive is up to date")
 
         self._start(job, "Google Drive backup", status, done, drive=True)
@@ -338,6 +351,9 @@ class WishBackend(QObject):
             self._drive_message(err[:300] or "Failed", int(step.group(1)) if step else 0)
         elif not ok:
             self._set_status(err[:200] or "Failed")
+        if self._sync_pending and not self._busy:
+            self._sync_pending = False
+            self.syncSoon()
 
     def _reload(self) -> None:
         self._history = store.latest()

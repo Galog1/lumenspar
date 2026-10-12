@@ -18,6 +18,9 @@ venv/
 # LUMENSPAR_GOOGLE_CLIENT repository secret; it is never committed.
 /lumenspar/google_client.json
 
+# Local preview configuration (machine-specific paths)
+/.claude/
+
 # Test cache
 .pytest_cache/
 

@@ -73,6 +73,7 @@ class BuildsBackend(QObject):
     busyChanged = Signal()
     statusChanged = Signal()
     waitChanged = Signal()
+    collected = Signal()          # a fetch added or changed cards (for the Drive backup)
     _artArrived = Signal()
 
     def __init__(self, settings, parent: QObject | None = None) -> None:
@@ -163,6 +164,8 @@ class BuildsBackend(QObject):
             if problems and not showcase:
                 parts = [problems[0]]
             self._set_status(" · ".join(parts) + f" · {len(collection.builds)} collected")
+            if new or updated:
+                self.collected.emit()
 
         self._busy = True
         self.busyChanged.emit()
@@ -179,6 +182,13 @@ class BuildsBackend(QObject):
         done, self._on_done = self._on_done, None
         if done is not None:
             done(ok, err)
+
+    @Slot()
+    def reload(self) -> None:
+        """Re-read the stored collection (after a Drive sync restored cards)."""
+        uid = self._collection.uid if self._collection else ""
+        self._collection = builds.Collection(uid) if uid else builds.latest()
+        self._publish()
 
     @Slot(str)
     def forget(self, avatar_id: str) -> None:
