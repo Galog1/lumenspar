@@ -6,14 +6,16 @@ weapon texts (weapon passives are fetched once from Project Amber and cached).
 
 from __future__ import annotations
 
+import dataclasses
 import json
+import math
 import threading
 from collections import Counter
 from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, Signal, Slot
 
-from .. import builds, passives
+from .. import akasha, builds, passives
 from .. import optimizer as O
 from ..wishes import icons
 from .backend import _Worker
@@ -94,6 +96,8 @@ def score_text(mode: str, r: O.Result) -> str:
         return "all targets met" if r.score <= 0 else f"{r.score * 100:.0f}% short of a target"
     if mode == "ratio":
         return f"{r.score:.1f} balanced"
+    if mode == "akasha":
+        return f"Akasha ≈ {r.score:,.0f}"
     return f"{r.damage:,.0f} damage estimate"
 
 
@@ -116,11 +120,30 @@ def _set_name(set_key: str) -> str:
     return builds._items("artifact_sets.json", "key").get(set_key, {}).get("name", set_key)
 
 
+def four_piece(card: dict) -> str:
+    """The set key worn on four or more of the card's artifacts, or ''."""
+    counts = Counter(a.get("setKey") for a in card.get("artifacts") or [] if a.get("setKey"))
+    for key, n in counts.items():
+        if n >= 4:
+            return key
+    return ""
+
+
+def same_build(card: dict, calc) -> bool:
+    """Whether Akasha's last-seen build has the same sets as the card's artifacts."""
+    names = builds._items("artifact_sets.json", "key")
+    mine = Counter(names.get(a["setKey"], {}).get("name", a["setKey"]) for a in card["artifacts"])
+    return dict(mine) == {k: v for k, v in calc.sets.items() if v} and bool(calc.sets)
+
+
 def _weapon_text(card: dict) -> str:
     weapon = card.get("weapon") or {}
     if not weapon.get("id"):
         return ""
     return passives.weapon_passive(weapon["id"], int(weapon.get("refinement") or 1))
+
+
+_AK_IDLE = {"state": "idle", "calc": "", "rank": "", "message": "", "trusted": False, "fitted": False}
 
 
 class OptimizerBackend(QObject):
@@ -129,6 +152,7 @@ class OptimizerBackend(QObject):
     statusChanged = Signal()
     resultsChanged = Signal()
     critChanged = Signal()
+    akashaChanged = Signal()
     _critReady = Signal(object)
     _artArrived = Signal()
 
@@ -150,6 +174,11 @@ class OptimizerBackend(QObject):
         self._stop = False
         self._worker: _Worker | None = None
         self._on_done = None          # what to run, on the GUI thread, when the job ends
+        self._ak_calc = None
+        self._ak_model = None
+        self._ak_top = 0.0
+        self._ak_same = False
+        self._ak: dict = dict(_AK_IDLE)
         self._art_fetch = False
         self._art_tried: set[str] = set()
         self._critReady.connect(self._on_crit)
@@ -222,6 +251,10 @@ class OptimizerBackend(QObject):
     def current(self) -> dict:
         return self._current
 
+    @Property("QVariantMap", notify=akashaChanged)
+    def akasha(self) -> dict:
+        return self._ak
+
     @Property(bool, notify=busyChanged)
     def busy(self) -> bool:
         return self._busy
@@ -232,11 +265,20 @@ class OptimizerBackend(QObject):
 
     # -- actions ------------------------------------------------------------
 
+    def _reset_akasha(self) -> None:
+        self._ak_calc = None
+        self._ak_model = None
+        self._ak_top = 0.0
+        self._ak_same = False
+        self._ak = dict(_AK_IDLE)
+        self.akashaChanged.emit()
+
     @Slot(str)
     def setCharacter(self, avatar_id: str) -> None:
         self._collection = builds.latest()      # fresh: a fetch may have added cards
         present = self._collection and avatar_id in self._collection.builds
         self._selected = avatar_id if present else ""
+        self._reset_akasha()
         self._results, self._raw_cards, self._current = [], [], {}
         self.resultsChanged.emit()
         self.changed.emit()
@@ -247,11 +289,14 @@ class OptimizerBackend(QObject):
     def reload(self) -> None:
         """Re-read the stored cards (after a fetch or a Drive sync)."""
         self._collection = builds.latest()
+        before = self._selected
         cards = self._collection.ordered() if self._collection else []
         if cards and not (self._selected in self._collection.builds):
             self._selected = cards[0]["avatarId"]
         elif not cards:
             self._selected = ""
+        if self._selected != before:
+            self._reset_akasha()
         self.changed.emit()
         self._fetch_art()
 
@@ -295,6 +340,14 @@ class OptimizerBackend(QObject):
             self._set_status("Choose a character first.")
             return
         goal = goal_from_qml(dict(goal_map))
+        if goal.mode == "akasha":
+            if self._ak_model is None:
+                self._set_status("Learn Akasha's formula first (the button in Akasha ranking).")
+                return
+            goal.akasha = self._ak_model
+            er = self._ak_calc.min_er()
+            if er and "enerRech_" not in goal.minimums:
+                goal.minimums["enerRech_"] = er
         source = self._source
         out: list = []
 
@@ -326,14 +379,32 @@ class OptimizerBackend(QObject):
             count, results, cur = out[0]
             element = card["element"]
             self._raw_cards = [O.result_card(r, card) for r in results]
+            ak = goal.mode == "akasha"
+            cur_text = score_text(goal.mode, cur)
+            if ak and self._ak_same:
+                cur_text = f"Akasha {self._ak_calc.result:,.0f} · {self._ak_calc.rank_text()}"
+
+            def score_of(r) -> str:
+                if not ak:
+                    return score_text(goal.mode, r)
+                rank, pct = akasha.estimate_rank(self._ak_calc, self._ak_top, r.score)
+                if rank == 0:
+                    return f"Akasha ≈ {r.score:,.0f}"
+                return f"Akasha ≈ {r.score:,.0f} · ≈ top {pct:.1f}% (#{rank:,})"
+
+            def change_of(r) -> str:
+                if ak:
+                    return f"{(r.score / cur.score - 1) * 100:+.1f}%" if cur.score else ""
+                return f"{(r.damage / cur.damage - 1) * 100:+.1f}%" if cur.damage else ""
+
             self._current = {"damage": cur.damage, "damageText": f"{cur.damage:,.0f}",
-                             "scoreText": score_text(goal.mode, cur),
+                             "scoreText": cur_text,
                              "card": {**decorate(card), "inShowcase": True}}
             self._results = [
                 {"rank": i + 1, "setName": _set_name(r.set_key), "damage": r.damage,
                  "damageText": f"{r.damage:,.0f}",
-                 "change": f"{(r.damage / cur.damage - 1) * 100:+.1f}%" if cur.damage else "",
-                 "scoreText": score_text(goal.mode, r),
+                 "change": change_of(r),
+                 "scoreText": score_of(r),
                  "deltas": deltas(cur.stats, r.stats, element),
                  "card": {**decorate(self._raw_cards[i]), "inShowcase": True}}
                 for i, r in enumerate(results)]
@@ -352,6 +423,73 @@ class OptimizerBackend(QObject):
         self._set_status("Searching…")
         w = _Worker(job, self)
         # Connected to a method of this object, so it runs on the GUI thread.
+        self._on_done = done
+        w.done.connect(self._job_done)
+        self._worker = w
+        w.start()
+
+    @Slot()
+    def learnAkasha(self) -> None:
+        """Learn the selected character's Akasha leaderboard formula (network, off the GUI thread)."""
+        card = self._card()
+        if self._busy or card is None:
+            return
+        uid = self._collection.uid
+        out: list = []
+        self._ak = {**self._ak, "state": "working", "message": "Reading Akasha.cv…"}
+        self.akashaChanged.emit()
+
+        def job(log) -> None:
+            element = card["element"]
+            calcs = akasha.profile(uid)
+            calc = calcs.get(card["avatarId"])
+            if calc is None:
+                raise akasha.AkashaError(
+                    f"Akasha has no {card['name']} for this UID yet: look up your UID on "
+                    "akasha.cv and refresh your profile there, then try again.")
+            rows, top = akasha.sample(calc)
+            model = akasha.fit(rows, element)
+            base = O.base_from_card(card)
+            cur = O.current(card, base, element, O.Goal(), 0.0)
+            pred = model.predict_stats(cur.stats, four_piece(card))
+            same = same_build(card, calc)
+            cal = calc.result / pred if same and pred > 0 else 1.0
+            shift = math.log(cal)
+            model = dataclasses.replace(
+                model, default=model.default + shift,
+                factors={k: v + shift for k, v in model.factors.items()})
+            out.append((calc, model, top, same))
+
+        def done(ok: bool, err: str) -> None:
+            self._finish()
+            if not ok:
+                self._ak = {**_AK_IDLE, "state": "unavailable", "message": err}
+                self.akashaChanged.emit()
+                return
+            calc, model, top, same = out[0]
+            trusted = model.rms <= 0.025
+            self._ak_calc, self._ak_model, self._ak_top, self._ak_same = calc, model, top, same
+            message = (f"Learned from {model.n} Akasha builds; it reproduces them to within "
+                       f"about {model.rms * 100:.1f}%.")
+            if same:
+                message += f" Calibrated on your current build (Akasha {calc.result:,.0f})."
+            else:
+                message += (" Akasha last saw a different build of this character, so predictions "
+                            "aren't calibrated to yours: refresh your profile on akasha.cv for exact ranks.")
+            if not trusted:
+                message += (" This leaderboard couldn't be learned closely (reaction calculations "
+                            "such as Lunar ones combine several characters' damage), so treat its "
+                            "ranking as rough.")
+            self._ak = {"state": "ready",
+                        "calc": calc.name + (" · " + calc.variant_label if calc.variant_label else ""),
+                        "rank": calc.rank_text(), "message": message,
+                        "trusted": trusted, "fitted": True}
+            self.akashaChanged.emit()
+
+        self._stop = False
+        self._busy = True
+        self.busyChanged.emit()
+        w = _Worker(job, self)
         self._on_done = done
         w.done.connect(self._job_done)
         self._worker = w

@@ -307,6 +307,26 @@ fast (well under a second for a few hundred artifacts). Results show as build
 cards next to the current build, with the stat changes and who wears each
 piece now.
 
+**Akasha ranking** optimizes for the character's [Akasha](https://akasha.cv)
+leaderboard instead. Akasha's damage formulas aren't public, but it scores every
+build with the character reset to the same level, talents, weapon and team, so
+a leaderboard's result depends only on the build's stats. Lumenspar samples
+about 200 builds around your own result and learns the formula from them
+(scaling stat, crit, DMG bonus and, for reactions, Elemental Mastery, with
+the constants fitted); when Akasha's copy of your build matches your
+showcase, predictions are calibrated to your actual Akasha result. The page
+says how closely the formula reproduces the sample: most leaderboards come
+within about 2.5%, while calculations that combine several characters' damage
+(such as Lunar reactions) are flagged as rough. Build cards also show each
+character's Akasha rank.
+
+Akasha has no documented API: Lumenspar uses the endpoints its own site uses,
+sparingly (your profile, cached for an hour; four leaderboard pages per
+calculation, cached for a day; only when you ask), and keeps only stats,
+4-piece sets and results from leaderboards -- never other players' UIDs or
+names. If Akasha changes its site, these features stop with a message until
+Lumenspar is updated.
+
 Unlike Genshin Optimizer it does not model talents, reactions, team buffs or
 conditional effects other than CRIT Rate: it ranks artifacts, not rotations.
 Characters whose passives convert one stat into another (e.g. ER into DMG

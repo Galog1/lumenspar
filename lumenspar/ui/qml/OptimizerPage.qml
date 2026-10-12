@@ -89,6 +89,12 @@ Item {
         }
     }
 
+    onModeChanged: {
+        if (mode === "akasha" && optimizer.akasha && optimizer.akasha.state === "idle"
+                && optimizer.card && optimizer.card.name !== undefined)
+            optimizer.learnAkasha()
+    }
+
     // a new character resets the goal to sensible defaults for its element
     Component.onCompleted: {
         page.lastSelected = optimizer.selected
@@ -320,7 +326,8 @@ Item {
                         spacing: 8
                         Repeater {
                             model: [{ key: "damage", label: "Damage estimate" }, { key: "weights", label: "Stat weights" },
-                                    { key: "targets", label: "Target values" }, { key: "ratio", label: "Ratio" }]
+                                    { key: "targets", label: "Target values" }, { key: "ratio", label: "Ratio" },
+                                    { key: "akasha", label: "Akasha ranking" }]
                             delegate: Pill {
                                 required property var modelData
                                 label: modelData.label
@@ -480,6 +487,54 @@ Item {
                     }
                 }
 
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    visible: page.mode === "akasha"
+                    spacing: 6
+                    Text {
+                        Layout.fillWidth: true
+                        text: "Ranks builds the way this character's Akasha leaderboard does, with its formula learned from a sample of that leaderboard (Akasha's formulas aren't public). Akasha resets everyone to the same level, talents, weapon and team, so only the artifacts count."
+                        color: Theme.textDim
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        visible: ((optimizer.akasha && optimizer.akasha.calc) || "") !== ""
+                        text: (optimizer.akasha && optimizer.akasha.calc) || ""
+                        color: Theme.text
+                        font.pixelSize: 13
+                        font.weight: Font.DemiBold
+                        wrapMode: Text.WordWrap
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        visible: ((optimizer.akasha && optimizer.akasha.rank) || "") !== ""
+                        text: "Your rank: " + ((optimizer.akasha && optimizer.akasha.rank) || "")
+                        color: Theme.accent
+                        font.pixelSize: 12
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        GhostButton {
+                            label: (optimizer.akasha && optimizer.akasha.fitted) ? "Learn again" : "Learn Akasha's formula"
+                            implicitHeight: 32
+                            enabledState: !optimizer.busy
+                            onClicked: optimizer.learnAkasha()
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: (optimizer.akasha && optimizer.akasha.message) || ""
+                            color: ((optimizer.akasha && optimizer.akasha.fitted && !optimizer.akasha.trusted)
+                                    || (optimizer.akasha && optimizer.akasha.state === "unavailable"))
+                                   ? Theme.danger : Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+
                 // 5. main stats
                 Repeater {
                     model: [{ slot: "sands", name: "Sands" }, { slot: "goblet", name: "Goblet" },
@@ -583,6 +638,7 @@ Item {
                 // 8. conditional crit rate
                 RowLayout {
                     Layout.fillWidth: true
+                    visible: page.mode !== "akasha"
                     spacing: 10
                     RowLabel { text: "Conditional CRIT Rate" }
                     ColumnLayout {

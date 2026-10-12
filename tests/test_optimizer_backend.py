@@ -1,7 +1,9 @@
 """The optimizer page's pure helpers (no Qt application needed)."""
 
+from types import SimpleNamespace
+
 from lumenspar import optimizer as O
-from lumenspar.ui.optimizer_backend import deltas, goal_from_qml, score_text
+from lumenspar.ui.optimizer_backend import deltas, four_piece, goal_from_qml, same_build, score_text
 
 
 def _result(damage=1000.0, score=2.0) -> O.Result:
@@ -62,3 +64,24 @@ def test_score_text_modes():
     assert score_text("ratio", r) == "7.3 balanced"
     assert score_text("targets", _result(score=0.0)) == "all targets met"
     assert score_text("targets", _result(score=0.126)) == "13% short of a target"
+
+
+def test_score_text_akasha():
+    assert score_text("akasha", _result(score=123456.7)) == "Akasha ≈ 123,457"
+
+
+def test_four_piece():
+    four = {"artifacts": [{"setKey": "GoldenTroupe"}] * 4 + [{"setKey": "Other"}]}
+    split = {"artifacts": [{"setKey": "GoldenTroupe"}] * 2 + [{"setKey": "Other"}] * 2}
+    assert four_piece(four) == "GoldenTroupe"
+    assert four_piece(split) == ""
+    assert four_piece({"artifacts": []}) == ""
+
+
+def test_same_build():
+    card = {"artifacts": [{"setKey": "GoldenTroupe"}] * 4 + [{"setKey": "EmblemOfSeveredFate"}]}
+    match = SimpleNamespace(sets={"Golden Troupe": 4, "Emblem of Severed Fate": 1, "Other": 0})
+    other = SimpleNamespace(sets={"Golden Troupe": 2, "Emblem of Severed Fate": 3})
+    assert same_build(card, match) is True
+    assert same_build(card, other) is False
+    assert same_build(card, SimpleNamespace(sets={})) is False

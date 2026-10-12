@@ -16,7 +16,7 @@ from pathlib import Path
 from PySide6.QtCore import Property, QObject, QRectF, Qt, QTimer, QUrl, Signal, Slot
 from PySide6.QtGui import QImage, QPainter, QPainterPath
 
-from .. import builds, enka
+from .. import akasha, builds, enka
 from ..wishes import icons
 from .backend import _Worker
 
@@ -96,7 +96,9 @@ class BuildsBackend(QObject):
     statusChanged = Signal()
     waitChanged = Signal()
     collected = Signal()          # a fetch added or changed cards (for the Drive backup)
+    akashaChanged = Signal()
     _artArrived = Signal()
+    _akashaArrived = Signal(object)    # (calcs by avatar id, status text)
 
     def __init__(self, settings, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -110,10 +112,16 @@ class BuildsBackend(QObject):
         self._on_done = None          # what to run, on the GUI thread, when the job ends
         self._art_fetch = False
         self._art_tried: set[str] = set()
+        self._akasha: dict = {}            # Akasha.cv calculations by avatar id
+        self._akasha_status = ""
+        self._akasha_loading = False
         self._artArrived.connect(self._on_art)
+        self._akashaArrived.connect(self._on_akasha)
         self._tick = QTimer(self, interval=1000)
         self._tick.timeout.connect(self._on_tick)
         self._publish()
+        if self._collection:
+            QTimer.singleShot(0, self._load_akasha)
 
     # -- what the page shows ----------------------------------------------
 
@@ -136,6 +144,10 @@ class BuildsBackend(QObject):
     @Property(str, notify=statusChanged)
     def status(self) -> str:
         return self._status
+
+    @Property(str, notify=akashaChanged)
+    def akashaStatus(self) -> str:
+        return self._akasha_status
 
     @Property(int, notify=waitChanged)
     def waitSeconds(self) -> int:
@@ -178,6 +190,7 @@ class BuildsBackend(QObject):
             showcase, new, updated, problems = result[0]
             self._collection, self._showcase = collection, showcase
             self._publish()
+            self._load_akasha()
             parts = [f"{len(showcase)} in the showcase"]
             if new:
                 parts.append(f"new: {', '.join(new)}")
@@ -251,6 +264,13 @@ class BuildsBackend(QObject):
             card = decorate(b)
             wanted += art_names(b)
             card["inShowcase"] = b["avatarId"] in self._showcase
+            calc = self._akasha.get(b["avatarId"])
+            if calc:
+                card["akasha"] = {
+                    "rank": calc.rank_text(),
+                    "calc": calc.name + (" · " + calc.variant_label if calc.variant_label else ""),
+                    "pct": calc.top_percent,
+                }
             out.append(card)
         self._cards = out
         self.changed.emit()
@@ -275,6 +295,30 @@ class BuildsBackend(QObject):
                         make_panel(icons.path(s), icons.path(panel_name(s)))
                 self._artArrived.emit()
             threading.Thread(target=fetch, daemon=True).start()
+
+    def _load_akasha(self) -> None:
+        """Fetch the Akasha.cv ranks for the collection's UID on a worker thread."""
+        if self._akasha_loading or not self._collection:
+            return
+        uid = self._collection.uid
+        self._akasha_loading = True
+
+        def fetch() -> None:
+            try:
+                calcs, status = akasha.profile(uid), ""
+            except akasha.AkashaError as e:
+                calcs, status = {}, f"Akasha ranks unavailable: {e}"
+            self._akashaArrived.emit((calcs, status))
+        threading.Thread(target=fetch, daemon=True).start()
+
+    def _on_akasha(self, payload) -> None:
+        calcs, status = payload
+        if calcs or not status:
+            self._akasha = calcs
+        self._akasha_status = status
+        self._akasha_loading = False
+        self.akashaChanged.emit()
+        self._publish()
 
     def _on_art(self) -> None:
         self._art_fetch = False

@@ -203,3 +203,37 @@ def test_owner_shows_other_characters_by_name():
                    stats={k: 0.0 for k in opt.KEYS}, damage=0.0, score=0.0, cond_crit=0.0)
     card = opt.result_card(res, {"key": "Furina", "name": "Furina", "artifacts": []})
     assert [a["owner"] for a in card["artifacts"]] == ["Yae Miko", ""]
+
+
+class FakeModel:
+    scaling = "atk"
+    element = "hydro"
+    crit = True
+
+    def __init__(self):
+        self.calls = []
+
+    def predict(self, final, set_key):
+        self.calls.append(set_key)
+        return (final[:, opt.IDX["atk"]] * (1 + final[:, opt.IDX["critDMG_"]] / 100)
+                * (2.0 if set_key == ATK_SET else 1.0))
+
+
+def test_akasha_mode_uses_the_model_and_the_set_key():
+    good = {"artifacts": full_set() + [
+        art(ATK_SET, "circlet", main=("critRate_", 31.1), subs=[("critDMG_", 14)])]}
+    base = make_base(critRate_=5, critDMG_=50)
+    model = FakeModel()
+    res = run(good, base, opt.Goal(mode="akasha", akasha=model, set_key=ATK_SET))
+    assert res
+    assert model.calls and set(model.calls) == {ATK_SET}
+    row = np.zeros((1, opt.D))
+    for k, v in res[0].stats.items():
+        row[0, opt.IDX[k]] = v
+    assert res[0].score == pytest.approx(model.predict(row, ATK_SET)[0])
+
+
+def test_akasha_mode_without_a_model_raises():
+    final = np.zeros((1, opt.D))
+    with pytest.raises(ValueError):
+        opt.evaluate(final, opt.Goal(mode="akasha"), "pyro", 0.0)

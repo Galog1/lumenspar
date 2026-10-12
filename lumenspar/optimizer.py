@@ -1,8 +1,9 @@
 """Artifact optimizer: a simpler Genshin Optimizer.
 
 Searches the scanned artifacts (.GOOD) for the best 4-piece set plus an
-off-piece for one character, by a damage estimate, stat weights, target values
-or a ratio. The character's own stats come from the build card (the Enka
+off-piece for one character, by a damage estimate, stat weights, target values,
+a ratio, or an Akasha leaderboard's formula learned from a sample of it (see
+akasha.py). The character's own stats come from the build card (the Enka
 showcase) minus its equipped artifacts and their static set bonuses, so any
 other artifact build can be added back on top. Combat CRIT Rate is the panel
 value plus the conditional bonuses, capped at 100%, so panel crit above the
@@ -106,7 +107,7 @@ class Goal:
     # slot -> allowed main keys (sands/goblet/circlet); missing or empty = any
     mains: dict[str, list[str]] = field(default_factory=dict)
     set_key: str = ""                          # "" = try every set
-    mode: str = "damage"                       # "damage" | "weights" | "targets" | "ratio"
+    mode: str = "damage"                       # "damage" | "weights" | "targets" | "ratio" | "akasha"
     weights: dict[str, float] = field(default_factory=dict)
     targets: dict[str, float] = field(default_factory=dict)
     ratio: tuple[str, float, str, float] = ("critRate_", 1.0, "critDMG_", 2.0)
@@ -115,6 +116,7 @@ class Goal:
     use_equipped: bool = True   # allow pieces other characters wear
     min_level: int = 16
     top: int = 5
+    akasha: object | None = None   # a learned akasha.Model, for mode "akasha"
 
 
 @dataclass
@@ -215,12 +217,15 @@ def _dmg_key(element: str) -> str:
 
 
 def evaluate(final: np.ndarray, goal: Goal, element: str,
-             cond_crit: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+             cond_crit: float, set_key: str = "") -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """(sort_keys, score, damage) for final stats (N, D).
 
     sort_keys has shape (rows, N); row 0 is the most significant and higher is
     better in every row. score is the mode's primary number (targets: the
-    worst shortfall, lower is better).
+    worst shortfall, lower is better). set_key is the build's 4-piece set, used
+    only by mode "akasha": its score is the learned model's prediction, which
+    does not use cond_crit (the formula already contains the conditional crit
+    Akasha applies); the damage estimate still does.
     """
     c = final
     panel = c[:, IDX["critRate_"]]
@@ -254,6 +259,11 @@ def evaluate(final: np.ndarray, goal: Goal, element: str,
         y = cr if b_key == "critRate_" else c[:, IDX[b_key]]
         balanced = np.minimum(x / max(a, 1e-9), y / max(b, 1e-9))
         return np.array([np.round(balanced, 2), damage]), balanced, damage
+    if goal.mode == "akasha":
+        if goal.akasha is None:
+            raise ValueError("No Akasha formula has been learned yet")
+        score = np.asarray(goal.akasha.predict(final, set_key), dtype=float)
+        return np.array([score]), score, damage
     return damage[None, :], damage, damage
 
 
@@ -262,6 +272,10 @@ def relevant(goal: Goal, element: str) -> list[int]:
     keys = {"atk": ["atk", "atk_"], "hp": ["hp", "hp_"], "def": ["def", "def_"],
             "eleMas": ["eleMas"]}.get(goal.scaling, [goal.scaling])
     keys += ["critRate_", "critDMG_", _dmg_key(element)]
+    if goal.mode == "akasha" and goal.akasha is not None:
+        keys += {"atk": ["atk", "atk_"], "hp": ["hp", "hp_"], "def": ["def", "def_"],
+                 "eleMas": ["eleMas"]}.get(goal.akasha.scaling, [goal.akasha.scaling])
+        keys += ["critRate_", "critDMG_", _dmg_key(goal.akasha.element)]
     keys += list(goal.weights) + list(goal.targets) + list(goal.minimums)
     keys += [goal.ratio[0], goal.ratio[2]]
     for flat, pct in (("hp", "hp_"), ("atk", "atk_"), ("def", "def_")):
@@ -300,8 +314,8 @@ def _main_ok(p: Piece, goal: Goal) -> bool:
 
 
 def _enumerate(lists: list[list[Piece]], base: Base, bonus: np.ndarray, goal: Goal,
-               element: str, cond: float, should_stop: Callable[[], bool]
-               ) -> tuple[list[tuple], bool]:
+               element: str, cond: float, should_stop: Callable[[], bool],
+               set_key: str = "") -> tuple[list[tuple], bool]:
     """Best builds of one choice of five candidate lists; (candidates, stopped)."""
     arrs = [np.array([p.vec for p in lst]) for lst in lists]
     # The longest lists are looped over, the shortest are vectorised.
@@ -325,7 +339,7 @@ def _enumerate(lists: list[list[Piece]], base: Base, bonus: np.ndarray, goal: Go
         if not mask.any():
             continue
         rows = np.flatnonzero(mask)
-        keys, _, _ = evaluate(final[rows], goal, element, cond)
+        keys, _, _ = evaluate(final[rows], goal, element, cond, set_key)
         best = np.lexsort(keys[::-1])[::-1][:goal.top]
         for j in best:
             chosen = dict(zip(lead, combo))
@@ -403,7 +417,8 @@ def search(pieces: list[Piece], base: Base, element: str, goal: Goal,
             lists = _set_candidates(by_slot, set_key, off, cols, limit)
             if lists is None:
                 continue
-            got, stopped = _enumerate(lists, base, bonus, goal, element, cond, should_stop)
+            got, stopped = _enumerate(lists, base, bonus, goal, element, cond, should_stop,
+                                 set_key)
             found += got
             if stopped:
                 break
@@ -418,7 +433,7 @@ def _result(pieces: tuple[Piece, ...], set_key: str, cond: float, base: Base,
             bonus: np.ndarray, goal: Goal, element: str) -> Result:
     total = base.vec + bonus + sum((np.array(p.vec) for p in pieces), np.zeros(D))
     final = final_stats(base, total[None, :])
-    _, score, damage = evaluate(final, goal, element, cond)
+    _, score, damage = evaluate(final, goal, element, cond, set_key)
     stats = {k: float(final[0, IDX[k]]) for k in KEYS}
     return Result(list(pieces), set_key, stats, float(damage[0]), float(score[0]), cond)
 
@@ -427,9 +442,10 @@ def current(card: dict, base: Base, element: str, goal: Goal, cond: float) -> Re
     """The card's equipped build, scored the same way as the search results."""
     total = base.vec + _equipped_vec(card)
     final = final_stats(base, total[None, :])
-    _, score, damage = evaluate(final, goal, element, cond)
     counts = Counter(a.get("setKey") for a in card.get("artifacts") or [] if a.get("setKey"))
     set_key = counts.most_common(1)[0][0] if counts else ""
+    four = next((k for k, n in counts.items() if n >= 4), "")
+    _, score, damage = evaluate(final, goal, element, cond, four)
     stats = {k: float(final[0, IDX[k]]) for k in KEYS}
     return Result([], set_key, stats, float(damage[0]), float(score[0]), cond)
 

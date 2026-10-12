@@ -310,6 +310,26 @@ Rectangle {
                 }
             }
         }
+
+        ColumnLayout {   // Akasha.cv rank
+            Layout.fillWidth: true
+            Layout.topMargin: 6
+            spacing: 2
+            visible: !!(bc.c && bc.c.akasha)
+            Text {
+                text: bc.c && bc.c.akasha ? "Akasha  " + bc.c.akasha.rank : ""
+                color: bc.tint
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+            }
+            Text {
+                Layout.fillWidth: true
+                text: bc.c && bc.c.akasha ? bc.c.akasha.calc : ""
+                color: "#8A94A9"
+                font.pixelSize: 11
+                elide: Text.ElideRight
+            }
+        }
     }
 
     // ── right: the five artifacts ──

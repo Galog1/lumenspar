@@ -89,6 +89,15 @@ Item {
                     font.pixelSize: 12
                     wrapMode: Text.WordWrap
                 }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: cards.akashaStatus
+                    visible: text !== ""
+                    color: Theme.textDim
+                    font.pixelSize: 12
+                    wrapMode: Text.WordWrap
+                }
             }
 
             Text {
