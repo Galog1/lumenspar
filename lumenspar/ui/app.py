@@ -15,6 +15,7 @@ from PySide6.QtQuickControls2 import QQuickStyle
 from .. import hostos, netcerts
 from .backend import Backend
 from .builds_backend import BuildsBackend
+from .optimizer_backend import OptimizerBackend
 from .wish_backend import WishBackend
 
 QML_DIR = Path(__file__).resolve().parent / "qml"
@@ -52,10 +53,15 @@ def main(argv: list[str] | None = None) -> int:
     engine.rootContext().setContextProperty("cards", cards)
     cards.collected.connect(wishes.syncSoon)
     wishes.restoredFromDrive.connect(cards.reload)
+    optimizer = OptimizerBackend(backend._s, app)
+    engine.rootContext().setContextProperty("optimizer", optimizer)
+    cards.collected.connect(optimizer.reload)
+    wishes.restoredFromDrive.connect(optimizer.reload)
 
     app.aboutToQuit.connect(backend.shutdown)
     app.aboutToQuit.connect(wishes.shutdown)
     app.aboutToQuit.connect(cards.shutdown)
+    app.aboutToQuit.connect(optimizer.shutdown)
 
     engine.load(QUrl.fromLocalFile(str(QML_DIR / "Main.qml")))
     smoke = os.environ.get("LUMENSPAR_SMOKE_TEST")

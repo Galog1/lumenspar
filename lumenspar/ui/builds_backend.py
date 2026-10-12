@@ -68,6 +68,28 @@ def _url(asset: str) -> str:
     return QUrl.fromLocalFile(str(f)).toString() if f.is_file() else ""
 
 
+def decorate(b: dict) -> dict:
+    """A card with file URLs for the art already cached (QML shows placeholders until then)."""
+    card = dict(b)
+    card["iconUrl"] = _url(b.get("icon", ""))
+    card["splashUrl"] = _url(panel_name(b.get("splash", "")))
+    if b.get("weapon"):
+        card["weapon"] = {**b["weapon"], "iconUrl": _url(b["weapon"].get("icon", ""))}
+    card["artifacts"] = [{**a, "iconUrl": _url(a.get("icon", ""))}
+                         for a in b.get("artifacts", [])]
+    card["fetched"] = datetime.fromtimestamp(b.get("fetchedAt", 0)).strftime("%Y-%m-%d %H:%M")
+    return card
+
+
+def art_names(b: dict) -> list[str]:
+    """The asset names a card's art needs (icon, splash, weapon, artifacts)."""
+    names = [b.get("icon", ""), b.get("splash", "")]
+    if b.get("weapon"):
+        names.append(b["weapon"].get("icon", ""))
+    names += [a.get("icon", "") for a in b.get("artifacts", [])]
+    return names
+
+
 class BuildsBackend(QObject):
     changed = Signal()
     busyChanged = Signal()
@@ -226,17 +248,8 @@ class BuildsBackend(QObject):
         wanted = []
         out = []
         for b in cards:
-            card = dict(b)
-            card["iconUrl"] = _url(b.get("icon", ""))
-            card["splashUrl"] = _url(panel_name(b.get("splash", "")))
-            wanted += [b.get("icon", ""), b.get("splash", "")]
-            if b.get("weapon"):
-                card["weapon"] = {**b["weapon"], "iconUrl": _url(b["weapon"].get("icon", ""))}
-                wanted.append(b["weapon"].get("icon", ""))
-            card["artifacts"] = [{**a, "iconUrl": _url(a.get("icon", ""))}
-                                 for a in b.get("artifacts", [])]
-            wanted += [a.get("icon", "") for a in b.get("artifacts", [])]
-            card["fetched"] = datetime.fromtimestamp(b.get("fetchedAt", 0)).strftime("%Y-%m-%d %H:%M")
+            card = decorate(b)
+            wanted += art_names(b)
             card["inShowcase"] = b["avatarId"] in self._showcase
             out.append(card)
         self._cards = out

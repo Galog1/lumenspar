@@ -22,8 +22,8 @@ Item {
         property string blurb
         property string detail
         property string target
-        Layout.preferredWidth: Math.min(330, (menu.width - 140) / 3)
-        Layout.preferredHeight: 300
+        Layout.preferredWidth: Math.min(330, (menu.width - 140 - 28 * (grid.columns - 1)) / grid.columns)
+        Layout.preferredHeight: grid.columns === 4 ? 300 : 268
         radius: Theme.radius + 4
         color: hover.hovered ? Theme.surfaceHi : Theme.surface
         border.width: 1
@@ -81,9 +81,12 @@ Item {
         }
     }
 
-    RowLayout {
+    GridLayout {
+        id: grid
         anchors.centerIn: parent
-        spacing: 28
+        columns: menu.width >= 1480 ? 4 : 2
+        columnSpacing: 28
+        rowSpacing: 28
 
         Tile {
             glyph: "✧"
@@ -108,6 +111,13 @@ Item {
             blurb: "Akasha-style cards for every character in your profile showcase: talents, weapon, artifacts with roll counts, crit value and final stats."
             detail: cards.cards.length > 0 ? cards.cards.length + " characters collected" : ""
             target: "cards"
+        }
+        Tile {
+            glyph: "◈"
+            title: "Optimizer"
+            blurb: "The best artifacts from your scan for any character: damage estimate, stat weights, targets or ratios, with conditional crit taken into account."
+            detail: optimizer.pieceCount > 0 ? optimizer.pieceCount + " artifacts scanned" : ""
+            target: "optimizer"
         }
     }
 }

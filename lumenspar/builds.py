@@ -73,6 +73,12 @@ _DMG_BONUS = {"30": "physical", "40": "pyro", "41": "electro", "42": "hydro",
               "43": "dendro", "44": "anemo", "45": "geo", "46": "cryo"}
 
 _MAX_LEVEL = (20, 40, 50, 60, 70, 80, 90)
+
+# The raw fightPropMap entries the optimizer needs to recover a character's
+# stats without artifacts: base HP/ATK/DEF (1, 4, 7), flat and % bonuses
+# (2/3, 5/6, 8/9), crit, ER, healing, EM, DMG bonuses and the totals.
+FIGHT_KEEP = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "20", "22", "23", "26", "28",
+              "30", "40", "41", "42", "43", "44", "45", "46", "2000", "2001", "2002")
 _PERCENT_KEYS = {k for k, _ in STATS.values() if k.endswith("_")}
 
 
@@ -136,6 +142,7 @@ def _artifact(equip: dict) -> dict | None:
         "level": max(0, int(rel.get("level") or 1) - 1),
         "icon": flat.get("icon", ""),
         "main": {"key": main_key, "label": main_label,
+                 "value": float(main.get("statValue", 0)),
                  "text": fmt(main_key, float(main.get("statValue", 0)))},
         "subs": subs,
         "critValue": round(cv, 1),
@@ -153,6 +160,7 @@ def _weapon(equip: dict) -> dict:
         value = float(s.get("statValue", 0))
         stats.append({"key": key, "label": label, "text": fmt(key, value)})
     return {
+        "id": str(equip.get("itemId", "")),
         "key": info.get("key", ""), "name": info.get("name", f"Weapon {equip.get('itemId')}"),
         "rarity": int(flat.get("rankLevel") or info.get("rarity") or 0),
         "level": int(w.get("level") or 1), "ascension": int(w.get("promoteLevel") or 0),
@@ -252,6 +260,7 @@ def parse(data: dict) -> tuple[dict, list[dict], list[str]]:
             "talents": talents, "weapon": weapon, "artifacts": artifacts, "sets": sets,
             "stats": stats,
             "critValue": round(sum(r["critValue"] for r in artifacts), 1),
+            "fight": {k: float(fight[k]) for k in FIGHT_KEEP if k in fight},
             "fetchedAt": now,
         })
     return player, builds, problems

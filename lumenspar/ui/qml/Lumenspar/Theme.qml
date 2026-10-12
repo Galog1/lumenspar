@@ -36,4 +36,17 @@ QtObject {
         default: return "#8A94A9";
         }
     }
+
+    function element(e) {
+        switch (e) {
+        case "pyro": return "#EF7938";
+        case "hydro": return "#4CC2F1";
+        case "anemo": return "#74C2A8";
+        case "electro": return "#B08FC2";
+        case "dendro": return "#A5C83B";
+        case "cryo": return "#9FD6E3";
+        case "geo": return "#FAB632";
+        default: return accent;
+        }
+    }
 }

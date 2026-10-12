@@ -1,6 +1,6 @@
 # Lumenspar
 
-A Genshin Impact companion for Linux and Windows, with three tools on its
+A Genshin Impact companion for Linux and Windows, with four tools on its
 main menu:
 
 - **Wish Counter** -- pity, guarantees and 50/50 results for every banner, read
@@ -14,6 +14,9 @@ main menu:
   in your profile showcase, read through [Enka.Network](https://enka.network):
   talents, weapon, artifacts with exact roll counts, crit value and final
   stats, saved as images if you like.
+- **Optimizer** -- a simpler [Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/):
+  the best artifacts from your scan for any character, by a damage estimate,
+  stat weights, target values or a stat ratio.
 
 Built for Wayland first: capture goes through the `xdg-desktop-portal`
 ScreenCast API and a PipeWire stream, so it works on KDE, GNOME and wlroots
@@ -278,6 +281,36 @@ Art (portraits, splash art, weapon and artifact icons) comes from Project Amber
 and is downloaded once, when first needed. Unlike Akasha, there are no
 leaderboards: those compare builds across many players on a server, and
 Lumenspar has none.
+
+## Optimizer
+
+Pick a character from your build cards, a scaling stat, priority stats and the
+main stats you accept on sands, goblet and circlet, and Lumenspar searches your
+scanned artifacts (the .GOOD export) for the best **4-piece set plus an
+off-piece** from any set. It optimizes for one of:
+
+- **Damage estimate** -- scaling stat × (1 + CRIT Rate × CRIT DMG) × (1 + DMG Bonus);
+- **Stat weights** -- a weight per priority stat, scored in maximum rolls;
+- **Target values** -- reach every target as evenly as possible, then the most damage;
+- **Ratio** -- keep two stats balanced, e.g. CRIT Rate : CRIT DMG = 1 : 2;
+
+with optional minimums (e.g. Energy Recharge ≥ 160%). Combat CRIT Rate is the
+panel value plus **conditional CRIT Rate** -- read from the set bonus and the
+weapon's passive at its refinement, plus whatever you add for team buffs --
+capped at 100%, so panel crit beyond that cap is worth nothing.
+
+The character's own stats come from the showcase: the game's totals minus the
+equipped artifacts and set bonuses, which reproduces the in-game panel exactly
+when the artifacts are put back. The search drops every piece that is no
+better than another in all the stats the goal uses, which keeps it exact and
+fast (well under a second for a few hundred artifacts). Results show as build
+cards next to the current build, with the stat changes and who wears each
+piece now.
+
+Unlike Genshin Optimizer it does not model talents, reactions, team buffs or
+conditional effects other than CRIT Rate: it ranks artifacts, not rotations.
+Characters whose passives convert one stat into another (e.g. ER into DMG
+Bonus) come out approximately.
 
 ## Characters from Enka.Network
 
