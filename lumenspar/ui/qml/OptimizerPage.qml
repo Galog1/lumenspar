@@ -36,8 +36,10 @@ Item {
     readonly property string teamTarget: {
         for (let i = 0; i < teamTargets.length; i++)
             if (teamTargets[i].key === teamChoice) return teamChoice
-        if ((teamInfo.rotationCount || 0) > 0 || teamTargets.length < 2) return "rotation"
-        return teamTargets[1].key
+        const d = teamInfo.defaultTarget || ""
+        for (let i = 0; i < teamTargets.length; i++)
+            if (teamTargets[i].key === d) return d
+        return teamTargets.length > 0 ? teamTargets[0].key : ""
     }
 
     readonly property var substats: optimizer.substats || []
@@ -77,6 +79,18 @@ Item {
     function setMinimum(i, key, value) {
         const list = minimums.slice()
         list[i] = { key: key, value: value }
+        minimums = list
+    }
+
+    function minimumOf(key) {
+        for (let i = 0; i < minimums.length; i++)
+            if (minimums[i].key === key) return minimums[i].value
+        return 0
+    }
+
+    function setPreset(key, value) {
+        const list = minimums.filter(function(m) { return m.key !== key })
+        if (value > 0) list.push({ key: key, value: value })
         minimums = list
     }
 
@@ -705,7 +719,7 @@ Item {
                         spacing: 8
                         Text {
                             Layout.fillWidth: true
-                            text: "Exact damage from the Team & damage tab: its team, conditions and enemy apply. Lumenspar searches your artifacts for the build that maximizes the chosen hit, or the whole rotation."
+                            text: "Exact damage from the Team & damage tab: its team, conditions and enemy apply. Lumenspar searches your artifacts for the build that maximizes the chosen hit."
                             color: Theme.textDim
                             font.pixelSize: 12
                             wrapMode: Text.WordWrap
@@ -747,14 +761,6 @@ Item {
                             Layout.fillWidth: true
                             visible: !!page.teamInfo.inTeam && !page.teamInfo.hasFormulas
                             text: "Open Team & damage and select " + (page.teamInfo.name || "the character") + " once to list their hits."
-                            color: Theme.textDim
-                            font.pixelSize: 12
-                            wrapMode: Text.WordWrap
-                        }
-                        Text {
-                            Layout.fillWidth: true
-                            visible: !!page.teamInfo.inTeam && page.teamTarget === "rotation" && (page.teamInfo.rotationCount || 0) === 0
-                            text: "Set hit counts in Team & damage first."
                             color: Theme.textDim
                             font.pixelSize: 12
                             wrapMode: Text.WordWrap
@@ -826,40 +832,39 @@ Item {
                             Layout.fillWidth: true
                             spacing: 6
                             Repeater {
-                                model: page.minimums
+                                model: [
+                                    { key: "enerRech_", label: "Energy Recharge", values: [110, 120, 130, 140, 160, 180, 200], unit: "%" },
+                                    { key: "critRate_", label: "CRIT Rate", values: [50, 60, 70, 80], unit: "%" },
+                                    { key: "eleMas", label: "Elemental Mastery", values: [100, 200, 300, 400], unit: "" }]
                                 delegate: RowLayout {
                                     id: minRow
                                     required property var modelData
-                                    required property int index
-                                    spacing: 10
-                                    Combo {
-                                        Layout.preferredWidth: 200
-                                        model: page.minLabels
-                                        currentIndex: Math.max(0, page.minKeys.indexOf(minRow.modelData.key))
-                                        onActivated: function(i) {
-                                            page.setMinimum(minRow.index, page.minKeys[i], minRow.modelData.value)
-                                        }
+                                    spacing: 8
+                                    Text {
+                                        Layout.preferredWidth: 130
+                                        text: minRow.modelData.label
+                                        color: Theme.text
+                                        font.pixelSize: 13
                                     }
-                                    Field {
-                                        Layout.preferredWidth: 90
-                                        text: String(minRow.modelData.value)
-                                        validator: DoubleValidator { bottom: 0; locale: "C" }
-                                        onEditingFinished: {
-                                            const v = Number(text)
-                                            page.setMinimum(minRow.index, minRow.modelData.key, isNaN(v) ? 0 : v)
+                                    Flow {
+                                        Layout.fillWidth: true
+                                        spacing: 8
+                                        Pill {
+                                            label: "None"
+                                            checked: page.minimumOf(minRow.modelData.key) === 0
+                                            onClicked: page.setPreset(minRow.modelData.key, 0)
                                         }
-                                    }
-                                    GhostButton {
-                                        label: "Remove"
-                                        implicitHeight: 32
-                                        onClicked: page.minimums = page.minimums.filter(function(m, i) { return i !== minRow.index })
+                                        Repeater {
+                                            model: minRow.modelData.values
+                                            delegate: Pill {
+                                                required property var modelData
+                                                label: modelData + minRow.modelData.unit
+                                                checked: page.minimumOf(minRow.modelData.key) === modelData
+                                                onClicked: page.setPreset(minRow.modelData.key, modelData)
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                            GhostButton {
-                                label: "+ Add minimum"
-                                implicitHeight: 32
-                                onClicked: page.minimums = page.minimums.concat([{ key: "enerRech_", value: 0 }])
                             }
                         }
                     }
@@ -903,13 +908,13 @@ Item {
                                     color: Theme.text
                                     font.pixelSize: 12
                                 }
-                                Field {
-                                    Layout.preferredWidth: 70
-                                    text: String(page.extraCrit)
-                                    validator: DoubleValidator { bottom: 0; top: 100; locale: "C" }
-                                    onEditingFinished: {
-                                        const v = Number(text)
-                                        page.extraCrit = isNaN(v) ? 0 : v
+                                Repeater {
+                                    model: [0, 10, 15, 20, 30, 40]
+                                    delegate: Pill {
+                                        required property var modelData
+                                        label: modelData + "%"
+                                        checked: page.extraCrit === modelData
+                                        onClicked: page.extraCrit = modelData
                                     }
                                 }
                                 Text {
@@ -952,34 +957,13 @@ Item {
                             onClicked: page.useEquipped = !page.useEquipped
                         }
                         Text { text: "Minimum level"; color: Theme.textDim; font.pixelSize: 12 }
-                        SpinBox {
-                            id: levelBox
-                            from: 0; to: 20; stepSize: 4
-                            value: page.minLevel
-                            implicitWidth: 110
-                            implicitHeight: 32
-                            onValueModified: page.minLevel = value
-                            background: Rectangle {
-                                radius: 8; color: Theme.bgAlt
-                                border.color: Theme.border
-                                border.width: 1
-                            }
-                            contentItem: Text {
-                                text: levelBox.value
-                                color: Theme.text
-                                font.pixelSize: 13
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                            }
-                            up.indicator: Text {
-                                x: parent.width - width - 10
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: "+"; color: Theme.text; font.pixelSize: 14
-                            }
-                            down.indicator: Text {
-                                x: 10
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: "−"; color: Theme.text; font.pixelSize: 14
+                        Repeater {
+                            model: [0, 4, 8, 12, 16, 20]
+                            delegate: Pill {
+                                required property var modelData
+                                label: "+" + modelData
+                                checked: page.minLevel === modelData
+                                onClicked: page.minLevel = modelData
                             }
                         }
                         Item { Layout.fillWidth: true }

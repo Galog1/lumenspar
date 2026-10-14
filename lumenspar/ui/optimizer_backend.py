@@ -743,18 +743,21 @@ class OptimizerBackend(QObject):
     def _refresh_team_info(self) -> None:
         card = self._card()
         info = {"inTeam": False, "name": card["name"] if card else "", "targets": [],
-                "rotationCount": 0, "hasFormulas": False}
+                "defaultTarget": "", "hasFormulas": False}
         ctx = self.team.optimize_context(card["key"]) if card and self.team is not None else None
         if ctx is not None:
             info["inTeam"] = True
-            info["rotationCount"] = sum(ctx["rotation"].values())
             hits = [f for f in ctx["formulas"] if f.get("q") == "dmg"]
             info["hasFormulas"] = bool(hits)
-            info["targets"] = [{"key": "rotation",
-                                "label": "Rotation (hit counts from Team & damage)"}] + [
+            info["targets"] = [
                 {"key": f"{f['sheet']}:{f['name']}",
                  "label": damage.formula_label(f["sheet"], f["name"], f.get("move", "")),
                  "group": formula_group(f)} for f in hits]
+            moves = [f for f in hits if f.get("move") in ("skill", "burst", "normal", "charged")]
+            best = max(moves, key=lambda f: f.get("avg") or 0, default=None) or (
+                hits[0] if hits else None)
+            if best is not None:
+                info["defaultTarget"] = f"{best['sheet']}:{best['name']}"
         if info != self._team_info:
             self._team_info = info
             self.teamInfoChanged.emit()
@@ -775,7 +778,7 @@ class OptimizerBackend(QObject):
             self._set_status(f"Add {card['name']} to the team in Team & damage first.")
             return
         try:
-            frames = teamopt.frames(target, ctx["rotation"], ctx["formulas"])
+            frames = teamopt.frames(target, {}, ctx["formulas"])
             base = O.base_from_card(card)
         except ValueError as exc:
             self._set_status(str(exc))

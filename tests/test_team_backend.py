@@ -103,14 +103,19 @@ def test_stat_rows_own_element_always_shown():
     assert by["Pyro DMG Bonus"] == "0.0%"
 
 
-def test_rotation_total():
-    formulas = [{"sheet": "Furina", "name": "skill_a", "avg": 100.0},
-                {"sheet": "Furina", "name": "burst", "avg": 2500.5},
-                {"sheet": "Furina", "name": "heal", "avg": None},
-                {"sheet": "Furina", "name": "unused", "avg": 7}]
-    counts = {"Furina:skill_a": 3, "Furina:burst": 2, "Furina:heal": 4, "Other:x": 9}
-    assert T.rotation_total(formulas, counts) == pytest.approx(300 + 5001.0)
-    assert T.rotation_total(formulas, {}) == 0
+def test_stack_options():
+    assert T.stack_options(0, 3) == [{"value": 0, "label": "Off"}, {"value": 1, "label": "1"},
+                                     {"value": 2, "label": "2"}, {"value": 3, "label": "3"}]
+    assert [o["value"] for o in T.stack_options(0, 6)] == [0, 1, 2, 3, 4, 5, 6]
+    assert [o["value"] for o in T.stack_options(1, 4)] == [0, 2, 3, 4]
+    big = T.stack_options(0, 10)
+    assert big == [{"value": 0, "label": "Off"}, {"value": 5, "label": "½"},
+                   {"value": 10, "label": "Max"}]
+    assert T.stack_options(0, 7)[1]["value"] == 4          # round(3.5) -> 4
+    rows = T.condition_rows(CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"], {})
+    by = {r["id"]: r for r in rows}
+    assert [o["value"] for o in by["0|SplendorOfTranquilWaters|stacks"]["options"]] == [0, 1, 2, 3]
+    assert [o["value"] for o in by["1|ViridescentVenerer|swirl"]["options"]] == ["pyro", "hydro"]
 
 
 # -- saved state ---------------------------------------------------------------------
@@ -155,9 +160,6 @@ def test_state_round_trip(app, tmp_path, monkeypatch):
     b.setMember(1, "Bennett")
     b.setMember(2, "Nobody")           # not offered: ignored
     b.select(1)
-    b.setCount("Bennett:skill_a", 3)
-    b.setSeconds(25.0)
-    b.setEnemy(95, 20.0)
     b._cond_rows = T.condition_rows(CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"],
                                     b._state["conditionals"])
     b._conds = (CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"])
@@ -171,9 +173,7 @@ def test_state_round_trip(app, tmp_path, monkeypatch):
     assert saved["members"] == [{"key": "Furina", "source": "owned"},
                                 {"key": "Bennett", "source": "owned"}, {}, {}]
     assert saved["selected"] == 1
-    assert saved["rotation"] == {"Bennett": {"Bennett:skill_a": 3}}
-    assert saved["seconds"] == 25.0
-    assert saved["enemy"] == {"level": 95, "res": 20.0}
+    assert "rotation" not in saved and "enemy" not in saved
     assert saved["conditionals"]["Furina"] == {"Furina": {"c1Cond": 1},
                                                "SplendorOfTranquilWaters": {"stacks": 2}}
     assert saved["conditionals"]["Bennett"] == {"ViridescentVenerer": {"swirl": "hydro"}}
@@ -183,17 +183,14 @@ def test_state_round_trip(app, tmp_path, monkeypatch):
     b.setConditional("0|Furina|c1Cond", False)
     b.setConditional("0|SplendorOfTranquilWaters|stacks", 0)
     b.setConditional("1|ViridescentVenerer|swirl", "")
-    b.setCount("Bennett:skill_a", 0)
     b._timer.stop()
     assert b._state["conditionals"] == {"_team": {"reso": {"nearbyDendro1": 1}}}
-    assert b._state["rotation"] == {}
 
     b2 = T.TeamBackend(settings, state_path=tmp_path / "team.json")
     b2._timer.stop()
     assert b2._state == b._state
     assert [m.get("key") for m in b2.members] == ["Furina", "Bennett", None, None]
     assert b2.selected == 1
-    assert b2.enemy["level"] == 95
     assert b2._engine is None
 
 
@@ -207,19 +204,17 @@ def test_set_member_moves_and_clears(app, tmp_path, monkeypatch):
     b._timer.stop()
 
 
-def test_formulas_carry_counts(app, tmp_path, monkeypatch):
+def test_formulas_rows(app, tmp_path, monkeypatch):
     _, b = _make(tmp_path, monkeypatch)
     b.setMember(0, "Furina")
-    b.setCount("Furina:burst", 2)
     b._raw_key = "Furina"
     b._raw_formulas = [{"sheet": "Furina", "name": "burst", "move": "burst", "q": "dmg",
                         "ele": "hydro", "avg": 10.0}]
     b._timer.stop()
     rows = b.formulas
-    assert rows[0]["key"] == "Furina:burst" and rows[0]["count"] == 2
+    assert rows[0]["key"] == "Furina:burst" and "count" not in rows[0]
     assert rows[0]["group"] == "Elemental Burst"
     assert rows[0]["crit"] is None
-    assert b.rotation["stale"] is True
 
 
 def test_corrupt_or_missing_state_means_defaults(app, tmp_path, monkeypatch):
@@ -228,12 +223,13 @@ def test_corrupt_or_missing_state_means_defaults(app, tmp_path, monkeypatch):
     _, b = _make(tmp_path, monkeypatch)
     assert b._state == T._default_state()
     path.write_text(json.dumps({"members": ["Furina", "Furina", 5], "selected": 9,
-                                "enemy": {"level": "x"}, "seconds": -1,
+                                "enemy": {"level": "x"}, "seconds": -1, "rotation": {"Furina": {"a": 2}},
                                 "conditionals": {"Furina": {"Furina": {"c1Cond": 1}}}}),
                     encoding="utf-8")
     state = T._load_state(path)
     assert state["members"] == [{"key": "Furina", "source": "owned"}, {}, {}, {}]
-    assert state["selected"] == 0 and state["seconds"] == 20.0
+    assert state["selected"] == 0
+    assert "rotation" not in state and "seconds" not in state and "enemy" not in state
     assert state["conditionals"] == {"Furina": {"Furina": {"c1Cond": 1}}}
 
 
@@ -276,12 +272,12 @@ def test_set_member_game_creates_default_settings(app, tmp_path, monkeypatch):
     assert entry["member"] == damage.member_from_settings("Venti", b._state["settings"]["Venti"])
     assert b._active() == [(1, "Venti")]
     # removing keeps the settings; re-adding restores them
-    b.setSetting(1, "level", 80)
+    b.setSetting(1, "constellation", 4)
     b.setMember(1, "")
-    assert b._state["settings"]["Venti"]["level"] == 80
+    assert b._state["settings"]["Venti"]["constellation"] == 4
     b.setMember(0, "Venti", "game")
     b._timer.stop()
-    assert b.members[0]["settings"]["level"] == 80
+    assert b.members[0]["settings"]["constellation"] == 4
     # moving a game character between slots
     assert b._state["members"][1] == {}
 
@@ -305,15 +301,16 @@ def test_set_setting_clamps_and_persists(app, tmp_path, monkeypatch):
     assert s == {"level": 100, "constellation": 0, "auto": 1, "skill": 10, "burst": 7,
                  "weapon": "SkywardHarp", "weaponLevel": 90, "refinement": 5}
     b.setMember(1, "Furina", "owned")
-    b.setSetting(1, "level", 5)                   # scan member: editable
+    b.setSetting(1, "constellation", 5)           # scan member: not editable
     b._timer.stop()
-    assert b._state["settings"]["scan:Furina"]["level"] == 5
-    assert "Furina" not in b._state["settings"]
+    assert not any(k.startswith("scan:") or k == "Furina" for k in b._state["settings"])
+    assert b.members[1]["settings"]["constellation"] == 0
 
     b2 = T.TeamBackend(settings, state_path=tmp_path / "team.json")
     b2._timer.stop()
-    assert b2._state["settings"]["Venti"] == s
-    assert b2.members[0]["settings"] == s
+    fixed = dict(s, level=90, auto=9, skill=9, burst=9, weaponLevel=90)   # full-list members stay maxed
+    assert b2._state["settings"]["Venti"] == fixed
+    assert b2.members[0]["settings"] == fixed
     assert b2._state["members"][1] == {"key": "Furina", "source": "owned"}
     member = b2._entry("Venti")["member"]
     assert member["weapon"] == {"key": "SkywardHarp", "level": 90, "ascension": 6, "refinement": 5}
@@ -336,11 +333,13 @@ def test_ensure_portraits_downloads_once(app, tmp_path, monkeypatch):
     calls = []
     monkeypatch.setattr(icons, "missing_assets", lambda names: ["UI_AvatarIcon_Venti"])
     monkeypatch.setattr(icons, "download", lambda names: calls.append(list(names)) or 1)
+    b._portraits_started = False      # the startup call may already have run
     b.ensurePortraits()
     b._portraits_thread.join(5)
-    QCoreApplication.processEvents()
-    b.ensurePortraits()
-    assert calls == [["UI_AvatarIcon_Venti"]]
+    assert calls and calls[-1] == ["UI_AvatarIcon_Venti"]
+    before = len(calls)
+    b.ensurePortraits()               # a second call on the same backend does nothing
+    assert len(calls) == before
 
 
 # -- all scanned characters, per-member reactions -------------------------------------
@@ -385,8 +384,8 @@ def test_scan_member_settings_prefilled(app, tmp_path, monkeypatch):
     assert x["source"] == "scan"
     assert x["settings"]["weapon"] == damage.default_settings("Xiangling")["weapon"]
     assert x["settings"]["level"] == 70
-    b.setSetting(1, "level", 60)
-    assert b._entry("Xiangling")["member"]["char"]["level"] == 60
+    b.setSetting(1, "level", 60)                  # scan members are not editable
+    assert b._entry("Xiangling")["member"]["char"]["level"] == 70
     assert b._entry("Xiangling")["member"]["artifacts"] == []
 
 
@@ -413,12 +412,17 @@ def test_reaction_per_member(app, tmp_path, monkeypatch):
     assert b._payload(b._active(), [0], ["avg"])["enemy"]["amp"] == ""
 
 
-def test_old_enemy_state_migrated(app, tmp_path, monkeypatch):
+def test_old_enemy_and_rotation_state_ignored(app, tmp_path, monkeypatch):
     (tmp_path / "old.json").write_text(json.dumps(
-        {"enemy": {"level": 90, "res": 15, "amp": "melt", "cata": "spread"}}), encoding="utf-8")
+        {"enemy": {"level": 90, "res": 15}, "rotation": {"A": {"A:b": 2}}, "seconds": 9}),
+        encoding="utf-8")
     state = T._load_state(tmp_path / "old.json")
-    assert state["enemy"] == {"level": 90, "res": 15.0}
-    assert state["reactions"] == {}
+    assert state == T._default_state()
+    _, b = _make(tmp_path, monkeypatch)
+    b.setMember(0, "Furina")
+    b._timer.stop()
+    assert b._payload(b._active(), [0], ["avg"])["enemy"]["level"] == 100
+    assert b._payload(b._active(), [0], ["avg"])["enemy"]["res"] == pytest.approx(0.1)
 
 
 def test_visible_formulas_filters_static_rows():
@@ -429,3 +433,11 @@ def test_visible_formulas_filters_static_rows():
     team = {"anemo", "pyro", "hydro", "dendro"}
     assert [f["name"] for f in T.visible_formulas(fs, "anemo", team)] == ["burst", "swirl_pyro"]
     assert [f["name"] for f in T.visible_formulas(fs, "hydro", team)] == ["burst", "bloom"]
+
+
+def test_long_option_lists_are_thinned():
+    from lumenspar.ui.team_backend import _thin
+    opts = [str(v) for v in range(10, 205, 5)]        # 39 options
+    out = _thin(opts)
+    assert len(out) == 8 and out[0] == "10" and out[-1] == "200"
+    assert _thin(["a", "b"]) == ["a", "b"]

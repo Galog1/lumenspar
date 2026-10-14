@@ -1,12 +1,12 @@
 """QML bridge for the Optimizer's "Team & damage" tab.
 
-A team of up to four characters, the conditional toggles of the whole team,
-enemy settings, each character's damage per hit and a rotation (hit counts)
-giving damage and DPS. The numbers come from the bundled Genshin Optimizer
+A team of up to four characters, the conditional toggles of the whole team and
+each character's damage per hit, against a fixed enemy. No number is typed in:
+everything is a choice. The numbers come from the bundled Genshin Optimizer
 formula engine (lumenspar.damage), which runs on its own thread; this module
 only builds its requests, debounces them and publishes the results.
 
-The state (team, toggles, enemy, rotation) is saved to team.json.
+The state (team, toggles, reactions) is saved to team.json.
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ MOVE_GROUPS = {"normal": "Normal Attack", "charged": "Charged Attack",
 TEAM = "_team"                      # state key of the team-wide conditionals
 TEAM_SHEETS = ("reso", "static")
 SLOTS = 4
+ENEMY = {"level": 100, "res": 10.0}  # fixed: level and resistance in percent
 _KIND_ORDER = {"char": 0, "weapon": 1, "artifact": 2}
 _ELEMENTS = ("pyro", "hydro", "electro", "cryo", "anemo", "geo", "dendro", "physical")
 
@@ -49,6 +50,16 @@ def visible_formulas(formulas: list[dict], element: str, team: set[str]) -> list
     return [f for f in formulas
             if f.get("sheet") != "static"
             or reactions.reaction_row_allowed(f.get("name", ""), element.lower(), team)]
+
+
+def _thin(options: list, keep: int = 8) -> list:
+    """Long option lists (e.g. Arlecchino's 40 Bond percentages) as at most
+    `keep` evenly spaced choices, always including the last."""
+    if len(options) <= keep:
+        return list(options)
+    step = (len(options) - 1) / (keep - 1)
+    picks = sorted({round(i * step) for i in range(keep)})
+    return [options[i] for i in picks]
 
 
 def condition_rows(conds: list[dict], keys: list[str], names: list[str], state: dict) -> list[dict]:
@@ -86,7 +97,9 @@ def condition_rows(conds: list[dict], keys: list[str], names: list[str], state: 
             "type": c.get("type"),
             "min": c.get("min"),
             "max": c.get("max"),
-            "options": [{"value": v, "label": damage.option_label(v)} for v in c.get("list", [])],
+            "options": (stack_options(c.get("min"), c.get("max")) if c.get("type") == "num"
+                        else [{"value": v, "label": damage.option_label(v)}
+                              for v in _thin(c.get("list", []))]),
             "value": ((state.get(store) or {}).get(sheet) or {}).get(name),
         }
         if team:
@@ -139,23 +152,22 @@ def stat_rows(stats: dict, element: str) -> list[dict]:
     return rows
 
 
-def rotation_total(formulas: list[dict], counts: dict[str, int]) -> float:
-    """Damage of a rotation: hit count times average damage, summed over the counted hits."""
-    total = 0.0
-    for f in formulas:
-        n = counts.get(f"{f['sheet']}:{f['name']}")
-        if n:
-            total += n * (f.get("avg") or 0)
-    return total
+def stack_options(lo, hi) -> list[dict]:
+    """Choices for a stacking condition: Off, then every stack count when there
+    are few of them, otherwise half and max."""
+    lo = int(lo or 0)
+    hi = int(hi if hi is not None else lo)
+    off = {"value": 0, "label": "Off"}
+    if hi - lo <= 6:
+        return [off] + [{"value": v, "label": str(v)} for v in range(lo + 1, hi + 1)]
+    return [off, {"value": round((lo + hi) / 2), "label": "½"}, {"value": hi, "label": "Max"}]
 
 
 # -- state ------------------------------------------------------------------------
 
 def _default_state() -> dict:
     return {"members": [{} for _ in range(SLOTS)], "selected": 0, "settings": {},
-            "conditionals": {}, "reactions": {},
-            "enemy": {"level": 100, "res": 10.0},
-            "rotation": {}, "seconds": 20.0}
+            "conditionals": {}, "reactions": {}}
 
 
 def _load_state(path: Path) -> dict:
@@ -185,8 +197,8 @@ def _load_state(path: Path) -> dict:
     settings = raw.get("settings")
     if isinstance(settings, dict):
         for key, s in settings.items():
-            if isinstance(key, str) and isinstance(s, dict):
-                state["settings"][key] = _clean_settings(key, s)
+            if isinstance(key, str) and isinstance(s, dict) and not key.startswith(SCAN):
+                state["settings"][key] = dict(_clean_settings(key, s), **_FIXED)
     sel = raw.get("selected")
     if isinstance(sel, int) and not isinstance(sel, bool) and 0 <= sel < SLOTS:
         state["selected"] = sel
@@ -202,34 +214,19 @@ def _load_state(path: Path) -> dict:
                         if isinstance(v, (int, str)) and not isinstance(v, bool)}
                 if good:
                     state["conditionals"].setdefault(key, {})[sheet] = good
-    enemy = raw.get("enemy")
-    if isinstance(enemy, dict):
-        try:
-            state["enemy"]["level"] = int(enemy.get("level", 100))
-            state["enemy"]["res"] = float(enemy.get("res", 10.0))
-        except (TypeError, ValueError):
-            pass
     chosen = raw.get("reactions")
     if isinstance(chosen, dict):
         for key, v in chosen.items():
             if isinstance(key, str) and v in _REACTIONS and v:
                 state["reactions"][key] = v
-    rotation = raw.get("rotation")
-    if isinstance(rotation, dict):
-        for key, counts in rotation.items():
-            if isinstance(counts, dict):
-                good = {k: v for k, v in counts.items()
-                        if isinstance(v, int) and not isinstance(v, bool) and v > 0}
-                if good:
-                    state["rotation"][key] = good
-    seconds = raw.get("seconds")
-    if isinstance(seconds, (int, float)) and not isinstance(seconds, bool) and seconds > 0:
-        state["seconds"] = float(seconds)
     return state
 
 
 _REACTIONS = ("", "vaporize", "melt", "aggravate", "spread")
 SCAN = "scan:"                      # prefix of the settings key of a scan member
+
+# a character from the full list is always maxed
+_FIXED = {"level": 90, "auto": 9, "skill": 9, "burst": 9, "weaponLevel": 90}
 
 _LIMITS = {"level": (1, 100), "constellation": (0, 6), "auto": (1, 10), "skill": (1, 10),
            "burst": (1, 10), "weaponLevel": (1, 90), "refinement": (1, 5)}
@@ -278,7 +275,6 @@ class TeamBackend(QObject):
     statusChanged = Signal()
     conditionsChanged = Signal()
     damageChanged = Signal()
-    rotationChanged = Signal()
     formulasUpdated = Signal()
     allCharactersChanged = Signal()
     _portraitsDone = Signal()
@@ -293,7 +289,7 @@ class TeamBackend(QObject):
         self._state = _load_state(self._path)
         self._cands: dict[str, dict] = {}       # key -> {key, name, element, icon, source, member}
         self._engine: damage.Engine | None = None
-        self._ids: dict[str, int | None] = {"cond": None, "avg": None, "detail": None, "team": None}
+        self._ids: dict[str, int | None] = {"cond": None, "avg": None, "detail": None}
         self._cond_sig: tuple | None = None
         self._conds: tuple[list, list, list] = ([], [], [])   # engine list, keys, names
         self._cond_rows: list[dict] = []
@@ -301,9 +297,6 @@ class TeamBackend(QObject):
         self._raw_stats: dict = {}
         self._raw_formulas: list[dict] = []
         self._formulas_by_key: dict[str, list[dict]] = {}   # last computed formulas per character
-        self._team: dict | None = None           # a computeTeam chain in progress
-        self._team_result: dict = {}             # {"seconds"?, "members": [...]} of the last chain
-        self._stale = True
         self._busy = False
         self._status = ""
         self._timer = QTimer(self)
@@ -317,6 +310,8 @@ class TeamBackend(QObject):
         self._portraitsDone.connect(self._on_portraits)
         self._rebuild_all_public()
         self._read_sources()
+        # Portraits for the team's and the player's characters, in the background.
+        QTimer.singleShot(0, self.ensurePortraits)
         if any(self._active()):
             self._timer.start()
 
@@ -401,16 +396,12 @@ class TeamBackend(QObject):
         """The settings of a character from the full list, created on first use."""
         store = self._state["settings"]
         if key not in store:
-            store[key] = damage.default_settings(key)
+            store[key] = dict(damage.default_settings(key), **_FIXED)
         return store[key]
 
     def _scan_settings_for(self, key: str) -> dict:
-        """The settings of a scan character, prefilled from the scan on first use."""
-        store = self._state["settings"]
-        k = SCAN + key
-        if k not in store:
-            store[k] = dict(self._cands[key]["defaults"])
-        return store[k]
+        """The settings of a scan character: what the scan says (not editable)."""
+        return dict(self._cands[key]["defaults"])
 
     def _slot_entry(self, m: dict) -> dict | None:
         """What a slot holds, or None when empty or no longer available."""
@@ -463,7 +454,8 @@ class TeamBackend(QObject):
         if self._portraits_started:
             return
         self._portraits_started = True
-        names = icons.missing_assets(c["icon"] for c in self._all.values())
+        names = icons.missing_assets([c["icon"] for c in self._all.values()]
+                                     + [c.get("icon", "") for c in self._cands.values()])
         if not names:
             return
 
@@ -522,10 +514,6 @@ class TeamBackend(QObject):
     def conditions(self) -> list:
         return self._cond_rows
 
-    @Property("QVariantMap", notify=changed)
-    def enemy(self) -> dict:
-        return dict(self._state["enemy"])
-
     @Property("QVariantList", notify=damageChanged)
     def stats(self) -> list:
         key = self._selected_key()
@@ -538,7 +526,6 @@ class TeamBackend(QObject):
         key = self._selected_key()
         if not key or key != self._raw_key:
             return []
-        counts = self._state["rotation"].get(key, {})
         rows = []
         for f in visible_formulas(self._raw_formulas, self._entry(key)["element"], self._team_set()):
             fk = f"{f['sheet']}:{f['name']}"
@@ -546,19 +533,8 @@ class TeamBackend(QObject):
             label = rlabel or damage.formula_label(f["sheet"], f["name"], f.get("move", ""))
             rows.append({"key": fk, "label": label,
                          "group": "Reactions" if rlabel else formula_group(f), "q": f.get("q"), "avg": f.get("avg"),
-                         "crit": f.get("crit"), "nonCrit": f.get("nonCrit"),
-                         "count": counts.get(fk, 0)})
+                         "crit": f.get("crit"), "nonCrit": f.get("nonCrit")})
         return rows
-
-    @Property("QVariantMap", notify=rotationChanged)
-    def rotation(self) -> dict:
-        res = self._team_result
-        members = res.get("members", [])
-        seconds = self._state["seconds"]
-        return {"seconds": seconds, "members": members,
-                "teamTotal": sum(m["total"] for m in members),
-                "teamDps": sum(m["dps"] for m in members),
-                "stale": self._stale or not members}
 
     @Property(bool, notify=busyChanged)
     def busy(self) -> bool:
@@ -601,7 +577,7 @@ class TeamBackend(QObject):
             return
         m = self._state["members"][slot]
         entry = self._slot_entry(m) if m else None
-        if entry is None or entry["source"] not in ("game", "scan") or m["key"] not in self._all:
+        if entry is None or entry["source"] != "game" or m["key"] not in self._all:
             return
         s = entry["settings"]
         if field == "weapon":
@@ -634,7 +610,7 @@ class TeamBackend(QObject):
             self._state["selected"] = slot
             self.changed.emit()
             self.damageChanged.emit()
-            self._touch(stale=False)
+            self._touch()
 
     @Slot(str, "QVariant")
     def setConditional(self, cond_id: str, value) -> None:
@@ -658,12 +634,6 @@ class TeamBackend(QObject):
         _compact(store)
         self._cond_rows = condition_rows(*self._conds, self._state["conditionals"])
         self.conditionsChanged.emit()
-        self._touch()
-
-    @Slot(int, float)
-    def setEnemy(self, level: int, res_percent: float) -> None:
-        self._state["enemy"] = {"level": int(level), "res": float(res_percent)}
-        self.changed.emit()
         self._touch()
 
     def _team_set(self) -> set[str]:
@@ -705,27 +675,6 @@ class TeamBackend(QObject):
         self.changed.emit()
         self._touch()
 
-    @Slot(str, int)
-    def setCount(self, formula_key: str, count: int) -> None:
-        key = self._selected_key()
-        if not key:
-            return
-        counts = self._state["rotation"].setdefault(key, {})
-        if count > 0:
-            counts[formula_key] = int(count)
-        else:
-            counts.pop(formula_key, None)
-        if not counts:
-            del self._state["rotation"][key]
-        self.damageChanged.emit()
-        self._touch(recompute=False)
-
-    @Slot(float)
-    def setSeconds(self, seconds: float) -> None:
-        if seconds > 0:
-            self._state["seconds"] = float(seconds)
-            self._touch(recompute=False)
-
     @Slot()
     def reload(self) -> None:
         """Re-read the build cards and the scan."""
@@ -741,16 +690,10 @@ class TeamBackend(QObject):
 
     # -- state changes -----------------------------------------------------------------
 
-    def _touch(self, stale: bool = True, recompute: bool = True) -> None:
-        """Save the state, mark the rotation out of date and schedule a recomputation."""
+    def _touch(self) -> None:
+        """Save the state and schedule a recomputation."""
         self._save()
-        if stale:
-            self._cancel_team()
-            if not self._stale:
-                self._stale = True
-            self.rotationChanged.emit()
-        if recompute:
-            self._timer.start()
+        self._timer.start()
 
     def _save(self) -> None:
         try:
@@ -784,7 +727,6 @@ class TeamBackend(QObject):
         base = self._payload(active, [], [], char_key)
         return {"members": base["members"], "conditionals": base["conditionals"],
                 "enemy": base["enemy"], "index": keys.index(char_key),
-                "rotation": dict(self._state["rotation"].get(char_key, {})),
                 "formulas": list(self._formulas_by_key.get(char_key, []))}
 
     def _payload(self, active: list[tuple[int, str]], only: list[int], modes: list[str],
@@ -799,7 +741,7 @@ class TeamBackend(QObject):
                     sheets.setdefault(s, {}).update(v)
             if sheets:
                 conds[str(idx)] = sheets
-        enemy = self._state["enemy"]
+        enemy = ENEMY
         if enemy_key is None:
             enemy_key = active[only[0]][1] if only else ""
         reaction = self._reaction_for(enemy_key) if enemy_key else ""
@@ -907,69 +849,12 @@ class TeamBackend(QObject):
                         f["crit"], f["nonCrit"] = g.get("crit"), g.get("nonCrit")
                 self.damageChanged.emit()
             self._settle("detail")
-        elif purpose == "team":
-            self._on_team_member(out)
 
     @Slot(int, str)
     def _on_failed(self, req_id: int, message: str) -> None:
         purpose = self._purpose(req_id)
         if purpose is None:
             return
-        if purpose == "team":
-            self._team = None
         self._ids[purpose] = None
         self._update_busy()
         self._set_status(message)
-
-    # -- the rotation --------------------------------------------------------------------------
-
-    @Slot()
-    def computeTeam(self) -> None:
-        active = self._active()
-        if not active:
-            return
-        self._cancel_team()
-        self._team = {"active": active, "pos": 0, "formulas": {}}
-        self._team_step()
-
-    def _cancel_team(self) -> None:
-        if self._team is not None:
-            self._team = None
-            self._ids["team"] = None
-            self._update_busy()
-            self._set_status("")
-
-    def _team_step(self) -> None:
-        t = self._team
-        n = len(t["active"])
-        self._set_status(f"Calculating team damage ({t['pos'] + 1}/{n})…")
-        self._request("team", "compute", self._payload(t["active"], [t["pos"]], ["avg"]))
-
-    def _on_team_member(self, out) -> None:
-        t = self._team
-        if t is None:
-            self._ids["team"] = None
-            self._update_busy()
-            return
-        pos = t["pos"]
-        res = (out.get("members") or [None] * (pos + 1))[pos]
-        member_key = t["active"][pos][1]
-        t["formulas"][member_key] = (res or {}).get("formulas", [])
-        if res is not None:
-            self._formulas_by_key[member_key] = t["formulas"][member_key]
-            self.formulasUpdated.emit()
-        t["pos"] += 1
-        if t["pos"] < len(t["active"]):
-            self._team_step()
-            return
-        seconds = self._state["seconds"]
-        members = []
-        for _, key in t["active"]:
-            total = rotation_total(t["formulas"].get(key, []), self._state["rotation"].get(key, {}))
-            members.append({"name": self._entry(key)["name"], "total": total,
-                            "dps": total / seconds})
-        self._team = None
-        self._team_result = {"members": members}
-        self._stale = False
-        self._settle("team")
-        self.rotationChanged.emit()

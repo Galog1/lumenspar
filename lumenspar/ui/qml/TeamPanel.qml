@@ -4,8 +4,8 @@ import QtQuick.Layouts
 import Lumenspar
 
 // "Team & damage" tab of the Optimizer: build a team of up to four characters,
-// set the enemy, toggle every conditional buff, and read each member's damage
-// table and the team's rotation DPS. All data and actions come from the `team`
+// toggle every conditional buff and read each member's damage table. Nothing
+// is typed in: every setting is a pill or a choice. All data and actions come from the `team`
 // backend; every access is guarded so the panel loads with empty data.
 ColumnLayout {
     id: panel
@@ -15,9 +15,6 @@ ColumnLayout {
     readonly property var conditions: team.conditions || []
     readonly property var formulas: team.formulas || []
     readonly property var stats: team.stats || []
-    readonly property var enemy: team.enemy || ({})
-    readonly property var rotation: team.rotation || ({})
-    readonly property var rotMembers: rotation.members || []
     readonly property int selectedSlot: team.selected || 0
     readonly property var selectedMember: members[selectedSlot] || ({})
     property string col: "avg"   // damage column shown: "avg" | "crit" | "nonCrit"
@@ -57,10 +54,6 @@ ColumnLayout {
         return col === "crit" ? f.crit : (col === "nonCrit" ? f.nonCrit : f.avg)
     }
 
-    function applyEnemy(level, res) {
-        team.setEnemy(level, res)
-    }
-
     component Field: TextField {
         id: field
         implicitHeight: 32
@@ -72,35 +65,6 @@ ColumnLayout {
             radius: 8; color: Theme.bgAlt
             border.color: field.activeFocus ? Theme.accent : Theme.border
             border.width: 1
-        }
-    }
-
-    component NumBox: SpinBox {
-        id: nb
-        implicitWidth: 110
-        implicitHeight: 32
-        editable: false
-        background: Rectangle {
-            radius: 8; color: Theme.bgAlt
-            border.color: Theme.border
-            border.width: 1
-        }
-        contentItem: Text {
-            text: nb.value
-            color: Theme.text
-            font.pixelSize: 13
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
-        up.indicator: Text {
-            x: parent.width - width - 10
-            anchors.verticalCenter: parent.verticalCenter
-            text: "+"; color: Theme.text; font.pixelSize: 14
-        }
-        down.indicator: Text {
-            x: 10
-            anchors.verticalCenter: parent.verticalCenter
-            text: "−"; color: Theme.text; font.pixelSize: 14
         }
     }
 
@@ -427,7 +391,7 @@ ColumnLayout {
 
         Text {
             Layout.fillWidth: true
-            visible: panel.selectedMember.source === "game" || panel.selectedMember.source === "scan"
+            visible: panel.selectedMember.source === "game"
             text: "Settings for " + (panel.selectedMember.name || "")
             color: Theme.text
             font.pixelSize: 14
@@ -436,19 +400,10 @@ ColumnLayout {
         Flow {
             id: gameSettings
             Layout.fillWidth: true
-            visible: panel.selectedMember.source === "game" || panel.selectedMember.source === "scan"
+            visible: panel.selectedMember.source === "game"
             spacing: 16
             readonly property var st: panel.selectedMember.settings || ({})
 
-            Column {
-                spacing: 4
-                Text { text: "Level"; color: Theme.textDim; font.pixelSize: 12 }
-                NumBox {
-                    from: 1; to: 100
-                    value: gameSettings.st.level || 1
-                    onValueModified: team.setSetting(panel.selectedSlot, "level", value)
-                }
-            }
             Column {
                 spacing: 4
                 Text { text: "Constellation"; color: Theme.textDim; font.pixelSize: 12 }
@@ -467,47 +422,11 @@ ColumnLayout {
             }
             Column {
                 spacing: 4
-                Text { text: "Normal"; color: Theme.textDim; font.pixelSize: 12 }
-                NumBox {
-                    from: 1; to: 10
-                    value: gameSettings.st.auto || 1
-                    onValueModified: team.setSetting(panel.selectedSlot, "auto", value)
-                }
-            }
-            Column {
-                spacing: 4
-                Text { text: "Skill"; color: Theme.textDim; font.pixelSize: 12 }
-                NumBox {
-                    from: 1; to: 10
-                    value: gameSettings.st.skill || 1
-                    onValueModified: team.setSetting(panel.selectedSlot, "skill", value)
-                }
-            }
-            Column {
-                spacing: 4
-                Text { text: "Burst"; color: Theme.textDim; font.pixelSize: 12 }
-                NumBox {
-                    from: 1; to: 10
-                    value: gameSettings.st.burst || 1
-                    onValueModified: team.setSetting(panel.selectedSlot, "burst", value)
-                }
-            }
-            Column {
-                spacing: 4
                 Text { text: "Weapon"; color: Theme.textDim; font.pixelSize: 12 }
                 Combo {
                     model: team.weaponChoices || []
                     currentIndex: panel.weaponIndex(team.weaponChoices, gameSettings.st.weapon)
                     onActivated: (i) => team.setSetting(panel.selectedSlot, "weapon", team.weaponChoices[i].key)
-                }
-            }
-            Column {
-                spacing: 4
-                Text { text: "Weapon level"; color: Theme.textDim; font.pixelSize: 12 }
-                NumBox {
-                    from: 1; to: 90
-                    value: gameSettings.st.weaponLevel || 1
-                    onValueModified: team.setSetting(panel.selectedSlot, "weaponLevel", value)
                 }
             }
             Column {
@@ -529,10 +448,8 @@ ColumnLayout {
         }
         Text {
             Layout.fillWidth: true
-            visible: panel.selectedMember.source === "game" || panel.selectedMember.source === "scan"
-            text: panel.selectedMember.source === "scan"
-                  ? "From your inventory scan; adjust anything the scan got wrong."
-                  : "Characters from the full list have no artifacts here; their talents, passives, constellations and weapon still apply."
+            visible: panel.selectedMember.source === "game"
+            text: "Level 90, talents 9/9/9 and weapon level 90. Characters from the full list have no artifacts here; their talents, passives, constellations and weapon still apply."
             color: Theme.textDim
             font.pixelSize: 12
             wrapMode: Text.WordWrap
@@ -546,80 +463,6 @@ ColumnLayout {
         color: Theme.textDim
         font.pixelSize: 12
         wrapMode: Text.WordWrap
-    }
-
-    // ── enemy ─────────────────────────────────────────────────────────
-    Card {
-        title: "Enemy"
-
-        Flow {
-            Layout.fillWidth: true
-            spacing: 10
-            Text {
-                height: 32
-                verticalAlignment: Text.AlignVCenter
-                text: "Level"
-                color: Theme.textDim
-                font.pixelSize: 13
-            }
-            NumBox {
-                from: 1; to: 120
-                value: panel.enemy.level || 90
-                onValueModified: panel.applyEnemy(value, Number(panel.enemy.res || 0))
-            }
-            Text {
-                height: 32
-                verticalAlignment: Text.AlignVCenter
-                text: "Resistance %"
-                color: Theme.textDim
-                font.pixelSize: 13
-            }
-            Field {
-                width: 70
-                text: String(panel.enemy.res ?? 10)
-                validator: DoubleValidator { locale: "C" }
-                onEditingFinished: {
-                    const v = Number(text)
-                    panel.applyEnemy(panel.enemy.level || 90, isNaN(v) ? 0 : v)
-                }
-            }
-        }
-        Flow {
-            Layout.fillWidth: true
-            spacing: 10
-            Text {
-                height: 32
-                verticalAlignment: Text.AlignVCenter
-                text: "Reaction on " + (panel.selectedMember.name || "the selected member") + "'s hits:"
-                color: Theme.textDim
-                font.pixelSize: 13
-            }
-            Repeater {
-                model: team.reactionOptions
-                delegate: Pill {
-                    required property var modelData
-                    label: modelData.label
-                    checked: team.reaction === modelData.value
-                    onClicked: team.setReaction(modelData.value)
-                }
-            }
-        }
-        Text {
-            Layout.fillWidth: true
-            visible: (team.reactionOptions || []).length <= 1
-            text: "No amplifying or catalyze reaction is possible for "
-                  + (panel.selectedMember.name || "this character") + " with this team."
-            color: Theme.textDim
-            font.pixelSize: 12
-            wrapMode: Text.WordWrap
-        }
-        Text {
-            Layout.fillWidth: true
-            text: "Transformative and Lunar reactions (Swirl, Overloaded, Bloom, Lunar-Charged, …) appear in the damage table when the team can trigger them."
-            color: Theme.textDim
-            font.pixelSize: 12
-            wrapMode: Text.WordWrap
-        }
     }
 
     // ── conditions ────────────────────────────────────────────────────
@@ -675,11 +518,6 @@ ColumnLayout {
                                 readonly property bool unset: val === null || val === undefined || val === ""
                                 readonly property bool active: kind === "bool" ? !!val
                                     : (kind === "num" ? Number(val || 0) > 0 : !unset)
-                                readonly property int lo: modelData.min || 0
-                                readonly property int hi: modelData.max || 10
-                                function setNum(n) {
-                                    team.setConditional(modelData.id, Math.max(lo, Math.min(hi, n)))
-                                }
 
                                 implicitWidth: tileBody.implicitWidth + 24
                                 width: Math.min(260, implicitWidth)
@@ -742,51 +580,20 @@ ColumnLayout {
                                             maximumLineCount: 2
                                             elide: Text.ElideRight
                                         }
-                                        Row {
-                                            visible: tile.kind === "num"
-                                            Layout.alignment: Qt.AlignVCenter
-                                            spacing: 2
-                                            Rectangle {
-                                                width: 22; height: 22; radius: 6
-                                                color: Theme.surfaceGlass
-                                                Text { anchors.centerIn: parent; text: "−"; color: Theme.text; font.pixelSize: 14 }
-                                                MouseArea {
-                                                    anchors.fill: parent
-                                                    cursorShape: Qt.PointingHandCursor
-                                                    onClicked: tile.setNum(Number(tile.val || 0) - 1)
-                                                }
-                                            }
-                                            Text {
-                                                width: 24; height: 22
-                                                horizontalAlignment: Text.AlignHCenter
-                                                verticalAlignment: Text.AlignVCenter
-                                                text: String(tile.val || 0)
-                                                color: Theme.text
-                                                font.pixelSize: 12
-                                            }
-                                            Rectangle {
-                                                width: 22; height: 22; radius: 6
-                                                color: Theme.surfaceGlass
-                                                Text { anchors.centerIn: parent; text: "+"; color: Theme.text; font.pixelSize: 14 }
-                                                MouseArea {
-                                                    anchors.fill: parent
-                                                    cursorShape: Qt.PointingHandCursor
-                                                    onClicked: tile.setNum(Number(tile.val || 0) + 1)
-                                                }
-                                            }
-                                        }
                                     }
                                     Flow {
-                                        visible: tile.kind === "list"
+                                        visible: tile.kind === "list" || tile.kind === "num"
                                         Layout.fillWidth: true
                                         spacing: 4
                                         Repeater {
-                                            model: [{ value: "", label: "Off" }].concat(tile.modelData.options || [])
+                                            model: tile.kind === "num" ? (tile.modelData.options || [])
+                                                   : [{ value: "", label: "Off" }].concat(tile.modelData.options || [])
                                             delegate: Rectangle {
                                                 id: opt
                                                 required property var modelData
-                                                readonly property bool on: modelData.value === ""
-                                                    ? tile.unset : tile.val === modelData.value
+                                                readonly property bool on: tile.kind === "num"
+                                                    ? Number(tile.val || 0) === modelData.value
+                                                    : (modelData.value === "" ? tile.unset : tile.val === modelData.value)
                                                 implicitWidth: optText.implicitWidth + 16
                                                 height: 22
                                                 radius: 11
@@ -821,6 +628,43 @@ ColumnLayout {
     // ── damage ────────────────────────────────────────────────────────
     Card {
         title: "Damage — " + (panel.selectedMember.name || "")
+
+        Flow {
+            Layout.fillWidth: true
+            spacing: 10
+            Text {
+                height: 32
+                verticalAlignment: Text.AlignVCenter
+                text: "Reaction on " + (panel.selectedMember.name || "the selected member") + "'s hits:"
+                color: Theme.textDim
+                font.pixelSize: 13
+            }
+            Repeater {
+                model: team.reactionOptions
+                delegate: Pill {
+                    required property var modelData
+                    label: modelData.label
+                    checked: team.reaction === modelData.value
+                    onClicked: team.setReaction(modelData.value)
+                }
+            }
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: (team.reactionOptions || []).length <= 1
+            text: "No amplifying or catalyze reaction is possible for "
+                  + (panel.selectedMember.name || "this character") + " with this team."
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
+        }
+        Text {
+            Layout.fillWidth: true
+            text: "Transformative and Lunar reactions (Swirl, Overloaded, Bloom, Lunar-Charged, …) appear in the damage table when the team can trigger them."
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
+        }
 
         Flow {
             Layout.fillWidth: true
@@ -918,17 +762,6 @@ ColumnLayout {
                             font.pixelSize: 13
                             font.weight: Font.DemiBold
                         }
-                        Text {
-                            text: "×"
-                            color: Theme.textDim
-                            font.pixelSize: 13
-                        }
-                        NumBox {
-                            implicitWidth: 90
-                            from: 0; to: 99
-                            value: frow.modelData.count || 0
-                            onValueModified: team.setCount(frow.modelData.key, value)
-                        }
                     }
                     Rectangle {
                         Layout.fillWidth: true
@@ -936,73 +769,6 @@ ColumnLayout {
                         color: Qt.rgba(1, 1, 1, 0.05)
                     }
                 }
-            }
-        }
-    }
-
-    // ── rotation ──────────────────────────────────────────────────────
-    Card {
-        title: "Rotation & DPS"
-        subtitle: "Set how many times each hit lands in one rotation on each member's damage table, and the rotation length."
-
-        Flow {
-            Layout.fillWidth: true
-            spacing: 10
-            Text {
-                height: 32
-                verticalAlignment: Text.AlignVCenter
-                text: "Rotation length (s)"
-                color: Theme.textDim
-                font.pixelSize: 13
-            }
-            Field {
-                width: 80
-                text: String(panel.rotation.seconds ?? 20)
-                validator: DoubleValidator { bottom: 0; locale: "C" }
-                onEditingFinished: {
-                    const v = Number(text)
-                    if (!isNaN(v)) team.setSeconds(v)
-                }
-            }
-            AccentButton {
-                label: "Calculate team DPS"
-                implicitHeight: 34
-                enabledState: !team.busy
-                onClicked: team.computeTeam()
-            }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 4
-            Repeater {
-                model: panel.rotMembers
-                delegate: Text {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    text: (modelData.name || "") + ": " + panel.fmt(modelData.total) + " damage · "
-                          + panel.fmt(modelData.dps) + " DPS"
-                    color: Theme.text
-                    font.pixelSize: 13
-                    wrapMode: Text.WordWrap
-                }
-            }
-            Text {
-                Layout.fillWidth: true
-                visible: panel.rotMembers.length > 0
-                text: "Team: " + panel.fmt(panel.rotation.teamTotal) + " damage · "
-                      + panel.fmt(panel.rotation.teamDps) + " DPS"
-                color: Theme.text
-                font.pixelSize: 14
-                font.weight: Font.Bold
-                wrapMode: Text.WordWrap
-            }
-            Text {
-                Layout.fillWidth: true
-                visible: !!panel.rotation.stale && panel.rotMembers.length > 0
-                text: "Out of date — recalculate"
-                color: Theme.textDim
-                font.pixelSize: 12
             }
         }
     }
