@@ -12,6 +12,7 @@ Item {
     objectName: "optimizerPage"
 
     // ── goal state (always reassigned, never mutated, so bindings update) ──
+    property string tab: "optimize"   // "optimize" | "team"
     property string scaling: "atk"
     property string mode: "damage"
     property var priority: ["critRate_", "critDMG_", "atk_"]
@@ -244,769 +245,790 @@ Item {
             width: scroll.availableWidth
             spacing: 18
 
-            // ── character ─────────────────────────────────────────────
-            Card {
-                title: "Character"
-                subtitle: "Characters from your build cards. Their stats without artifacts come from the showcase; refetch a character there if it shows as needing it."
-
-                Text {
-                    Layout.fillWidth: true
-                    visible: (optimizer.characters || []).length === 0
-                    text: "No build cards yet — fetch your showcase in Build Cards first."
-                    color: Theme.textDim
-                    font.pixelSize: 13
+            Row {
+                spacing: 8
+                Pill {
+                    label: "Optimize"
+                    checked: page.tab === "optimize"
+                    onClicked: page.tab = "optimize"
                 }
-                Flow {
-                    Layout.fillWidth: true
-                    spacing: 10
-                    visible: (optimizer.characters || []).length > 0
-                    Repeater {
-                        model: optimizer.characters || []
-                        delegate: Rectangle {
-                            id: chip
-                            required property var modelData
-                            readonly property bool current: modelData.avatarId === optimizer.selected
-                            readonly property color tint: Theme.element(modelData.element)
-                            width: 78; height: 96
-                            radius: 14
-                            color: current ? Qt.rgba(tint.r, tint.g, tint.b, 0.18) : Theme.surface
-                            border.width: current ? 2 : 1
-                            border.color: current ? tint : Theme.border
-                            opacity: modelData.ready ? 1.0 : 0.45
-
-                            HoverHandler { id: chipHover; cursorShape: Qt.PointingHandCursor }
-                            TapHandler { onTapped: optimizer.setCharacter(chip.modelData.avatarId) }
-                            ToolTip.visible: chipHover.hovered && !chip.modelData.ready
-                            ToolTip.delay: 400
-                            ToolTip.text: "Fetch the showcase again in Build Cards to optimize"
-
-                            Rectangle {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                y: 8
-                                width: 58; height: 58
-                                radius: 29
-                                gradient: Gradient {
-                                    GradientStop { position: 0.0; color: Qt.darker(Theme.rarity(chip.modelData.rarity), 2.6) }
-                                    GradientStop { position: 1.0; color: Qt.darker(Theme.rarity(chip.modelData.rarity), 1.5) }
-                                }
-                                Image {
-                                    anchors.fill: parent
-                                    anchors.margins: 3
-                                    source: chip.modelData.iconUrl
-                                    visible: status === Image.Ready
-                                    fillMode: Image.PreserveAspectFit
-                                    asynchronous: true
-                                    smooth: true
-                                    mipmap: true
-                                }
-                                Text {
-                                    anchors.centerIn: parent
-                                    visible: chip.modelData.iconUrl === ""
-                                    text: chip.modelData.name.charAt(0)
-                                    color: "#FFFFFF"
-                                    opacity: 0.7
-                                    font.pixelSize: 18
-                                    font.weight: Font.DemiBold
-                                }
-                            }
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                y: 70
-                                width: parent.width - 8
-                                horizontalAlignment: Text.AlignHCenter
-                                text: chip.modelData.name
-                                color: Theme.text
-                                font.pixelSize: 11
-                                elide: Text.ElideRight
-                            }
-                        }
-                    }
+                Pill {
+                    label: "Team & damage"
+                    checked: page.tab === "team"
+                    onClicked: page.tab = "team"
                 }
             }
 
-            // ── goal ──────────────────────────────────────────────────
-            Card {
-                title: "Goal"
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 18
+                visible: page.tab === "optimize"
 
-                // 1. scaling stat
-                RowLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode !== "akasha"
-                    spacing: 10
-                    RowLabel { text: "Scaling stat" }
-                    Flow {
+                // ── character ─────────────────────────────────────────────
+                Card {
+                    title: "Character"
+                    subtitle: "Characters from your build cards. Their stats without artifacts come from the showcase; refetch a character there if it shows as needing it."
+
+                    Text {
                         Layout.fillWidth: true
-                        spacing: 8
-                        Repeater {
-                            model: [{ key: "atk", label: "ATK" }, { key: "hp", label: "HP" },
-                                    { key: "def", label: "DEF" }, { key: "eleMas", label: "Elemental Mastery" }]
-                            delegate: Pill {
-                                required property var modelData
-                                label: modelData.label
-                                checked: page.scaling === modelData.key
-                                onClicked: { page.scaling = modelData.key; page.resetForScaling() }
-                            }
-                        }
+                        visible: (optimizer.characters || []).length === 0
+                        text: "No build cards yet — fetch your showcase in Build Cards first."
+                        color: Theme.textDim
+                        font.pixelSize: 13
                     }
-                }
-
-                // 2. optimize for
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 10
-                    RowLabel { text: "Optimize for" }
                     Flow {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        Repeater {
-                            model: [{ key: "damage", label: "Damage estimate" }, { key: "weights", label: "Stat weights" },
-                                    { key: "targets", label: "Target values" }, { key: "ratio", label: "Ratio" },
-                                    { key: "akasha", label: "Akasha ranking" }]
-                            delegate: Pill {
-                                required property var modelData
-                                label: modelData.label
-                                checked: page.mode === modelData.key
-                                onClicked: page.mode = modelData.key
-                            }
-                        }
-                    }
-                }
-
-                // 3. priority stats
-                RowLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode !== "akasha"
-                    spacing: 10
-                    RowLabel { text: "Priority stats" }
-                    Flow {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        Repeater {
-                            model: page.substats
-                            delegate: Pill {
-                                required property var modelData
-                                label: modelData.label
-                                checked: page.priority.indexOf(modelData.key) >= 0
-                                onClicked: page.priority = page.toggle(page.priority, modelData.key)
-                            }
-                        }
-                    }
-                }
-
-                // 4. mode-specific area
-                Text {
-                    Layout.fillWidth: true
-                    visible: page.mode === "damage"
-                    text: "Scaling stat × (1 + CRIT Rate × CRIT DMG) × (1 + DMG Bonus). CRIT Rate counts up to 100% including the conditional CRIT Rate below."
-                    color: Theme.textDim
-                    font.pixelSize: 12
-                    wrapMode: Text.WordWrap
-                }
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode === "weights"
-                    spacing: 6
-                    Repeater {
-                        model: page.priority
-                        delegate: RowLayout {
-                            id: wrow
-                            required property var modelData
-                            spacing: 10
-                            Text {
-                                Layout.preferredWidth: 160
-                                text: page.labelOf(wrow.modelData)
-                                color: Theme.text
-                                font.pixelSize: 13
-                            }
-                            Field {
-                                Layout.preferredWidth: 80
-                                text: String(page.weights[wrow.modelData] ?? 1)
-                                validator: DoubleValidator { locale: "C" }
-                                onEditingFinished: {
-                                    const w = Object.assign({}, page.weights)
-                                    const v = Number(text)
-                                    w[wrow.modelData] = isNaN(v) ? 1 : v
-                                    page.weights = w
-                                }
-                            }
-                        }
-                    }
-                }
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode === "targets"
-                    spacing: 6
-                    RowLayout {
                         Layout.fillWidth: true
                         spacing: 10
-                        GhostButton {
-                            label: "Use Akasha's top 1% averages"
-                            implicitHeight: 32
-                            enabledState: !optimizer.busy
-                            onClicked: optimizer.akashaTargets(page.scaling)
-                        }
-                        Text {
-                            Layout.fillWidth: true
-                            text: optimizer.akashaTop1.calc
-                                  ? "Top 1% of " + optimizer.akashaTop1.calc + " (your build: " + optimizer.akashaTop1.rank + ")"
-                                  : "Fills the targets with the average stats of the top 1% of this character's Akasha leaderboard."
-                            color: Theme.textDim
-                            font.pixelSize: 12
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    Repeater {
-                        model: page.priority
-                        delegate: RowLayout {
-                            id: trow
-                            required property var modelData
-                            spacing: 10
-                            Text {
-                                Layout.preferredWidth: 160
-                                text: page.labelOf(trow.modelData)
-                                color: Theme.text
-                                font.pixelSize: 13
-                            }
-                            Field {
-                                Layout.preferredWidth: 80
-                                placeholderText: "e.g. 70"
-                                text: page.targets[trow.modelData] !== undefined ? String(page.targets[trow.modelData]) : ""
-                                validator: DoubleValidator { bottom: 0; locale: "C" }
-                                onEditingFinished: {
-                                    const t = Object.assign({}, page.targets)
-                                    const v = Number(text)
-                                    if (text !== "" && !isNaN(v) && v > 0) t[trow.modelData] = v
-                                    else delete t[trow.modelData]
-                                    page.targets = t
-                                }
-                            }
-                        }
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Reaches every target as evenly as possible, then the highest damage estimate."
-                        color: Theme.textDim
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
-                    }
-                }
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode === "ratio"
-                    spacing: 6
-                    RowLayout {
-                        spacing: 10
-                        Combo {
-                            Layout.preferredWidth: 170
-                            model: page.priority.map(function(k) { return page.labelOf(k) })
-                            currentIndex: page.priority.indexOf(page.ratio[0])
-                            onActivated: function(i) {
-                                const r = page.ratio.slice(); r[0] = page.priority[i]; page.ratio = r
-                            }
-                        }
-                        Field {
-                            Layout.preferredWidth: 60
-                            text: String(page.ratio[1])
-                            validator: DoubleValidator { bottom: 0; locale: "C" }
-                            onEditingFinished: {
-                                const r = page.ratio.slice(); const v = Number(text)
-                                r[1] = isNaN(v) ? 1 : v; page.ratio = r
-                            }
-                        }
-                        Text { text: ":"; color: Theme.text; font.pixelSize: 14 }
-                        Field {
-                            Layout.preferredWidth: 60
-                            text: String(page.ratio[3])
-                            validator: DoubleValidator { bottom: 0; locale: "C" }
-                            onEditingFinished: {
-                                const r = page.ratio.slice(); const v = Number(text)
-                                r[3] = isNaN(v) ? 1 : v; page.ratio = r
-                            }
-                        }
-                        Combo {
-                            Layout.preferredWidth: 170
-                            model: page.priority.map(function(k) { return page.labelOf(k) })
-                            currentIndex: page.priority.indexOf(page.ratio[2])
-                            onActivated: function(i) {
-                                const r = page.ratio.slice(); r[2] = page.priority[i]; page.ratio = r
-                            }
-                        }
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Keeps the two stats near this ratio (e.g. CRIT Rate : CRIT DMG = 1 : 2), then the highest damage estimate."
-                        color: Theme.textDim
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode === "akasha"
-                    spacing: 8
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Pick one of this character's Akasha leaderboards. Lumenspar learns its formula from a sample of it, takes the sets and main stats its top builds use, and finds your best build for it."
-                        color: Theme.textDim
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        visible: !!optimizer.akashaBoardsNote
-                        text: optimizer.akashaBoardsNote || ""
-                        color: Theme.danger
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
-                    }
-                    Column {
-                        Layout.fillWidth: true
-                        spacing: 6
+                        visible: (optimizer.characters || []).length > 0
                         Repeater {
-                            model: page.boards
+                            model: optimizer.characters || []
                             delegate: Rectangle {
-                                id: boardRow
+                                id: chip
                                 required property var modelData
-                                readonly property bool selected: modelData.calcId === page.boardId
-                                width: parent.width
-                                height: 54
-                                radius: 10
-                                color: Theme.bgAlt
-                                border.width: 1
-                                border.color: selected ? Theme.accent : Theme.border
+                                readonly property bool current: modelData.avatarId === optimizer.selected
+                                readonly property color tint: Theme.element(modelData.element)
+                                width: 78; height: 96
+                                radius: 14
+                                color: current ? Qt.rgba(tint.r, tint.g, tint.b, 0.18) : Theme.surface
+                                border.width: current ? 2 : 1
+                                border.color: current ? tint : Theme.border
+                                opacity: modelData.ready ? 1.0 : 0.45
 
-                                HoverHandler { id: boardHover; cursorShape: Qt.PointingHandCursor }
-                                TapHandler {
-                                    onTapped: {
-                                        page.boardId = boardRow.modelData.calcId
-                                        page.boardVariant = boardRow.modelData.defaultVariant
-                                    }
-                                }
-                                ToolTip.visible: boardHover.hovered && !!modelData.details
+                                HoverHandler { id: chipHover; cursorShape: Qt.PointingHandCursor }
+                                TapHandler { onTapped: optimizer.setCharacter(chip.modelData.avatarId) }
+                                ToolTip.visible: chipHover.hovered && !chip.modelData.ready
                                 ToolTip.delay: 400
-                                ToolTip.text: modelData.details
+                                ToolTip.text: "Fetch the showcase again in Build Cards to optimize"
 
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: 14
-                                    anchors.rightMargin: 14
-                                    spacing: 10
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        spacing: 2
-                                        RowLayout {
-                                            spacing: 8
-                                            Text {
-                                                text: boardRow.modelData.name
-                                                color: Theme.text
-                                                font.pixelSize: 13
-                                                font.weight: Font.DemiBold
-                                            }
-                                            Rectangle {
-                                                visible: !!boardRow.modelData.short
-                                                implicitWidth: shortText.implicitWidth + 12
-                                                implicitHeight: 18
-                                                radius: 9
-                                                color: Theme.surface
-                                                border.width: 1
-                                                border.color: Theme.border
-                                                Text {
-                                                    id: shortText
-                                                    anchors.centerIn: parent
-                                                    text: boardRow.modelData.short
-                                                    color: Theme.textDim
-                                                    font.pixelSize: 10
-                                                }
-                                            }
-                                        }
-                                        Text {
-                                            Layout.fillWidth: true
-                                            text: boardRow.modelData.weapon
-                                            color: Theme.textDim
-                                            font.pixelSize: 11
-                                            elide: Text.ElideRight
-                                        }
+                                Rectangle {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    y: 8
+                                    width: 58; height: 58
+                                    radius: 29
+                                    gradient: Gradient {
+                                        GradientStop { position: 0.0; color: Qt.darker(Theme.rarity(chip.modelData.rarity), 2.6) }
+                                        GradientStop { position: 1.0; color: Qt.darker(Theme.rarity(chip.modelData.rarity), 1.5) }
+                                    }
+                                    Image {
+                                        anchors.fill: parent
+                                        anchors.margins: 3
+                                        source: chip.modelData.iconUrl
+                                        visible: status === Image.Ready
+                                        fillMode: Image.PreserveAspectFit
+                                        asynchronous: true
+                                        smooth: true
+                                        mipmap: true
                                     }
                                     Text {
-                                        text: boardRow.modelData.yourRank
-                                        color: Theme.accent
-                                        font.pixelSize: 12
+                                        anchors.centerIn: parent
+                                        visible: chip.modelData.iconUrl === ""
+                                        text: chip.modelData.name.charAt(0)
+                                        color: "#FFFFFF"
+                                        opacity: 0.7
+                                        font.pixelSize: 18
+                                        font.weight: Font.DemiBold
                                     }
+                                }
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    y: 70
+                                    width: parent.width - 8
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: chip.modelData.name
+                                    color: Theme.text
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
                                 }
                             }
                         }
                     }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        visible: page.selectedBoard !== null
-                        spacing: 10
-                        RowLabel { text: "ER requirement" }
-                        Combo {
-                            id: variantBox
-                            readonly property var variantList: page.selectedBoard ? page.selectedBoard.variants : []
-                            Layout.preferredWidth: 240
-                            model: ["All builds"].concat(variantList.map(function(v) { return v.label || v.name }))
-                            currentIndex: {
-                                for (let i = 0; i < variantList.length; i++)
-                                    if (variantList[i].name === page.boardVariant) return i + 1
-                                return 0
-                            }
-                            onActivated: function(i) {
-                                page.boardVariant = i === 0 ? "" : variantList[i - 1].name
-                            }
-                        }
-                        Item { Layout.fillWidth: true }
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        visible: !!optimizer.akashaInfo
-                        text: optimizer.akashaInfo || ""
-                        color: Theme.textDim
-                        font.pixelSize: 12
-                        wrapMode: Text.WordWrap
-                    }
                 }
 
-                // 5. main stats
-                Repeater {
-                    model: [{ slot: "sands", name: "Sands" }, { slot: "goblet", name: "Goblet" },
-                            { slot: "circlet", name: "Circlet" }]
-                    delegate: RowLayout {
-                        id: mrow
-                        required property var modelData
+                // ── goal ──────────────────────────────────────────────────
+                Card {
+                    title: "Goal"
+
+                    // 1. scaling stat
+                    RowLayout {
                         Layout.fillWidth: true
                         visible: page.mode !== "akasha"
                         spacing: 10
-                        RowLabel { text: mrow.modelData.name + " main stat" }
+                        RowLabel { text: "Scaling stat" }
                         Flow {
                             Layout.fillWidth: true
                             spacing: 8
                             Repeater {
-                                model: (optimizer.mainChoices || {})[mrow.modelData.slot] || []
+                                model: [{ key: "atk", label: "ATK" }, { key: "hp", label: "HP" },
+                                        { key: "def", label: "DEF" }, { key: "eleMas", label: "Elemental Mastery" }]
                                 delegate: Pill {
                                     required property var modelData
                                     label: modelData.label
-                                    checked: (page.mains[mrow.modelData.slot] || []).indexOf(modelData.key) >= 0
-                                    onClicked: {
-                                        const m = Object.assign({}, page.mains)
-                                        m[mrow.modelData.slot] = page.toggle(m[mrow.modelData.slot] || [], modelData.key)
-                                        page.mains = m
-                                    }
+                                    checked: page.scaling === modelData.key
+                                    onClicked: { page.scaling = modelData.key; page.resetForScaling() }
                                 }
                             }
                         }
                     }
-                }
 
-                // 6. set
-                RowLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode !== "akasha"
-                    spacing: 10
-                    RowLabel { text: "Set" }
-                    Combo {
-                        id: setBox
-                        readonly property var setList: optimizer.sets || []
-                        Layout.preferredWidth: 320
-                        model: ["Any set"].concat(setList.map(function(s) { return s.name + " (" + s.count + ")" }))
-                        currentIndex: {
-                            for (let i = 0; i < setList.length; i++)
-                                if (setList[i].key === page.setKey) return i + 1
-                            return 0
-                        }
-                        onActivated: function(i) {
-                            page.setKey = i === 0 ? "" : setList[i - 1].key
-                            optimizer.refreshCrit(page.setKey)
-                        }
-                    }
-                    Item { Layout.fillWidth: true }
-                }
-
-                // 7. minimums
-                RowLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode !== "akasha"
-                    spacing: 10
-                    RowLabel { text: "Minimums" }
-                    ColumnLayout {
+                    // 2. optimize for
+                    RowLayout {
                         Layout.fillWidth: true
-                        spacing: 6
-                        Repeater {
-                            model: page.minimums
-                            delegate: RowLayout {
-                                id: minRow
-                                required property var modelData
-                                required property int index
-                                spacing: 10
-                                Combo {
-                                    Layout.preferredWidth: 200
-                                    model: page.minLabels
-                                    currentIndex: Math.max(0, page.minKeys.indexOf(minRow.modelData.key))
-                                    onActivated: function(i) {
-                                        page.setMinimum(minRow.index, page.minKeys[i], minRow.modelData.value)
-                                    }
-                                }
-                                Field {
-                                    Layout.preferredWidth: 90
-                                    text: String(minRow.modelData.value)
-                                    validator: DoubleValidator { bottom: 0; locale: "C" }
-                                    onEditingFinished: {
-                                        const v = Number(text)
-                                        page.setMinimum(minRow.index, minRow.modelData.key, isNaN(v) ? 0 : v)
-                                    }
-                                }
-                                GhostButton {
-                                    label: "Remove"
-                                    implicitHeight: 32
-                                    onClicked: page.minimums = page.minimums.filter(function(m, i) { return i !== minRow.index })
-                                }
-                            }
-                        }
-                        GhostButton {
-                            label: "+ Add minimum"
-                            implicitHeight: 32
-                            onClicked: page.minimums = page.minimums.concat([{ key: "enerRech_", value: 0 }])
-                        }
-                    }
-                }
-
-                // 8. conditional crit rate
-                RowLayout {
-                    Layout.fillWidth: true
-                    visible: page.mode !== "akasha"
-                    spacing: 10
-                    RowLabel { text: "Conditional CRIT Rate" }
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 4
-                        Repeater {
-                            model: page.crit.sources || []
-                            delegate: Text {
-                                required property var modelData
-                                text: modelData.label + " — " + modelData.value + "%"
-                                color: Theme.text
-                                font.pixelSize: 12
-                            }
-                        }
-                        Text {
-                            visible: (page.crit.sources || []).length === 0
-                            text: "None found in the weapon passive"
-                            color: Theme.textDim
-                            font.pixelSize: 12
-                        }
-                        Text {
+                        spacing: 10
+                        RowLabel { text: "Optimize for" }
+                        Flow {
                             Layout.fillWidth: true
-                            visible: !!page.crit.note
-                            text: page.crit.note || ""
-                            color: Theme.textDim
-                            font.pixelSize: 12
-                            wrapMode: Text.WordWrap
-                        }
-                        RowLayout {
-                            spacing: 10
-                            Text {
-                                text: "Extra (team buffs, passives)"
-                                color: Theme.text
-                                font.pixelSize: 12
-                            }
-                            Field {
-                                Layout.preferredWidth: 70
-                                text: String(page.extraCrit)
-                                validator: DoubleValidator { bottom: 0; top: 100; locale: "C" }
-                                onEditingFinished: {
-                                    const v = Number(text)
-                                    page.extraCrit = isNaN(v) ? 0 : v
+                            spacing: 8
+                            Repeater {
+                                model: [{ key: "damage", label: "Damage estimate" }, { key: "weights", label: "Stat weights" },
+                                        { key: "targets", label: "Target values" }, { key: "ratio", label: "Ratio" },
+                                        { key: "akasha", label: "Akasha ranking" }]
+                                delegate: Pill {
+                                    required property var modelData
+                                    label: modelData.label
+                                    checked: page.mode === modelData.key
+                                    onClicked: page.mode = modelData.key
                                 }
                             }
-                            Text {
-                                text: "Panel CRIT Rate above "
-                                      + Math.max(0, 100 - (page.crit.total || 0) - page.extraCrit).toFixed(0)
-                                      + "% is wasted"
-                                color: Theme.textDim
-                                font.pixelSize: 12
+                        }
+                    }
+
+                    // 3. priority stats
+                    RowLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode !== "akasha"
+                        spacing: 10
+                        RowLabel { text: "Priority stats" }
+                        Flow {
+                            Layout.fillWidth: true
+                            spacing: 8
+                            Repeater {
+                                model: page.substats
+                                delegate: Pill {
+                                    required property var modelData
+                                    label: modelData.label
+                                    checked: page.priority.indexOf(modelData.key) >= 0
+                                    onClicked: page.priority = page.toggle(page.priority, modelData.key)
+                                }
                             }
                         }
                     }
-                }
 
-                // 9. artifacts
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 10
-                    RowLabel { text: "Artifacts" }
+                    // 4. mode-specific area
                     Text {
                         Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter
-                        text: optimizer.pieceCount + " five-star artifacts from " + optimizer.sourcePath
-                        color: Theme.text
-                        font.pixelSize: 12
-                        elide: Text.ElideMiddle
-                    }
-                    GhostButton {
-                        label: "Choose file…"
-                        implicitHeight: 32
-                        onClicked: fileDlg.open()
-                    }
-                }
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 10
-                    RowLabel { text: "" }
-                    Pill {
-                        label: "Use artifacts other characters wear"
-                        checked: page.useEquipped
-                        onClicked: page.useEquipped = !page.useEquipped
-                    }
-                    Text { text: "Minimum level"; color: Theme.textDim; font.pixelSize: 12 }
-                    SpinBox {
-                        id: levelBox
-                        from: 0; to: 20; stepSize: 4
-                        value: page.minLevel
-                        implicitWidth: 110
-                        implicitHeight: 32
-                        onValueModified: page.minLevel = value
-                        background: Rectangle {
-                            radius: 8; color: Theme.bgAlt
-                            border.color: Theme.border
-                            border.width: 1
-                        }
-                        contentItem: Text {
-                            text: levelBox.value
-                            color: Theme.text
-                            font.pixelSize: 13
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        up.indicator: Text {
-                            x: parent.width - width - 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "+"; color: Theme.text; font.pixelSize: 14
-                        }
-                        down.indicator: Text {
-                            x: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "−"; color: Theme.text; font.pixelSize: 14
-                        }
-                    }
-                    Item { Layout.fillWidth: true }
-                }
-
-                // 10. run
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 14
-                    AccentButton {
-                        label: optimizer.busy ? "Stop" : "Optimize"
-                        pulsing: optimizer.busy
-                        enabledState: optimizer.busy
-                                      || (page.mode === "akasha" ? page.boardId !== ""
-                                          : (!!optimizer.card && optimizer.card.name !== undefined))
-                        onClicked: {
-                            if (optimizer.busy) optimizer.stop()
-                            else if (page.mode === "akasha") {
-                                page.shown = 0
-                                optimizer.runAkasha(page.boardId, page.boardVariant, page.minLevel, page.useEquipped)
-                            }
-                            else { page.shown = 0; optimizer.run(page.goal()) }
-                        }
-                    }
-                    Text {
-                        Layout.fillWidth: true
-                        text: optimizer.status
+                        visible: page.mode === "damage"
+                        text: "Scaling stat × (1 + CRIT Rate × CRIT DMG) × (1 + DMG Bonus). CRIT Rate counts up to 100% including the conditional CRIT Rate below."
                         color: Theme.textDim
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
                     }
-                }
-            }
-
-            // ── results ───────────────────────────────────────────────
-            Card {
-                title: "Results"
-                subtitle: "Best builds from your artifacts. 'from …' marks pieces another character wears."
-                visible: page.results.length > 0 || page.currentCard !== null
-
-                Flow {
-                    Layout.fillWidth: true
-                    spacing: 8
-                    Pill {
-                        visible: page.currentCard !== null
-                        label: "Current"
-                        checked: page.showCurrent
-                        onClicked: page.shown = -1
-                    }
-                    Repeater {
-                        model: page.results
-                        delegate: Pill {
-                            required property var modelData
-                            required property int index
-                            label: "#" + modelData.rank + " " + modelData.setName + "  " + modelData.change
-                            checked: !page.showCurrent && page.shown === index
-                            onClicked: page.shown = index
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode === "weights"
+                        spacing: 6
+                        Repeater {
+                            model: page.priority
+                            delegate: RowLayout {
+                                id: wrow
+                                required property var modelData
+                                spacing: 10
+                                Text {
+                                    Layout.preferredWidth: 160
+                                    text: page.labelOf(wrow.modelData)
+                                    color: Theme.text
+                                    font.pixelSize: 13
+                                }
+                                Field {
+                                    Layout.preferredWidth: 80
+                                    text: String(page.weights[wrow.modelData] ?? 1)
+                                    validator: DoubleValidator { locale: "C" }
+                                    onEditingFinished: {
+                                        const w = Object.assign({}, page.weights)
+                                        const v = Number(text)
+                                        w[wrow.modelData] = isNaN(v) ? 1 : v
+                                        page.weights = w
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    text: page.showCurrent
-                          ? ((optimizer.current && optimizer.current.scoreText) || "")
-                          : (page.entry ? (page.mode === "damage" ? "" : (page.entry.scoreText || "") + "  ·  ")
-                                          + "damage estimate " + page.entry.damageText
-                                          + " (" + page.entry.change + ")" : "")
-                    color: Theme.text
-                    font.pixelSize: 13
-                    wrapMode: Text.WordWrap
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    visible: !page.showCurrent && page.entry !== null
-                    spacing: 3
-                    Repeater {
-                        model: page.entry ? (page.entry.deltas || []) : []
-                        delegate: RowLayout {
-                            required property var modelData
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode === "targets"
+                        spacing: 6
+                        RowLayout {
+                            Layout.fillWidth: true
                             spacing: 10
+                            GhostButton {
+                                label: "Use Akasha's top 1% averages"
+                                implicitHeight: 32
+                                enabledState: !optimizer.busy
+                                onClicked: optimizer.akashaTargets(page.scaling)
+                            }
                             Text {
-                                Layout.preferredWidth: 160
-                                text: modelData.label
+                                Layout.fillWidth: true
+                                text: optimizer.akashaTop1.calc
+                                      ? "Top 1% of " + optimizer.akashaTop1.calc + " (your build: " + optimizer.akashaTop1.rank + ")"
+                                      : "Fills the targets with the average stats of the top 1% of this character's Akasha leaderboard."
+                                color: Theme.textDim
+                                font.pixelSize: 12
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+                        Repeater {
+                            model: page.priority
+                            delegate: RowLayout {
+                                id: trow
+                                required property var modelData
+                                spacing: 10
+                                Text {
+                                    Layout.preferredWidth: 160
+                                    text: page.labelOf(trow.modelData)
+                                    color: Theme.text
+                                    font.pixelSize: 13
+                                }
+                                Field {
+                                    Layout.preferredWidth: 80
+                                    placeholderText: "e.g. 70"
+                                    text: page.targets[trow.modelData] !== undefined ? String(page.targets[trow.modelData]) : ""
+                                    validator: DoubleValidator { bottom: 0; locale: "C" }
+                                    onEditingFinished: {
+                                        const t = Object.assign({}, page.targets)
+                                        const v = Number(text)
+                                        if (text !== "" && !isNaN(v) && v > 0) t[trow.modelData] = v
+                                        else delete t[trow.modelData]
+                                        page.targets = t
+                                    }
+                                }
+                            }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Reaches every target as evenly as possible, then the highest damage estimate."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode === "ratio"
+                        spacing: 6
+                        RowLayout {
+                            spacing: 10
+                            Combo {
+                                Layout.preferredWidth: 170
+                                model: page.priority.map(function(k) { return page.labelOf(k) })
+                                currentIndex: page.priority.indexOf(page.ratio[0])
+                                onActivated: function(i) {
+                                    const r = page.ratio.slice(); r[0] = page.priority[i]; page.ratio = r
+                                }
+                            }
+                            Field {
+                                Layout.preferredWidth: 60
+                                text: String(page.ratio[1])
+                                validator: DoubleValidator { bottom: 0; locale: "C" }
+                                onEditingFinished: {
+                                    const r = page.ratio.slice(); const v = Number(text)
+                                    r[1] = isNaN(v) ? 1 : v; page.ratio = r
+                                }
+                            }
+                            Text { text: ":"; color: Theme.text; font.pixelSize: 14 }
+                            Field {
+                                Layout.preferredWidth: 60
+                                text: String(page.ratio[3])
+                                validator: DoubleValidator { bottom: 0; locale: "C" }
+                                onEditingFinished: {
+                                    const r = page.ratio.slice(); const v = Number(text)
+                                    r[3] = isNaN(v) ? 1 : v; page.ratio = r
+                                }
+                            }
+                            Combo {
+                                Layout.preferredWidth: 170
+                                model: page.priority.map(function(k) { return page.labelOf(k) })
+                                currentIndex: page.priority.indexOf(page.ratio[2])
+                                onActivated: function(i) {
+                                    const r = page.ratio.slice(); r[2] = page.priority[i]; page.ratio = r
+                                }
+                            }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Keeps the two stats near this ratio (e.g. CRIT Rate : CRIT DMG = 1 : 2), then the highest damage estimate."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode === "akasha"
+                        spacing: 8
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Pick one of this character's Akasha leaderboards. Lumenspar learns its formula from a sample of it, takes the sets and main stats its top builds use, and finds your best build for it."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            visible: !!optimizer.akashaBoardsNote
+                            text: optimizer.akashaBoardsNote || ""
+                            color: Theme.danger
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                        Column {
+                            Layout.fillWidth: true
+                            spacing: 6
+                            Repeater {
+                                model: page.boards
+                                delegate: Rectangle {
+                                    id: boardRow
+                                    required property var modelData
+                                    readonly property bool selected: modelData.calcId === page.boardId
+                                    width: parent.width
+                                    height: 54
+                                    radius: 10
+                                    color: Theme.bgAlt
+                                    border.width: 1
+                                    border.color: selected ? Theme.accent : Theme.border
+
+                                    HoverHandler { id: boardHover; cursorShape: Qt.PointingHandCursor }
+                                    TapHandler {
+                                        onTapped: {
+                                            page.boardId = boardRow.modelData.calcId
+                                            page.boardVariant = boardRow.modelData.defaultVariant
+                                        }
+                                    }
+                                    ToolTip.visible: boardHover.hovered && !!modelData.details
+                                    ToolTip.delay: 400
+                                    ToolTip.text: modelData.details
+
+                                    RowLayout {
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 14
+                                        anchors.rightMargin: 14
+                                        spacing: 10
+                                        ColumnLayout {
+                                            Layout.fillWidth: true
+                                            spacing: 2
+                                            RowLayout {
+                                                spacing: 8
+                                                Text {
+                                                    text: boardRow.modelData.name
+                                                    color: Theme.text
+                                                    font.pixelSize: 13
+                                                    font.weight: Font.DemiBold
+                                                }
+                                                Rectangle {
+                                                    visible: !!boardRow.modelData.short
+                                                    implicitWidth: shortText.implicitWidth + 12
+                                                    implicitHeight: 18
+                                                    radius: 9
+                                                    color: Theme.surface
+                                                    border.width: 1
+                                                    border.color: Theme.border
+                                                    Text {
+                                                        id: shortText
+                                                        anchors.centerIn: parent
+                                                        text: boardRow.modelData.short
+                                                        color: Theme.textDim
+                                                        font.pixelSize: 10
+                                                    }
+                                                }
+                                            }
+                                            Text {
+                                                Layout.fillWidth: true
+                                                text: boardRow.modelData.weapon
+                                                color: Theme.textDim
+                                                font.pixelSize: 11
+                                                elide: Text.ElideRight
+                                            }
+                                        }
+                                        Text {
+                                            text: boardRow.modelData.yourRank
+                                            color: Theme.accent
+                                            font.pixelSize: 12
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            visible: page.selectedBoard !== null
+                            spacing: 10
+                            RowLabel { text: "ER requirement" }
+                            Combo {
+                                id: variantBox
+                                readonly property var variantList: page.selectedBoard ? page.selectedBoard.variants : []
+                                Layout.preferredWidth: 240
+                                model: ["All builds"].concat(variantList.map(function(v) { return v.label || v.name }))
+                                currentIndex: {
+                                    for (let i = 0; i < variantList.length; i++)
+                                        if (variantList[i].name === page.boardVariant) return i + 1
+                                    return 0
+                                }
+                                onActivated: function(i) {
+                                    page.boardVariant = i === 0 ? "" : variantList[i - 1].name
+                                }
+                            }
+                            Item { Layout.fillWidth: true }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            visible: !!optimizer.akashaInfo
+                            text: optimizer.akashaInfo || ""
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    // 5. main stats
+                    Repeater {
+                        model: [{ slot: "sands", name: "Sands" }, { slot: "goblet", name: "Goblet" },
+                                { slot: "circlet", name: "Circlet" }]
+                        delegate: RowLayout {
+                            id: mrow
+                            required property var modelData
+                            Layout.fillWidth: true
+                            visible: page.mode !== "akasha"
+                            spacing: 10
+                            RowLabel { text: mrow.modelData.name + " main stat" }
+                            Flow {
+                                Layout.fillWidth: true
+                                spacing: 8
+                                Repeater {
+                                    model: (optimizer.mainChoices || {})[mrow.modelData.slot] || []
+                                    delegate: Pill {
+                                        required property var modelData
+                                        label: modelData.label
+                                        checked: (page.mains[mrow.modelData.slot] || []).indexOf(modelData.key) >= 0
+                                        onClicked: {
+                                            const m = Object.assign({}, page.mains)
+                                            m[mrow.modelData.slot] = page.toggle(m[mrow.modelData.slot] || [], modelData.key)
+                                            page.mains = m
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 6. set
+                    RowLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode !== "akasha"
+                        spacing: 10
+                        RowLabel { text: "Set" }
+                        Combo {
+                            id: setBox
+                            readonly property var setList: optimizer.sets || []
+                            Layout.preferredWidth: 320
+                            model: ["Any set"].concat(setList.map(function(s) { return s.name + " (" + s.count + ")" }))
+                            currentIndex: {
+                                for (let i = 0; i < setList.length; i++)
+                                    if (setList[i].key === page.setKey) return i + 1
+                                return 0
+                            }
+                            onActivated: function(i) {
+                                page.setKey = i === 0 ? "" : setList[i - 1].key
+                                optimizer.refreshCrit(page.setKey)
+                            }
+                        }
+                        Item { Layout.fillWidth: true }
+                    }
+
+                    // 7. minimums
+                    RowLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode !== "akasha"
+                        spacing: 10
+                        RowLabel { text: "Minimums" }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 6
+                            Repeater {
+                                model: page.minimums
+                                delegate: RowLayout {
+                                    id: minRow
+                                    required property var modelData
+                                    required property int index
+                                    spacing: 10
+                                    Combo {
+                                        Layout.preferredWidth: 200
+                                        model: page.minLabels
+                                        currentIndex: Math.max(0, page.minKeys.indexOf(minRow.modelData.key))
+                                        onActivated: function(i) {
+                                            page.setMinimum(minRow.index, page.minKeys[i], minRow.modelData.value)
+                                        }
+                                    }
+                                    Field {
+                                        Layout.preferredWidth: 90
+                                        text: String(minRow.modelData.value)
+                                        validator: DoubleValidator { bottom: 0; locale: "C" }
+                                        onEditingFinished: {
+                                            const v = Number(text)
+                                            page.setMinimum(minRow.index, minRow.modelData.key, isNaN(v) ? 0 : v)
+                                        }
+                                    }
+                                    GhostButton {
+                                        label: "Remove"
+                                        implicitHeight: 32
+                                        onClicked: page.minimums = page.minimums.filter(function(m, i) { return i !== minRow.index })
+                                    }
+                                }
+                            }
+                            GhostButton {
+                                label: "+ Add minimum"
+                                implicitHeight: 32
+                                onClicked: page.minimums = page.minimums.concat([{ key: "enerRech_", value: 0 }])
+                            }
+                        }
+                    }
+
+                    // 8. conditional crit rate
+                    RowLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode !== "akasha"
+                        spacing: 10
+                        RowLabel { text: "Conditional CRIT Rate" }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4
+                            Repeater {
+                                model: page.crit.sources || []
+                                delegate: Text {
+                                    required property var modelData
+                                    text: modelData.label + " — " + modelData.value + "%"
+                                    color: Theme.text
+                                    font.pixelSize: 12
+                                }
+                            }
+                            Text {
+                                visible: (page.crit.sources || []).length === 0
+                                text: "None found in the weapon passive"
                                 color: Theme.textDim
                                 font.pixelSize: 12
                             }
                             Text {
-                                Layout.preferredWidth: 80
-                                text: String(modelData.before)
+                                Layout.fillWidth: true
+                                visible: !!page.crit.note
+                                text: page.crit.note || ""
+                                color: Theme.textDim
+                                font.pixelSize: 12
+                                wrapMode: Text.WordWrap
+                            }
+                            RowLayout {
+                                spacing: 10
+                                Text {
+                                    text: "Extra (team buffs, passives)"
+                                    color: Theme.text
+                                    font.pixelSize: 12
+                                }
+                                Field {
+                                    Layout.preferredWidth: 70
+                                    text: String(page.extraCrit)
+                                    validator: DoubleValidator { bottom: 0; top: 100; locale: "C" }
+                                    onEditingFinished: {
+                                        const v = Number(text)
+                                        page.extraCrit = isNaN(v) ? 0 : v
+                                    }
+                                }
+                                Text {
+                                    text: "Panel CRIT Rate above "
+                                          + Math.max(0, 100 - (page.crit.total || 0) - page.extraCrit).toFixed(0)
+                                          + "% is wasted"
+                                    color: Theme.textDim
+                                    font.pixelSize: 12
+                                }
+                            }
+                        }
+                    }
+
+                    // 9. artifacts
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        RowLabel { text: "Artifacts" }
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                            text: optimizer.pieceCount + " five-star artifacts from " + optimizer.sourcePath
+                            color: Theme.text
+                            font.pixelSize: 12
+                            elide: Text.ElideMiddle
+                        }
+                        GhostButton {
+                            label: "Choose file…"
+                            implicitHeight: 32
+                            onClicked: fileDlg.open()
+                        }
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
+                        RowLabel { text: "" }
+                        Pill {
+                            label: "Use artifacts other characters wear"
+                            checked: page.useEquipped
+                            onClicked: page.useEquipped = !page.useEquipped
+                        }
+                        Text { text: "Minimum level"; color: Theme.textDim; font.pixelSize: 12 }
+                        SpinBox {
+                            id: levelBox
+                            from: 0; to: 20; stepSize: 4
+                            value: page.minLevel
+                            implicitWidth: 110
+                            implicitHeight: 32
+                            onValueModified: page.minLevel = value
+                            background: Rectangle {
+                                radius: 8; color: Theme.bgAlt
+                                border.color: Theme.border
+                                border.width: 1
+                            }
+                            contentItem: Text {
+                                text: levelBox.value
                                 color: Theme.text
-                                font.pixelSize: 12
+                                font.pixelSize: 13
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
-                            Text { text: "→"; color: Theme.textDim; font.pixelSize: 12 }
-                            Text {
-                                text: String(modelData.after)
-                                color: modelData.better ? Theme.ok : Theme.danger
-                                font.pixelSize: 12
+                            up.indicator: Text {
+                                x: parent.width - width - 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "+"; color: Theme.text; font.pixelSize: 14
                             }
+                            down.indicator: Text {
+                                x: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "−"; color: Theme.text; font.pixelSize: 14
+                            }
+                        }
+                        Item { Layout.fillWidth: true }
+                    }
+
+                    // 10. run
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 14
+                        AccentButton {
+                            label: optimizer.busy ? "Stop" : "Optimize"
+                            pulsing: optimizer.busy
+                            enabledState: optimizer.busy
+                                          || (page.mode === "akasha" ? page.boardId !== ""
+                                              : (!!optimizer.card && optimizer.card.name !== undefined))
+                            onClicked: {
+                                if (optimizer.busy) optimizer.stop()
+                                else if (page.mode === "akasha") {
+                                    page.shown = 0
+                                    optimizer.runAkasha(page.boardId, page.boardVariant, page.minLevel, page.useEquipped)
+                                }
+                                else { page.shown = 0; optimizer.run(page.goal()) }
+                            }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: optimizer.status
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
                         }
                     }
                 }
 
-                Item {   // the card, scaled down to fit narrower windows
-                    id: holder
-                    Layout.fillWidth: true
-                    visible: page.shownCard !== null
-                    readonly property real fit: Math.min(1, width / resultCard.width)
-                    Layout.preferredHeight: resultCard.height * fit
-                    BuildCard {
-                        id: resultCard
-                        c: page.shownCard
-                        footer: page.showCurrent ? "Current build" : "Suggested by Lumenspar's optimizer"
-                        transformOrigin: Item.TopLeft
-                        scale: holder.fit
+                // ── results ───────────────────────────────────────────────
+                Card {
+                    title: "Results"
+                    subtitle: "Best builds from your artifacts. 'from …' marks pieces another character wears."
+                    visible: page.results.length > 0 || page.currentCard !== null
+
+                    Flow {
+                        Layout.fillWidth: true
+                        spacing: 8
+                        Pill {
+                            visible: page.currentCard !== null
+                            label: "Current"
+                            checked: page.showCurrent
+                            onClicked: page.shown = -1
+                        }
+                        Repeater {
+                            model: page.results
+                            delegate: Pill {
+                                required property var modelData
+                                required property int index
+                                label: "#" + modelData.rank + " " + modelData.setName + "  " + modelData.change
+                                checked: !page.showCurrent && page.shown === index
+                                onClicked: page.shown = index
+                            }
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: page.showCurrent
+                              ? ((optimizer.current && optimizer.current.scoreText) || "")
+                              : (page.entry ? (page.mode === "damage" ? "" : (page.entry.scoreText || "") + "  ·  ")
+                                              + "damage estimate " + page.entry.damageText
+                                              + " (" + page.entry.change + ")" : "")
+                        color: Theme.text
+                        font.pixelSize: 13
+                        wrapMode: Text.WordWrap
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: !page.showCurrent && page.entry !== null
+                        spacing: 3
+                        Repeater {
+                            model: page.entry ? (page.entry.deltas || []) : []
+                            delegate: RowLayout {
+                                required property var modelData
+                                spacing: 10
+                                Text {
+                                    Layout.preferredWidth: 160
+                                    text: modelData.label
+                                    color: Theme.textDim
+                                    font.pixelSize: 12
+                                }
+                                Text {
+                                    Layout.preferredWidth: 80
+                                    text: String(modelData.before)
+                                    color: Theme.text
+                                    font.pixelSize: 12
+                                }
+                                Text { text: "→"; color: Theme.textDim; font.pixelSize: 12 }
+                                Text {
+                                    text: String(modelData.after)
+                                    color: modelData.better ? Theme.ok : Theme.danger
+                                    font.pixelSize: 12
+                                }
+                            }
+                        }
+                    }
+
+                    Item {   // the card, scaled down to fit narrower windows
+                        id: holder
+                        Layout.fillWidth: true
+                        visible: page.shownCard !== null
+                        readonly property real fit: Math.min(1, width / resultCard.width)
+                        Layout.preferredHeight: resultCard.height * fit
+                        BuildCard {
+                            id: resultCard
+                            c: page.shownCard
+                            footer: page.showCurrent ? "Current build" : "Suggested by Lumenspar's optimizer"
+                            transformOrigin: Item.TopLeft
+                            scale: holder.fit
+                        }
                     }
                 }
             }
 
+            TeamPanel { Layout.fillWidth: true; visible: page.tab === "team" }
             Item { Layout.preferredHeight: 4 }
         }
     }

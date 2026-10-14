@@ -342,6 +342,32 @@ conditional effects other than CRIT Rate: it ranks artifacts, not rotations.
 Characters whose passives convert one stat into another (e.g. ER into DMG
 Bonus) come out approximately.
 
+## Team & damage
+
+The Optimizer's **Team & damage** tab calculates damage the way
+[Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/) does -- with its
+own formula engine, so every character's talents, passives and constellations,
+weapon stats and passives, artifact sets, elemental resonance, team buffs,
+enemy level and resistance and amplifying/catalyze reactions are included, as
+GO models them.
+
+- **Team:** up to four characters. Showcase builds are used as they are; other
+  characters come from the inventory scan with what they have equipped.
+- **Conditions:** every conditional the team can have, as a toggle (or a stack
+  count, or a choice such as the element swirled), grouped by character, weapon,
+  set, resonance and enemy state; hovering shows the game's description.
+- **Damage:** each character's final stats and every damage instance, as an
+  average, a crit or a non-crit hit.
+- **Rotation & DPS:** how many times each hit lands in a rotation and how long
+  the rotation is give each character's damage, the team's, and DPS.
+
+The engine is bundled by `tools/build_go_engine.py` from a pinned Genshin
+Optimizer commit and runs in Qt's own JavaScript engine (about 1.4 s per
+character), so neither Lumenspar nor its builds need Node.js. The script also
+works around Qt's older JavaScript engine and patches two engine issues; each
+patch is documented there and fails the build loudly if GO's code changes under
+it.
+
 ## Characters from Enka.Network
 
 Character data can come from your in-game profile showcase via
@@ -477,3 +503,7 @@ to license:
 - The wish counter follows [paimon.moe](https://github.com/MadeBaruna/paimon-moe)'s
   method, and `lumenspar/gamedata/wish_banners.json` is generated from its
   banner data: Copyright (c) 2021 Made Baruna, MIT License.
+- `lumenspar/gamedata/go_engine.js` and `go_labels.json` are built by
+  `tools/build_go_engine.py` from [Genshin Optimizer](https://github.com/frzyc/genshin-optimizer)'s
+  formula engine, game data and English text: Copyright (c) frzyc and the
+  Genshin Optimizer contributors, MIT License (`lumenspar/gamedata/GO_LICENSE.txt`).
