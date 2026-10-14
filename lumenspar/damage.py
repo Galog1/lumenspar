@@ -11,10 +11,11 @@ The bundle runs in Qt's QJSEngine. Percent stats are fractions in the engine
 (percent); member_from_card / member_from_good convert. Energy Recharge comes
 out without the base 100% (0.123 means 112.3%).
 
-Threading: a QJSEngine must only be used on the thread that created it, and one
-`compute` takes ~1.4 s per (member, mode) while loading the bundle takes ~1 s.
-`Engine` therefore keeps a QJSEngine on its own thread; `run_sync` is the
-blocking form for tests and scripts. Both need a QCoreApplication to exist.
+Process model: one `compute` takes ~1.4 s per (member, mode) and loading the
+bundle ~1 s. PySide6 does not release the GIL during QJSEngine calls, so a
+worker thread would still freeze the GUI; `Engine` therefore talks to a child
+process (damage_worker.py). `run_sync` is the blocking in-process form used by
+that worker, tests and scripts; it needs a QCoreApplication.
 
 This module also turns the engine's internal keys into readable English
 (labels from gamedata/go_labels.json, built by tools/build_go_engine.py).
@@ -23,11 +24,13 @@ This module also turns the engine's internal keys into readable English
 from __future__ import annotations
 
 import json
+import os
 import re
+import sys
 from functools import lru_cache
 from pathlib import Path
 
-from PySide6.QtCore import QMetaObject, QObject, Qt, QThread, Signal, Slot
+from PySide6.QtCore import QObject, QProcess, QProcessEnvironment, Signal
 from PySide6.QtQml import QJSEngine
 
 from . import optimizer
@@ -35,6 +38,8 @@ from . import optimizer
 _GAMEDATA = Path(__file__).resolve().parent / "gamedata"
 ENGINE_PATH = _GAMEDATA / "go_engine.js"
 LABELS_PATH = _GAMEDATA / "go_labels.json"
+
+ENGINE_FLAG = "--lumenspar-engine-worker"
 
 ELEMENTS = ("pyro", "hydro", "electro", "cryo", "anemo", "geo", "dendro")
 
@@ -180,68 +185,107 @@ def run_sync(fn: str, payload: dict, engine: QJSEngine | None = None) -> dict | 
     return json.loads(result.toString())
 
 
-class _EngineWorker(QObject):
-    """Lives on the engine thread; its QJSEngine is created there on first use."""
-
-    done = Signal(int, object)
-    error = Signal(int, str)
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._js: QJSEngine | None = None
-
-    @Slot(int, str, str)
-    def run(self, req_id: int, fn: str, text: str) -> None:
-        try:
-            if self._js is None:
-                self._js = QJSEngine()
-            out = run_sync(fn, json.loads(text), self._js)
-        except Exception as exc:  # reported to the caller, never a silent stop
-            self.error.emit(req_id, str(exc) or type(exc).__name__)
-            return
-        self.done.emit(req_id, out)
-
-    @Slot()
-    def close(self) -> None:
-        self._js = None   # destroyed on this thread
-
-
 class Engine(QObject):
-    """Runs engine requests on a private thread; results come back as signals."""
+    """Runs engine requests in a child process; results come back as signals.
+
+    The child (damage_worker.py) has its own interpreter: PySide6 holds the GIL
+    during QJSEngine calls, so a thread would still freeze the GUI. It starts
+    in the background on construction (loading the bundle takes ~1 s) and is
+    restarted on the next request if it dies.
+    """
 
     finished = Signal(int, object)   # request id, parsed result
     failed = Signal(int, str)        # request id, message
-    _request = Signal(int, str, str)
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self._next_id = 0
-        self._thread = QThread(self)
-        self._worker = _EngineWorker()
-        self._worker.moveToThread(self._thread)
-        self._request.connect(self._worker.run, Qt.QueuedConnection)
-        self._worker.done.connect(self._on_done, Qt.QueuedConnection)
-        self._worker.error.connect(self._on_error, Qt.QueuedConnection)
-        self._thread.start()
+        self._pending: set[int] = set()
+        self._buf = b""
+        self._proc: QProcess | None = None
+        self._start()
+
+    def _start(self) -> None:
+        proc = QProcess(self)
+        if getattr(sys, "frozen", False):
+            program, args = sys.executable, [ENGINE_FLAG]
+        else:
+            root = str(Path(__file__).resolve().parent.parent)
+            env = QProcessEnvironment.systemEnvironment()
+            old = env.value("PYTHONPATH")
+            env.insert("PYTHONPATH", root + (os.pathsep + old if old else ""))
+            proc.setProcessEnvironment(env)
+            proc.setWorkingDirectory(root)
+            program, args = sys.executable, ["-m", "lumenspar", ENGINE_FLAG]
+        proc.readyReadStandardOutput.connect(self._on_stdout)
+        proc.readyReadStandardError.connect(self._on_stderr)
+        proc.errorOccurred.connect(self._on_error)
+        proc.finished.connect(self._on_exit)
+        self._buf = b""
+        self._proc = proc
+        proc.start(program, args)
 
     def request(self, fn: str, payload: dict) -> int:
+        if self._proc is None or self._proc.state() == QProcess.NotRunning:
+            self._drop_proc()
+            self._start()
         self._next_id += 1
-        self._request.emit(self._next_id, fn, json.dumps(payload))
-        return self._next_id
+        rid = self._next_id
+        self._pending.add(rid)
+        line = json.dumps({"id": rid, "fn": fn, "payload": payload}) + "\n"
+        self._proc.write(line.encode("utf-8"))
+        return rid
 
-    @Slot(int, object)
-    def _on_done(self, req_id: int, out: object) -> None:
-        self.finished.emit(req_id, out)
+    def _on_stdout(self) -> None:
+        self._buf += bytes(self._proc.readAllStandardOutput())
+        while b"\n" in self._buf:
+            raw, self._buf = self._buf.split(b"\n", 1)
+            if not raw.strip():
+                continue
+            try:
+                msg = json.loads(raw.decode("utf-8"))
+                rid = msg["id"]
+            except (ValueError, KeyError, TypeError):
+                continue
+            if rid not in self._pending:
+                continue
+            self._pending.discard(rid)
+            if msg.get("ok"):
+                self.finished.emit(rid, msg.get("result"))
+            else:
+                self.failed.emit(rid, str(msg.get("error") or "engine error"))
 
-    @Slot(int, str)
-    def _on_error(self, req_id: int, msg: str) -> None:
-        self.failed.emit(req_id, msg)
+    def _on_stderr(self) -> None:
+        sys.stderr.write(bytes(self._proc.readAllStandardError()).decode("utf-8", "replace"))
+
+    def _on_error(self, _err) -> None:
+        if self._proc is not None and self._proc.state() == QProcess.NotRunning:
+            self._fail_pending()
+
+    def _on_exit(self, *_args) -> None:
+        self._fail_pending()
+
+    def _fail_pending(self) -> None:
+        pending, self._pending = sorted(self._pending), set()
+        for rid in pending:
+            self.failed.emit(rid, "The damage engine stopped unexpectedly; "
+                                  "it will restart on the next request.")
+
+    def _drop_proc(self) -> None:
+        if self._proc is not None:
+            self._proc.blockSignals(True)
+            self._proc.deleteLater()
+            self._proc = None
 
     def shutdown(self) -> None:
-        if self._thread.isRunning():
-            QMetaObject.invokeMethod(self._worker, "close", Qt.BlockingQueuedConnection)
-            self._thread.quit()
-            self._thread.wait(5000)
+        proc = self._proc
+        if proc is None:
+            return
+        if proc.state() != QProcess.NotRunning:
+            proc.closeWriteChannel()
+            if not proc.waitForFinished(3000):
+                proc.kill()
+                proc.waitForFinished(2000)
 
 
 # -- readable labels ----------------------------------------------------------

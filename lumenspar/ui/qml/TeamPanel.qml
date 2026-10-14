@@ -57,9 +57,8 @@ ColumnLayout {
         return col === "crit" ? f.crit : (col === "nonCrit" ? f.nonCrit : f.avg)
     }
 
-    // amp/cata: undefined keeps the current value
-    function applyEnemy(level, res, amp, cata) {
-        team.setEnemy(level, res, amp, cata)
+    function applyEnemy(level, res) {
+        team.setEnemy(level, res)
     }
 
     component Field: TextField {
@@ -428,7 +427,7 @@ ColumnLayout {
 
         Text {
             Layout.fillWidth: true
-            visible: panel.selectedMember.source === "game"
+            visible: panel.selectedMember.source === "game" || panel.selectedMember.source === "scan"
             text: "Settings for " + (panel.selectedMember.name || "")
             color: Theme.text
             font.pixelSize: 14
@@ -437,7 +436,7 @@ ColumnLayout {
         Flow {
             id: gameSettings
             Layout.fillWidth: true
-            visible: panel.selectedMember.source === "game"
+            visible: panel.selectedMember.source === "game" || panel.selectedMember.source === "scan"
             spacing: 16
             readonly property var st: panel.selectedMember.settings || ({})
 
@@ -530,8 +529,10 @@ ColumnLayout {
         }
         Text {
             Layout.fillWidth: true
-            visible: panel.selectedMember.source === "game"
-            text: "Characters from the full list have no artifacts here; their talents, passives, constellations and weapon still apply."
+            visible: panel.selectedMember.source === "game" || panel.selectedMember.source === "scan"
+            text: panel.selectedMember.source === "scan"
+                  ? "From your inventory scan; adjust anything the scan got wrong."
+                  : "Characters from the full list have no artifacts here; their talents, passives, constellations and weapon still apply."
             color: Theme.textDim
             font.pixelSize: 12
             wrapMode: Text.WordWrap
@@ -564,8 +565,7 @@ ColumnLayout {
             NumBox {
                 from: 1; to: 120
                 value: panel.enemy.level || 90
-                onValueModified: panel.applyEnemy(value, Number(panel.enemy.res || 0),
-                                                  panel.enemy.amp || "", panel.enemy.cata || "")
+                onValueModified: panel.applyEnemy(value, Number(panel.enemy.res || 0))
             }
             Text {
                 height: 32
@@ -580,32 +580,45 @@ ColumnLayout {
                 validator: DoubleValidator { locale: "C" }
                 onEditingFinished: {
                     const v = Number(text)
-                    panel.applyEnemy(panel.enemy.level || 90, isNaN(v) ? 0 : v,
-                                     panel.enemy.amp || "", panel.enemy.cata || "")
+                    panel.applyEnemy(panel.enemy.level || 90, isNaN(v) ? 0 : v)
                 }
             }
+        }
+        Flow {
+            Layout.fillWidth: true
+            spacing: 10
             Text {
                 height: 32
                 verticalAlignment: Text.AlignVCenter
-                text: "Reaction"
+                text: "Reaction on " + (panel.selectedMember.name || "the selected member") + "'s hits:"
                 color: Theme.textDim
                 font.pixelSize: 13
             }
             Repeater {
-                model: [{ label: "None", amp: "", cata: "" },
-                        { label: "Vaporize", amp: "vaporize", cata: "" },
-                        { label: "Melt", amp: "melt", cata: "" },
-                        { label: "Aggravate", amp: "", cata: "aggravate" },
-                        { label: "Spread", amp: "", cata: "spread" }]
+                model: team.reactionOptions
                 delegate: Pill {
                     required property var modelData
                     label: modelData.label
-                    checked: (panel.enemy.amp || "") === modelData.amp
-                             && (panel.enemy.cata || "") === modelData.cata
-                    onClicked: panel.applyEnemy(panel.enemy.level || 90, Number(panel.enemy.res || 0),
-                                                modelData.amp, modelData.cata)
+                    checked: team.reaction === modelData.value
+                    onClicked: team.setReaction(modelData.value)
                 }
             }
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: (team.reactionOptions || []).length <= 1
+            text: "No amplifying or catalyze reaction is possible for "
+                  + (panel.selectedMember.name || "this character") + " with this team."
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
+        }
+        Text {
+            Layout.fillWidth: true
+            text: "Transformative and Lunar reactions (Swirl, Overloaded, Bloom, Lunar-Charged, …) appear in the damage table when the team can trigger them."
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
         }
     }
 

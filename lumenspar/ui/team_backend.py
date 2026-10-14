@@ -17,7 +17,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, QTimer, Signal, Slot
 
-from .. import builds, damage
+from .. import builds, damage, reactions
 from ..config import DATA_DIR
 from ..wishes import icons
 from .builds_backend import _url
@@ -42,6 +42,13 @@ def formula_group(f: dict) -> str:
     if f.get("q") == "shield":
         return "Shield"
     return MOVE_GROUPS.get(f.get("move"), "Other")
+
+
+def visible_formulas(formulas: list[dict], element: str, team: set[str]) -> list[dict]:
+    """The formulas to list: transformative / Lunar rows only when the member can trigger them."""
+    return [f for f in formulas
+            if f.get("sheet") != "static"
+            or reactions.reaction_row_allowed(f.get("name", ""), element.lower(), team)]
 
 
 def condition_rows(conds: list[dict], keys: list[str], names: list[str], state: dict) -> list[dict]:
@@ -146,8 +153,8 @@ def rotation_total(formulas: list[dict], counts: dict[str, int]) -> float:
 
 def _default_state() -> dict:
     return {"members": [{} for _ in range(SLOTS)], "selected": 0, "settings": {},
-            "conditionals": {},
-            "enemy": {"level": 100, "res": 10.0, "amp": "", "cata": ""},
+            "conditionals": {}, "reactions": {},
+            "enemy": {"level": 100, "res": 10.0},
             "rotation": {}, "seconds": 20.0}
 
 
@@ -202,9 +209,11 @@ def _load_state(path: Path) -> dict:
             state["enemy"]["res"] = float(enemy.get("res", 10.0))
         except (TypeError, ValueError):
             pass
-        for k in ("amp", "cata"):
-            if isinstance(enemy.get(k), str):
-                state["enemy"][k] = enemy[k]
+    chosen = raw.get("reactions")
+    if isinstance(chosen, dict):
+        for key, v in chosen.items():
+            if isinstance(key, str) and v in _REACTIONS and v:
+                state["reactions"][key] = v
     rotation = raw.get("rotation")
     if isinstance(rotation, dict):
         for key, counts in rotation.items():
@@ -219,13 +228,16 @@ def _load_state(path: Path) -> dict:
     return state
 
 
+_REACTIONS = ("", "vaporize", "melt", "aggravate", "spread")
+SCAN = "scan:"                      # prefix of the settings key of a scan member
+
 _LIMITS = {"level": (1, 100), "constellation": (0, 6), "auto": (1, 10), "skill": (1, 10),
            "burst": (1, 10), "weaponLevel": (1, 90), "refinement": (1, 5)}
 
 
 def _clean_settings(key: str, raw: dict) -> dict:
     """Saved settings of a character: defaults for anything missing or out of range."""
-    out = damage.default_settings(key)
+    out = damage.default_settings(key.removeprefix(SCAN))
     for field, (lo, hi) in _LIMITS.items():
         v = raw.get(field)
         if isinstance(v, (int, float)) and not isinstance(v, bool):
@@ -331,20 +343,36 @@ class TeamBackend(QObject):
             good = {}
         chars = builds._items("characters.json", "key")
         for c in (good.get("characters") or []) if isinstance(good, dict) else []:
-            key = c.get("key")
+            key = c.get("key") if isinstance(c, dict) else None
             if not key or key in cands:
                 continue
             try:
                 member = damage.member_from_good(good, key)
+                if member is None:
+                    dummy = {"key": "", "level": 1, "ascension": 0, "refinement": 1,
+                             "location": key}
+                    member = damage.member_from_good(
+                        dict(good, weapons=[dummy]), key)
             except (KeyError, TypeError, ValueError):
                 continue
             if member is None:
                 continue
+            real = damage.member_from_good(good, key) is not None
+            defaults = damage.default_settings(key)
+            ch, w = member["char"], member["weapon"]
+            defaults.update(level=ch["level"], constellation=ch["constellation"],
+                            auto=ch["talent"]["auto"], skill=ch["talent"]["skill"],
+                            burst=ch["talent"]["burst"])
+            if real and w.get("key"):
+                defaults.update(weapon=w["key"], weaponLevel=w["level"],
+                                refinement=w["refinement"])
+            defaults = _clean_settings(key, defaults)
             info = chars.get(key, {})
             element = info.get("element") or (
                 key.removeprefix("Traveler").lower() if key.startswith("Traveler") else "")
             cands[key] = {"key": key, "name": info.get("name") or key, "element": element,
-                          "icon": info.get("icon", ""), "source": "scan", "member": member}
+                          "icon": info.get("icon", ""), "source": "scan", "member": None,
+                          "defaults": defaults, "artifacts": member["artifacts"]}
         self._cands = cands
 
     @staticmethod
@@ -376,6 +404,14 @@ class TeamBackend(QObject):
             store[key] = damage.default_settings(key)
         return store[key]
 
+    def _scan_settings_for(self, key: str) -> dict:
+        """The settings of a scan character, prefilled from the scan on first use."""
+        store = self._state["settings"]
+        k = SCAN + key
+        if k not in store:
+            store[k] = dict(self._cands[key]["defaults"])
+        return store[k]
+
     def _slot_entry(self, m: dict) -> dict | None:
         """What a slot holds, or None when empty or no longer available."""
         key = m.get("key") if m else ""
@@ -389,7 +425,13 @@ class TeamBackend(QObject):
             return {"key": key, "name": info["name"], "element": info["element"],
                     "icon": info["icon"], "source": "game", "settings": s,
                     "member": damage.member_from_settings(key, s)}
-        return self._cands.get(key)
+        cand = self._cands.get(key)
+        if cand is not None and cand["source"] == "scan":
+            s = self._scan_settings_for(key)
+            member = damage.member_from_settings(key, s)
+            member["artifacts"] = cand["artifacts"]
+            return dict(cand, settings=s, member=member)
+        return cand
 
     def _entry(self, key: str) -> dict | None:
         for m in self._state["members"]:
@@ -400,7 +442,7 @@ class TeamBackend(QObject):
     def _public(self, entry: dict) -> dict:
         out = {"key": entry["key"], "name": entry["name"], "element": entry["element"],
                "iconUrl": _url(entry["icon"]), "source": entry["source"]}
-        if entry["source"] == "game":
+        if entry["source"] in ("game", "scan"):
             out["settings"] = dict(entry["settings"])
         return out
 
@@ -445,7 +487,7 @@ class TeamBackend(QObject):
     @Property("QVariantList", notify=changed)
     def owned(self) -> list:
         shown = sorted(self._cands.values(), key=lambda c: (c["source"] != "showcase", c["name"]))
-        return [self._public(c) for c in shown]
+        return [self._public(self._slot_entry({"key": c["key"]}) or c) for c in shown]
 
     @Property("QVariantList", notify=allCharactersChanged)
     def allCharacters(self) -> list:
@@ -498,10 +540,12 @@ class TeamBackend(QObject):
             return []
         counts = self._state["rotation"].get(key, {})
         rows = []
-        for f in self._raw_formulas:
+        for f in visible_formulas(self._raw_formulas, self._entry(key)["element"], self._team_set()):
             fk = f"{f['sheet']}:{f['name']}"
-            rows.append({"key": fk, "label": damage.formula_label(f["sheet"], f["name"], f.get("move", "")),
-                         "group": formula_group(f), "q": f.get("q"), "avg": f.get("avg"),
+            rlabel = reactions.reaction_label(f["name"]) if f["sheet"] == "static" else None
+            label = rlabel or damage.formula_label(f["sheet"], f["name"], f.get("move", ""))
+            rows.append({"key": fk, "label": label,
+                         "group": "Reactions" if rlabel else formula_group(f), "q": f.get("q"), "avg": f.get("avg"),
                          "crit": f.get("crit"), "nonCrit": f.get("nonCrit"),
                          "count": counts.get(fk, 0)})
         return rows
@@ -543,6 +587,8 @@ class TeamBackend(QObject):
                     members[i] = {}
             if source == "game":
                 self._settings_for(key)
+            elif self._cands[key]["source"] == "scan":
+                self._scan_settings_for(key)
             members[slot] = {"key": key, "source": "game" if source == "game" else "owned"}
         else:
             members[slot] = {}
@@ -554,9 +600,10 @@ class TeamBackend(QObject):
         if not 0 <= slot < SLOTS:
             return
         m = self._state["members"][slot]
-        if not m or m.get("source") != "game" or m.get("key") not in self._all:
+        entry = self._slot_entry(m) if m else None
+        if entry is None or entry["source"] not in ("game", "scan") or m["key"] not in self._all:
             return
-        s = self._settings_for(m["key"])
+        s = entry["settings"]
         if field == "weapon":
             wtype = self._all[m["key"]]["weaponType"]
             w = builds._items("weapons.json", "key").get(str(value))
@@ -613,10 +660,48 @@ class TeamBackend(QObject):
         self.conditionsChanged.emit()
         self._touch()
 
-    @Slot(int, float, str, str)
-    def setEnemy(self, level: int, res_percent: float, amp: str, cata: str) -> None:
-        self._state["enemy"] = {"level": int(level), "res": float(res_percent),
-                                "amp": amp or "", "cata": cata or ""}
+    @Slot(int, float)
+    def setEnemy(self, level: int, res_percent: float) -> None:
+        self._state["enemy"] = {"level": int(level), "res": float(res_percent)}
+        self.changed.emit()
+        self._touch()
+
+    def _team_set(self) -> set[str]:
+        return reactions.team_elements(
+            [self._slot_entry(m)["element"] for m in self._state["members"]
+             if self._slot_entry(m) is not None])
+
+    def _reaction_for(self, key: str) -> str:
+        """The amplifying / catalyze reaction chosen for a member, "" if none or no longer possible."""
+        e = self._entry(key)
+        if e is None:
+            return ""
+        chosen = self._state["reactions"].get(key, "")
+        return chosen if chosen in reactions.amp_options(e["element"].lower(), self._team_set()) else ""
+
+    @Property("QVariantList", notify=changed)
+    def reactionOptions(self) -> list:
+        key = self._selected_key()
+        if not key:
+            return [{"value": "", "label": "None"}]
+        opts = reactions.amp_options(self._entry(key)["element"].lower(), self._team_set())
+        return [{"value": "", "label": "None"}] + [
+            {"value": v, "label": v.capitalize()} for v in opts]
+
+    @Property(str, notify=changed)
+    def reaction(self) -> str:
+        key = self._selected_key()
+        return self._reaction_for(key) if key else ""
+
+    @Slot(str)
+    def setReaction(self, value: str) -> None:
+        key = self._selected_key()
+        if not key or value not in [o["value"] for o in self.reactionOptions]:
+            return
+        if value:
+            self._state["reactions"][key] = value
+        else:
+            self._state["reactions"].pop(key, None)
         self.changed.emit()
         self._touch()
 
@@ -696,13 +781,14 @@ class TeamBackend(QObject):
         keys = [k for _, k in active]
         if char_key not in keys:
             return None
-        base = self._payload(active, [], [])
+        base = self._payload(active, [], [], char_key)
         return {"members": base["members"], "conditionals": base["conditionals"],
                 "enemy": base["enemy"], "index": keys.index(char_key),
                 "rotation": dict(self._state["rotation"].get(char_key, {})),
                 "formulas": list(self._formulas_by_key.get(char_key, []))}
 
-    def _payload(self, active: list[tuple[int, str]], only: list[int], modes: list[str]) -> dict:
+    def _payload(self, active: list[tuple[int, str]], only: list[int], modes: list[str],
+                 enemy_key: str | None = None) -> dict:
         conds: dict = {}
         stored = self._state["conditionals"]
         team = stored.get(TEAM, {})
@@ -714,10 +800,14 @@ class TeamBackend(QObject):
             if sheets:
                 conds[str(idx)] = sheets
         enemy = self._state["enemy"]
+        if enemy_key is None:
+            enemy_key = active[only[0]][1] if only else ""
+        reaction = self._reaction_for(enemy_key) if enemy_key else ""
         return {"members": [self._entry(k)["member"] for _, k in active],
                 "conditionals": conds,
                 "enemy": {"level": enemy["level"], "res": enemy["res"] / 100,
-                          "amp": enemy["amp"], "cata": enemy["cata"]},
+                          "amp": reaction if reaction in ("vaporize", "melt") else "",
+                          "cata": reaction if reaction in ("spread", "aggravate") else ""},
                 "only": only, "modes": modes}
 
     def _request(self, purpose: str, fn: str, payload: dict) -> None:

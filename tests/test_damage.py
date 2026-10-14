@@ -161,23 +161,57 @@ def test_run_sync_conditionals(app):
     assert any(c["sheet"] == "Furina" for c in out)
 
 
-def test_engine_signal(app):
+def _run_requests(app, reqs, timeout=60000):
+    """Issue (fn, payload) requests on one Engine; return ({id: result|exc}, ids, engine)."""
     from PySide6.QtCore import QEventLoop, QTimer
     eng = damage.Engine()
-    got = {}
+    got, order = {}, []
     loop = QEventLoop()
-    eng.finished.connect(lambda i, r: (got.update(id=i, res=r), loop.quit()))
-    eng.failed.connect(lambda i, msg: (got.update(id=i, err=msg), loop.quit()))
+
+    def done(i, v):
+        got[i] = v
+        order.append(i)
+        if len(got) == len(reqs):
+            loop.quit()
+    eng.finished.connect(done)
+    eng.failed.connect(lambda i, msg: done(i, RuntimeError(msg)))
     timer = QTimer()
     timer.setSingleShot(True)
     timer.timeout.connect(loop.quit)
-    timer.start(30000)
-    rid = eng.request("conditionals", {"members": [_member()]})
+    timer.start(timeout)
+    ids = [eng.request(fn, payload) for fn, payload in reqs]
     loop.exec()
+    timer.stop()
+    return got, order, ids, eng
+
+
+def test_engine_subprocess(app):
+    from PySide6.QtCore import QProcess
+    got, _order, ids, eng = _run_requests(app, [
+        ("compute", {"members": [_member()], "only": [0], "modes": ["avg"]})])
+    proc = eng._proc
     eng.shutdown()
-    assert got.get("id") == rid
-    assert "err" not in got
-    assert got["res"]
+    assert ids[0] in got and not isinstance(got[ids[0]], Exception)
+    assert got[ids[0]]["members"][0]["stats"]["hp"] > 10000
+    assert proc.state() == QProcess.NotRunning
+
+
+def test_engine_bad_function(app):
+    got, _order, ids, eng = _run_requests(app, [("nope", {})])
+    eng.shutdown()
+    assert isinstance(got[ids[0]], RuntimeError)
+    assert "nope" in str(got[ids[0]])
+
+
+def test_engine_back_to_back_in_order(app):
+    reqs = [("conditionals", {"members": [_member()]}),
+            ("nope", {}),
+            ("compute", {"members": [_member()], "only": [0], "modes": ["avg"]})]
+    got, order, ids, eng = _run_requests(app, reqs)
+    eng.shutdown()
+    assert order == ids
+    assert got[ids[0]] and isinstance(got[ids[1]], RuntimeError)
+    assert got[ids[2]]["members"][0]["stats"]["hp"] > 10000
 
 
 def test_option_label_lunar_reactions():

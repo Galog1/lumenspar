@@ -157,7 +157,7 @@ def test_state_round_trip(app, tmp_path, monkeypatch):
     b.select(1)
     b.setCount("Bennett:skill_a", 3)
     b.setSeconds(25.0)
-    b.setEnemy(95, 20.0, "pyro", "")
+    b.setEnemy(95, 20.0)
     b._cond_rows = T.condition_rows(CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"],
                                     b._state["conditionals"])
     b._conds = (CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"])
@@ -173,7 +173,7 @@ def test_state_round_trip(app, tmp_path, monkeypatch):
     assert saved["selected"] == 1
     assert saved["rotation"] == {"Bennett": {"Bennett:skill_a": 3}}
     assert saved["seconds"] == 25.0
-    assert saved["enemy"] == {"level": 95, "res": 20.0, "amp": "pyro", "cata": ""}
+    assert saved["enemy"] == {"level": 95, "res": 20.0}
     assert saved["conditionals"]["Furina"] == {"Furina": {"c1Cond": 1},
                                                "SplendorOfTranquilWaters": {"stacks": 2}}
     assert saved["conditionals"]["Bennett"] == {"ViridescentVenerer": {"swirl": "hydro"}}
@@ -305,8 +305,9 @@ def test_set_setting_clamps_and_persists(app, tmp_path, monkeypatch):
     assert s == {"level": 100, "constellation": 0, "auto": 1, "skill": 10, "burst": 7,
                  "weapon": "SkywardHarp", "weaponLevel": 90, "refinement": 5}
     b.setMember(1, "Furina", "owned")
-    b.setSetting(1, "level", 5)                   # owned member: ignored
+    b.setSetting(1, "level", 5)                   # scan member: editable
     b._timer.stop()
+    assert b._state["settings"]["scan:Furina"]["level"] == 5
     assert "Furina" not in b._state["settings"]
 
     b2 = T.TeamBackend(settings, state_path=tmp_path / "team.json")
@@ -340,3 +341,91 @@ def test_ensure_portraits_downloads_once(app, tmp_path, monkeypatch):
     QCoreApplication.processEvents()
     b.ensurePortraits()
     assert calls == [["UI_AvatarIcon_Venti"]]
+
+
+# -- all scanned characters, per-member reactions -------------------------------------
+
+def _make3(tmp_path, monkeypatch):
+    good = {
+        "characters": [
+            {"key": "Furina", "level": 80, "ascension": 6, "constellation": 2,
+             "talent": {"auto": 5, "skill": 6, "burst": 7}},
+            {"key": "Xiangling", "level": 70, "ascension": 4, "constellation": 0,
+             "talent": {"auto": 1, "skill": 2, "burst": 3}},
+            {"key": "Zhongli", "level": 90, "ascension": 6, "constellation": 0,
+             "talent": {"auto": 9, "skill": 9, "burst": 9}},
+        ],
+        "weapons": [{"key": "SplendorOfTranquilWaters", "level": 85, "ascension": 6,
+                     "refinement": 3, "location": "Furina"}],
+        "artifacts": [],
+    }
+    export = tmp_path / "scan3.GOOD.json"
+    export.write_text(json.dumps(good), encoding="utf-8")
+    monkeypatch.setattr(builds, "latest", lambda *a, **k: None)
+    b = T.TeamBackend(SimpleNamespace(export_path=export), state_path=tmp_path / "t3.json")
+    b._timer.stop()
+    return b
+
+
+def test_owned_lists_every_scanned_character(app, tmp_path, monkeypatch):
+    b = _make3(tmp_path, monkeypatch)
+    assert [c["key"] for c in b.owned] == ["Furina", "Xiangling", "Zhongli"]
+    assert all(c["source"] == "scan" for c in b.owned)
+
+
+def test_scan_member_settings_prefilled(app, tmp_path, monkeypatch):
+    b = _make3(tmp_path, monkeypatch)
+    b.setMember(0, "Furina")
+    b.setMember(1, "Xiangling")
+    b._timer.stop()
+    s = b.members[0]["settings"]
+    assert (s["level"], s["constellation"], s["auto"], s["skill"], s["burst"]) == (80, 2, 5, 6, 7)
+    assert (s["weapon"], s["weaponLevel"], s["refinement"]) == ("SplendorOfTranquilWaters", 85, 3)
+    x = b.members[1]
+    assert x["source"] == "scan"
+    assert x["settings"]["weapon"] == damage.default_settings("Xiangling")["weapon"]
+    assert x["settings"]["level"] == 70
+    b.setSetting(1, "level", 60)
+    assert b._entry("Xiangling")["member"]["char"]["level"] == 60
+    assert b._entry("Xiangling")["member"]["artifacts"] == []
+
+
+def test_reaction_per_member(app, tmp_path, monkeypatch):
+    b = _make3(tmp_path, monkeypatch)
+    b.setMember(0, "Furina")
+    b.setMember(1, "Xiangling")
+    b.select(1)
+    b._timer.stop()
+    assert [o["value"] for o in b.reactionOptions] == ["", "vaporize"]
+    b.setReaction("melt")                       # not allowed: ignored
+    assert b.reaction == ""
+    b.setReaction("vaporize")
+    b._timer.stop()
+    assert b.reaction == "vaporize"
+    active = b._active()
+    p = b._payload(active, [1], ["avg"])
+    assert p["enemy"]["amp"] == "vaporize" and p["enemy"]["cata"] == ""
+    p0 = b._payload(active, [0], ["avg"])
+    assert p0["enemy"]["amp"] == ""
+    assert b.optimize_context("Xiangling")["enemy"]["amp"] == "vaporize"
+    b.setMember(0, "")                          # team changed: choice no longer allowed
+    assert b.reaction == ""
+    assert b._payload(b._active(), [0], ["avg"])["enemy"]["amp"] == ""
+
+
+def test_old_enemy_state_migrated(app, tmp_path, monkeypatch):
+    (tmp_path / "old.json").write_text(json.dumps(
+        {"enemy": {"level": 90, "res": 15, "amp": "melt", "cata": "spread"}}), encoding="utf-8")
+    state = T._load_state(tmp_path / "old.json")
+    assert state["enemy"] == {"level": 90, "res": 15.0}
+    assert state["reactions"] == {}
+
+
+def test_visible_formulas_filters_static_rows():
+    fs = [{"sheet": "Furina", "name": "burst"},
+          {"sheet": "static", "name": "swirl_pyro"},
+          {"sheet": "static", "name": "overloaded"},
+          {"sheet": "static", "name": "bloom"}]
+    team = {"anemo", "pyro", "hydro", "dendro"}
+    assert [f["name"] for f in T.visible_formulas(fs, "anemo", team)] == ["burst", "swirl_pyro"]
+    assert [f["name"] for f in T.visible_formulas(fs, "hydro", team)] == ["burst", "bloom"]
