@@ -74,3 +74,9 @@ var process = { env: { NODE_ENV: "production" } };
   Object.entries = function (o) { return enumKeys(o).map(function (k) { return [k, o[k]]; }); };
   Object.values = function (o) { return enumKeys(o).map(function (k) { return o[k]; }); };
 })();
+// QJSEngine's WeakMap can crash (a segfault in WeakMap.has, seen while the
+// optimizer detaches and prunes formulas). The engine only uses weak
+// collections as caches, so ordinary Map/Set are a safe stand-in: entries are
+// kept for the engine's lifetime instead of being collected.
+WeakMap = function WeakMap(entries) { return new Map(entries); };
+WeakSet = function WeakSet(values) { return new Set(values); };

@@ -76,6 +76,48 @@ def member_from_card(card: dict) -> dict:
     }
 
 
+DEFAULT_WEAPONS = {"sword": "FavoniusSword", "claymore": "FavoniusGreatsword",
+                   "polearm": "FavoniusLance", "catalyst": "FavoniusCodex",
+                   "bow": "FavoniusWarbow"}
+
+
+def ascension_for(level: int) -> int:
+    """The ascension phase a level implies."""
+    for phase, top in enumerate((20, 40, 50, 60, 70, 80)):
+        if level <= top:
+            return phase
+    return 6
+
+
+@lru_cache(maxsize=1)
+def _character_info() -> dict:
+    try:
+        items = json.loads((_GAMEDATA / "characters.json").read_text(encoding="utf-8"))["items"]
+    except (OSError, ValueError, KeyError):
+        return {}
+    return {c["key"]: c for c in items if c.get("key")}
+
+
+def default_settings(key: str) -> dict:
+    """Settings of a character picked from the full list: maxed, no constellations."""
+    info = _character_info().get(key, {})
+    return {"level": 90, "constellation": 0, "auto": 9, "skill": 9, "burst": 9,
+            "weapon": DEFAULT_WEAPONS.get(info.get("weaponType"), "FavoniusSword"),
+            "weaponLevel": 90, "refinement": 1}
+
+
+def member_from_settings(key: str, s: dict) -> dict:
+    """An engine team member from editable settings: no artifacts."""
+    return {
+        "char": {"key": key, "level": s["level"], "constellation": s["constellation"],
+                 "ascension": ascension_for(s["level"]),
+                 "talent": {"auto": s["auto"], "skill": s["skill"], "burst": s["burst"]}},
+        "weapon": {"key": s["weapon"], "level": s["weaponLevel"],
+                   "ascension": ascension_for(s["weaponLevel"]), "refinement": s["refinement"]},
+        "artifacts": [],
+    }
+
+
 def member_from_good(good: dict, char_key: str) -> dict | None:
     """An engine team member from a .GOOD export, or None without the character or its weapon."""
     char = next((c for c in good.get("characters", []) if c.get("key") == char_key), None)
@@ -297,6 +339,13 @@ def cond_label(sheet: str, name: str) -> str:
             keys = sorted(k for k in go if k.startswith(m.group(1)) and "cond" in k.lower())
             if keys:
                 label = go[keys[0]]
+    # a nested group of labels ("c2": {"bloomCondName": ...}): the entry named in this condition
+    if isinstance(label, dict):
+        pick = [v for k, v in label.items() if isinstance(v, str) and len(k) > 2
+                and re.sub(r"(cond|condname)$", "", k.lower()) in low]
+        label = pick[0] if len(pick) == 1 else None
+    elif not isinstance(label, (str, type(None))):
+        label = None
     # (5) the sheet's single generic GO label, when it is about this condition:
     # a generic name, or one sharing a word with the label ("noEnergy" and
     # "Character has 0 energy", but not "afterSkill")
@@ -350,7 +399,12 @@ def option_label(value: str) -> str:
     if value.isdigit():
         return value
     special = {"sc": "Stellar-Conduct", "ss": "Stellar Swirl", "on": "On"}
-    return special.get(value) or humanize(value)
+    if value in special:
+        return special[value]
+    m = re.fullmatch(r"lunar([a-z]+)", value)
+    if m:
+        return "Lunar-" + m.group(1).capitalize()
+    return humanize(value)
 
 
 def formula_label(sheet: str, name: str, move: str) -> str:

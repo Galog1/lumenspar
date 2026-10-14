@@ -81,6 +81,12 @@ PATCHES = [
     ("GO's critMode 'crit' multiplies by 1 + CRIT Rate instead of 1 + CRIT DMG "
      "(data/common/dmg.ts; GO's UI only uses 'avg', so it went unnoticed)",
      "crit:sum(1,own.common.cappedCritRate_)", "crit:sum(1,own.final.critDMG_)", 1),
+    ("`compile` inlines custom operations (e.g. the resistance multiplier) into "
+     "generated code via Function.toString(); QJSEngine returns '[native code]' "
+     "for that, so expose the registry and reference it instead",
+     "var customOps={}", "var customOps=globalThis.__lumensparOps={}", 1),
+    ("(continued) reference the registered operation rather than its source text",
+     "${f.calc.toString()}", "globalThis.__lumensparOps[${JSON.stringify(name)}].calc", 1),
 ]
 
 

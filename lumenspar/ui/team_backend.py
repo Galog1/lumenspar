@@ -12,12 +12,14 @@ The state (team, toggles, enemy, rotation) is saved to team.json.
 from __future__ import annotations
 
 import json
+import threading
 from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, QTimer, Signal, Slot
 
 from .. import builds, damage
 from ..config import DATA_DIR
+from ..wishes import icons
 from .builds_backend import _url
 
 MOVE_GROUPS = {"normal": "Normal Attack", "charged": "Charged Attack",
@@ -85,7 +87,17 @@ def condition_rows(conds: list[dict], keys: list[str], names: list[str], state: 
         else:
             member_rows.append((int(c["src"]), _KIND_ORDER.get(kind, 3), n, row))
     member_rows.sort(key=lambda t: t[:3])
-    return [r for *_, r in member_rows] + team_rows
+    rows = [r for *_, r in member_rows] + team_rows
+    # GO sometimes gives several conditions of one sheet the same text
+    # (e.g. Venti's per-element Stormeye swirls); tell them apart.
+    seen: dict[tuple, int] = {}
+    for r in rows:
+        k = (r["memberKey"], r["sheet"], r["label"])
+        seen[k] = seen.get(k, 0) + 1
+    for r in rows:
+        if seen[(r["memberKey"], r["sheet"], r["label"])] > 1:
+            r["label"] = f"{r['label']} ({damage.humanize(r['name'])})"
+    return rows
 
 
 def _whole(v: float) -> str:
@@ -133,7 +145,8 @@ def rotation_total(formulas: list[dict], counts: dict[str, int]) -> float:
 # -- state ------------------------------------------------------------------------
 
 def _default_state() -> dict:
-    return {"members": [""] * SLOTS, "selected": 0, "conditionals": {},
+    return {"members": [{} for _ in range(SLOTS)], "selected": 0, "settings": {},
+            "conditionals": {},
             "enemy": {"level": 100, "res": 10.0, "amp": "", "cata": ""},
             "rotation": {}, "seconds": 20.0}
 
@@ -149,9 +162,24 @@ def _load_state(path: Path) -> dict:
         return state
     members = raw.get("members")
     if isinstance(members, list):
-        keys = [m if isinstance(m, str) else "" for m in members[:SLOTS]]
-        keys += [""] * (SLOTS - len(keys))
-        state["members"] = [k if k not in keys[:i] or not k else "" for i, k in enumerate(keys)]
+        out: list[dict] = []
+        seen: set[str] = set()
+        for m in members[:SLOTS]:
+            if isinstance(m, str):                      # old state: plain keys
+                m = {"key": m, "source": "owned"}
+            key = m.get("key") if isinstance(m, dict) else None
+            if not isinstance(key, str) or not key or key in seen:
+                out.append({})
+                continue
+            seen.add(key)
+            out.append({"key": key, "source": "game" if m.get("source") == "game" else "owned"})
+        out += [{} for _ in range(SLOTS - len(out))]
+        state["members"] = out
+    settings = raw.get("settings")
+    if isinstance(settings, dict):
+        for key, s in settings.items():
+            if isinstance(key, str) and isinstance(s, dict):
+                state["settings"][key] = _clean_settings(key, s)
     sel = raw.get("selected")
     if isinstance(sel, int) and not isinstance(sel, bool) and 0 <= sel < SLOTS:
         state["selected"] = sel
@@ -191,6 +219,22 @@ def _load_state(path: Path) -> dict:
     return state
 
 
+_LIMITS = {"level": (1, 100), "constellation": (0, 6), "auto": (1, 10), "skill": (1, 10),
+           "burst": (1, 10), "weaponLevel": (1, 90), "refinement": (1, 5)}
+
+
+def _clean_settings(key: str, raw: dict) -> dict:
+    """Saved settings of a character: defaults for anything missing or out of range."""
+    out = damage.default_settings(key)
+    for field, (lo, hi) in _LIMITS.items():
+        v = raw.get(field)
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            out[field] = max(lo, min(hi, int(v)))
+    if isinstance(raw.get("weapon"), str) and raw["weapon"]:
+        out["weapon"] = raw["weapon"]
+    return out
+
+
 def _truthy(value) -> bool:
     if isinstance(value, str):
         return value.strip().lower() not in ("", "0", "false", "off", "no")
@@ -223,6 +267,9 @@ class TeamBackend(QObject):
     conditionsChanged = Signal()
     damageChanged = Signal()
     rotationChanged = Signal()
+    formulasUpdated = Signal()
+    allCharactersChanged = Signal()
+    _portraitsDone = Signal()
 
     DEBOUNCE_MS = 300
 
@@ -241,6 +288,7 @@ class TeamBackend(QObject):
         self._raw_key = ""                       # whose formulas/stats are shown
         self._raw_stats: dict = {}
         self._raw_formulas: list[dict] = []
+        self._formulas_by_key: dict[str, list[dict]] = {}   # last computed formulas per character
         self._team: dict | None = None           # a computeTeam chain in progress
         self._team_result: dict = {}             # {"seconds"?, "members": [...]} of the last chain
         self._stale = True
@@ -250,6 +298,12 @@ class TeamBackend(QObject):
         self._timer.setSingleShot(True)
         self._timer.setInterval(self.DEBOUNCE_MS)
         self._timer.timeout.connect(self._recompute)
+        self._all: dict[str, dict] = self._read_all()
+        self._all_public: list[dict] = []
+        self._portraits_started = False
+        self._portraits_thread: threading.Thread | None = None
+        self._portraitsDone.connect(self._on_portraits)
+        self._rebuild_all_public()
         self._read_sources()
         if any(self._active()):
             self._timer.start()
@@ -293,29 +347,130 @@ class TeamBackend(QObject):
                           "icon": info.get("icon", ""), "source": "scan", "member": member}
         self._cands = cands
 
-    def _public(self, key: str) -> dict:
-        c = self._cands[key]
-        return {"key": key, "name": c["name"], "element": c["element"],
-                "iconUrl": _url(c["icon"]), "source": c["source"]}
+    @staticmethod
+    def _read_all() -> dict[str, dict]:
+        """Every character of the game (characters.json), Travelers once per element."""
+        out: dict[str, dict] = {}
+        for key, c in builds._items("characters.json", "key").items():
+            if not c.get("inGO") or not c.get("name"):
+                continue
+            name, element = c["name"], c.get("element") or ""
+            if key.startswith("Traveler"):
+                element = element or key.removeprefix("Traveler").lower()
+                name = f"Traveler ({element.capitalize()})"
+            out[key] = {"key": key, "name": name, "element": element,
+                        "rarity": int(c.get("rarity") or 0), "icon": c.get("icon") or "",
+                        "weaponType": c.get("weaponType") or "sword"}
+        return out
+
+    def _rebuild_all_public(self) -> None:
+        self._all_public = [
+            {"key": c["key"], "name": c["name"], "element": c["element"], "rarity": c["rarity"],
+             "iconUrl": _url(c["icon"])}
+            for c in sorted(self._all.values(), key=lambda c: (c["name"].lower(), c["key"]))]
+
+    def _settings_for(self, key: str) -> dict:
+        """The settings of a character from the full list, created on first use."""
+        store = self._state["settings"]
+        if key not in store:
+            store[key] = damage.default_settings(key)
+        return store[key]
+
+    def _slot_entry(self, m: dict) -> dict | None:
+        """What a slot holds, or None when empty or no longer available."""
+        key = m.get("key") if m else ""
+        if not key:
+            return None
+        if m.get("source") == "game":
+            info = self._all.get(key)
+            if info is None:
+                return None
+            s = self._settings_for(key)
+            return {"key": key, "name": info["name"], "element": info["element"],
+                    "icon": info["icon"], "source": "game", "settings": s,
+                    "member": damage.member_from_settings(key, s)}
+        return self._cands.get(key)
+
+    def _entry(self, key: str) -> dict | None:
+        for m in self._state["members"]:
+            if m and m.get("key") == key:
+                return self._slot_entry(m)
+        return None
+
+    def _public(self, entry: dict) -> dict:
+        out = {"key": entry["key"], "name": entry["name"], "element": entry["element"],
+               "iconUrl": _url(entry["icon"]), "source": entry["source"]}
+        if entry["source"] == "game":
+            out["settings"] = dict(entry["settings"])
+        return out
 
     def _active(self) -> list[tuple[int, str]]:
         """(slot, key) of the non-empty slots whose character is available, in slot order."""
-        return [(i, k) for i, k in enumerate(self._state["members"]) if k and k in self._cands]
+        return [(i, m["key"]) for i, m in enumerate(self._state["members"])
+                if self._slot_entry(m) is not None]
 
     def _selected_key(self) -> str:
-        key = self._state["members"][self._state["selected"]]
-        return key if key in self._cands else ""
+        m = self._state["members"][self._state["selected"]]
+        return m["key"] if self._slot_entry(m) is not None else ""
+
+    # -- portraits of the full list -----------------------------------------------
+
+    @Slot()
+    def ensurePortraits(self) -> None:
+        """Download the portraits the full list is missing, once per session."""
+        if self._portraits_started:
+            return
+        self._portraits_started = True
+        names = icons.missing_assets(c["icon"] for c in self._all.values())
+        if not names:
+            return
+
+        def work() -> None:
+            try:
+                icons.download(names)
+            finally:
+                self._portraitsDone.emit()
+
+        self._portraits_thread = threading.Thread(target=work, daemon=True)
+        self._portraits_thread.start()
+
+    @Slot()
+    def _on_portraits(self) -> None:
+        self._rebuild_all_public()
+        self.allCharactersChanged.emit()
+        self.changed.emit()
 
     # -- what the page shows --------------------------------------------------------
 
     @Property("QVariantList", notify=changed)
-    def candidates(self) -> list:
+    def owned(self) -> list:
         shown = sorted(self._cands.values(), key=lambda c: (c["source"] != "showcase", c["name"]))
-        return [self._public(c["key"]) for c in shown]
+        return [self._public(c) for c in shown]
+
+    @Property("QVariantList", notify=allCharactersChanged)
+    def allCharacters(self) -> list:
+        return self._all_public
 
     @Property("QVariantList", notify=changed)
     def members(self) -> list:
-        return [self._public(k) if k in self._cands else {} for k in self._state["members"]]
+        out = []
+        for m in self._state["members"]:
+            e = self._slot_entry(m)
+            out.append(self._public(e) if e is not None else {})
+        return out
+
+    @Property("QVariantList", notify=changed)
+    def weaponChoices(self) -> list:
+        key = self._selected_key()
+        if not key:
+            return []
+        info = self._all.get(key)
+        wtype = info["weaponType"] if info else "sword"
+        items = builds._items("weapons.json", "key").values()
+        shown = [w for w in items if w.get("inGO") and w.get("type") == wtype and w.get("name")]
+        shown.sort(key=lambda w: (-int(w.get("rarity") or 0), w["name"].lower()))
+        return [{"key": w["key"], "name": w["name"], "rarity": int(w.get("rarity") or 0)}
+                for w in shown]
 
     @Property(int, notify=changed)
     def selected(self) -> int:
@@ -334,7 +489,7 @@ class TeamBackend(QObject):
         key = self._selected_key()
         if not key or key != self._raw_key or not self._raw_stats:
             return []
-        return stat_rows(self._raw_stats, self._cands[key]["element"])
+        return stat_rows(self._raw_stats, self._entry(key)["element"])
 
     @Property("QVariantList", notify=damageChanged)
     def formulas(self) -> list:
@@ -372,19 +527,59 @@ class TeamBackend(QObject):
     # -- actions --------------------------------------------------------------------
 
     @Slot(int, str)
-    def setMember(self, slot: int, key: str) -> None:
+    @Slot(int, str, str)
+    def setMember(self, slot: int, key: str, source: str = "owned") -> None:
         if not 0 <= slot < SLOTS:
             return
         members = self._state["members"]
-        if key and key not in self._cands:
-            return
         if key:
-            for i, k in enumerate(members):
-                if k == key and i != slot:
-                    members[i] = ""
-        members[slot] = key
+            if source == "game":
+                if key not in self._all:
+                    return
+            elif key not in self._cands:
+                return
+            for i, m in enumerate(members):
+                if m and m.get("key") == key and i != slot:
+                    members[i] = {}
+            if source == "game":
+                self._settings_for(key)
+            members[slot] = {"key": key, "source": "game" if source == "game" else "owned"}
+        else:
+            members[slot] = {}
         self.changed.emit()
         self._touch()
+
+    @Slot(int, str, "QVariant")
+    def setSetting(self, slot: int, field: str, value) -> None:
+        if not 0 <= slot < SLOTS:
+            return
+        m = self._state["members"][slot]
+        if not m or m.get("source") != "game" or m.get("key") not in self._all:
+            return
+        s = self._settings_for(m["key"])
+        if field == "weapon":
+            wtype = self._all[m["key"]]["weaponType"]
+            w = builds._items("weapons.json", "key").get(str(value))
+            if w is None or not w.get("inGO") or w.get("type") != wtype:
+                return
+            s["weapon"] = w["key"]
+        elif field in _LIMITS:
+            lo, hi = _LIMITS[field]
+            s[field] = max(lo, min(hi, _int(value)))
+        else:
+            return
+        self._cond_sig = None                # the weapon / constellation change the toggles
+        self.changed.emit()
+        self._touch()
+
+    @Slot(str)
+    def addOwned(self, key: str) -> None:
+        """Put an owned character in the first empty slot (the last slot when all are taken)."""
+        members = self._state["members"]
+        if key not in self._cands or any(m and m.get("key") == key for m in members):
+            return
+        slot = next((i for i, m in enumerate(members) if not m), SLOTS - 1)
+        self.setMember(slot, key, "owned")
 
     @Slot(int)
     def select(self, slot: int) -> None:
@@ -490,6 +685,23 @@ class TeamBackend(QObject):
             self._engine.failed.connect(self._on_failed)
         return self._engine
 
+    def engine(self) -> damage.Engine:
+        """The formula engine (created on first use), shared with the optimizer."""
+        return self._engine_get()
+
+    def optimize_context(self, char_key: str) -> dict | None:
+        """What an engine search for a character needs from the team, or None when
+        the character is not in it."""
+        active = self._active()
+        keys = [k for _, k in active]
+        if char_key not in keys:
+            return None
+        base = self._payload(active, [], [])
+        return {"members": base["members"], "conditionals": base["conditionals"],
+                "enemy": base["enemy"], "index": keys.index(char_key),
+                "rotation": dict(self._state["rotation"].get(char_key, {})),
+                "formulas": list(self._formulas_by_key.get(char_key, []))}
+
     def _payload(self, active: list[tuple[int, str]], only: list[int], modes: list[str]) -> dict:
         conds: dict = {}
         stored = self._state["conditionals"]
@@ -502,7 +714,7 @@ class TeamBackend(QObject):
             if sheets:
                 conds[str(idx)] = sheets
         enemy = self._state["enemy"]
-        return {"members": [self._cands[k]["member"] for _, k in active],
+        return {"members": [self._entry(k)["member"] for _, k in active],
                 "conditionals": conds,
                 "enemy": {"level": enemy["level"], "res": enemy["res"] / 100,
                           "amp": enemy["amp"], "cata": enemy["cata"]},
@@ -539,7 +751,7 @@ class TeamBackend(QObject):
         if keys != self._cond_sig:
             self._cond_sig = keys
             self._request("cond", "conditionals",
-                          {"members": [self._cands[k]["member"] for _, k in active]})
+                          {"members": [self._entry(k)["member"] for _, k in active]})
         key = self._selected_key()
         if not key:
             self._ids["avg"] = self._ids["detail"] = None
@@ -549,7 +761,7 @@ class TeamBackend(QObject):
             return
         idx = [k for _, k in active].index(key)
         self._ids["detail"] = None
-        self._set_status(f"Calculating {self._cands[key]['name']}…")
+        self._set_status(f"Calculating {self._entry(key)['name']}…")
         self._request("avg", "compute", self._payload(active, [idx], ["avg"]))
 
     def _purpose(self, req_id: int) -> str | None:
@@ -569,7 +781,7 @@ class TeamBackend(QObject):
         if purpose == "cond":
             active = self._active()
             keys = [k for _, k in active]
-            names = [self._cands[k]["name"] for k in keys]
+            names = [self._entry(k)["name"] for k in keys]
             self._conds = (list(out), keys, names)
             self._cond_rows = condition_rows(*self._conds, self._state["conditionals"])
             self._settle("cond")
@@ -587,6 +799,8 @@ class TeamBackend(QObject):
             self._raw_key = key
             self._raw_stats = res.get("stats", {})
             self._raw_formulas = list(res.get("formulas", []))
+            self._formulas_by_key[key] = self._raw_formulas
+            self.formulasUpdated.emit()
             self.damageChanged.emit()
             self._update_busy()
             self._request("detail", "compute", self._payload(active, [idx], ["crit", "nonCrit"]))
@@ -649,7 +863,11 @@ class TeamBackend(QObject):
             return
         pos = t["pos"]
         res = (out.get("members") or [None] * (pos + 1))[pos]
-        t["formulas"][t["active"][pos][1]] = (res or {}).get("formulas", [])
+        member_key = t["active"][pos][1]
+        t["formulas"][member_key] = (res or {}).get("formulas", [])
+        if res is not None:
+            self._formulas_by_key[member_key] = t["formulas"][member_key]
+            self.formulasUpdated.emit()
         t["pos"] += 1
         if t["pos"] < len(t["active"]):
             self._team_step()
@@ -658,7 +876,7 @@ class TeamBackend(QObject):
         members = []
         for _, key in t["active"]:
             total = rotation_total(t["formulas"].get(key, []), self._state["rotation"].get(key, {}))
-            members.append({"name": self._cands[key]["name"], "total": total,
+            members.append({"name": self._entry(key)["name"], "total": total,
                             "dps": total / seconds})
         self._team = None
         self._team_result = {"members": members}

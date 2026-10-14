@@ -27,6 +27,32 @@ ColumnLayout {
         return Number(v).toLocaleString(Qt.locale(), "f", 0)
     }
 
+    // the conditions grouped by member and sheet, in display order
+    function groupConditions(list) {
+        const out = []
+        for (const c of list) {
+            const last = out.length > 0 ? out[out.length - 1] : null
+            if (last && last.member === (c.member || "") && last.sheetTitle === (c.sheetTitle || ""))
+                last.rows.push(c)
+            else
+                out.push({ member: c.member || "", sheetTitle: c.sheetTitle || "",
+                           newMember: !last || last.member !== (c.member || ""), rows: [c] })
+        }
+        return out
+    }
+
+    function filterByName(list, query) {
+        const q = (query || "").trim().toLowerCase()
+        if (!q) return list || []
+        return (list || []).filter(c => (c.name || "").toLowerCase().indexOf(q) >= 0)
+    }
+
+    function weaponIndex(choices, key) {
+        for (let i = 0; i < (choices || []).length; i++)
+            if (choices[i].key === key) return i
+        return -1
+    }
+
     function colValue(f) {
         return col === "crit" ? f.crit : (col === "nonCrit" ? f.nonCrit : f.avg)
     }
@@ -79,6 +105,67 @@ ColumnLayout {
         }
     }
 
+    component Combo: ComboBox {
+        id: cb
+        implicitHeight: 32
+        implicitWidth: 220
+        font.pixelSize: 13
+        textRole: "name"
+        background: Rectangle {
+            radius: 8; color: Theme.bgAlt
+            border.color: cb.activeFocus ? Theme.accent : Theme.border
+            border.width: 1
+        }
+        contentItem: Text {
+            leftPadding: 10
+            rightPadding: 26
+            text: cb.displayText
+            color: Theme.text
+            font.pixelSize: 13
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        indicator: Text {
+            x: cb.width - width - 10
+            anchors.verticalCenter: parent.verticalCenter
+            text: "▾"
+            color: Theme.textDim
+            font.pixelSize: 12
+        }
+        delegate: ItemDelegate {
+            id: dlg
+            required property var modelData
+            required property int index
+            width: cb.width
+            highlighted: cb.highlightedIndex === index
+            background: Rectangle { color: dlg.highlighted ? Theme.surfaceHi : Theme.bgAlt }
+            contentItem: Text {
+                text: dlg.modelData.name
+                color: Theme.text
+                font.pixelSize: 13
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+        popup: Popup {
+            y: cb.height + 2
+            width: cb.width
+            implicitHeight: Math.min(contentItem.implicitHeight + 2, 320)
+            padding: 1
+            contentItem: ListView {
+                clip: true
+                implicitHeight: contentHeight
+                model: cb.popup.visible ? cb.delegateModel : null
+                currentIndex: cb.highlightedIndex
+            }
+            background: Rectangle {
+                radius: 8; color: Theme.bgAlt
+                border.color: Theme.border
+                border.width: 1
+            }
+        }
+    }
+
     // portrait circle with a rarity gradient; falls back to the initial
     component Portrait: Rectangle {
         id: portrait
@@ -115,12 +202,17 @@ ColumnLayout {
     Popup {
         id: pickPopup
         property int slot: 0
+        property string tab: "mine"
         parent: Overlay.overlay
         anchors.centerIn: parent
         modal: true
         padding: 16
         width: Math.min(640, (parent ? parent.width : 640) - 40)
-        height: Math.min(420, implicitHeight)
+        height: Math.min(460, (parent ? parent.height : 460) - 40)
+        onAboutToShow: {
+            pickSearch.text = ""
+            if (tab === "all") team.ensurePortraits()
+        }
         background: Rectangle {
             radius: 14
             color: Theme.surface
@@ -129,25 +221,70 @@ ColumnLayout {
         }
         contentItem: ColumnLayout {
             spacing: 12
+            Row {
+                spacing: 8
+                Pill {
+                    label: "My characters"
+                    checked: pickPopup.tab === "mine"
+                    onClicked: pickPopup.tab = "mine"
+                }
+                Pill {
+                    label: "All characters"
+                    checked: pickPopup.tab === "all"
+                    onClicked: {
+                        pickPopup.tab = "all"
+                        team.ensurePortraits()
+                    }
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 10
+                Field {
+                    id: pickSearch
+                    Layout.fillWidth: true
+                    placeholderText: "Search characters"
+                }
+                GhostButton {
+                    label: "Remove from team"
+                    implicitHeight: 32
+                    onClicked: {
+                        team.setMember(pickPopup.slot, "", "owned")
+                        pickPopup.close()
+                    }
+                }
+            }
             Text {
-                text: "Choose a character"
-                color: Theme.text
-                font.pixelSize: 15
-                font.weight: Font.DemiBold
+                Layout.fillWidth: true
+                visible: pickPopup.tab === "mine" && (team.owned || []).length === 0
+                text: "No builds yet — fetch your showcase in Build Cards or scan your inventory."
+                color: Theme.textDim
+                font.pixelSize: 13
+                wrapMode: Text.WordWrap
+            }
+            Text {
+                Layout.fillWidth: true
+                visible: pickFlow.model.length === 0 && ((team.owned || []).length > 0 || pickPopup.tab === "all")
+                text: "No characters match."
+                color: Theme.textDim
+                font.pixelSize: 13
             }
             Flickable {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.preferredHeight: Math.min(contentHeight, 280)
                 contentWidth: width
                 contentHeight: pickFlow.height
                 clip: true
+                boundsBehavior: Flickable.StopAtBounds
+                ScrollBar.vertical: ScrollBar {}
                 Flow {
                     id: pickFlow
-                    width: parent.width
+                    width: parent.width - 10
                     spacing: 8
+                    property var model: panel.filterByName(
+                        pickPopup.tab === "mine" ? team.owned : team.allCharacters, pickSearch.text)
                     Repeater {
-                        model: team.candidates || []
+                        model: pickFlow.model
                         delegate: Rectangle {
                             id: cand
                             required property var modelData
@@ -160,7 +297,8 @@ ColumnLayout {
                             HoverHandler { id: candHover; cursorShape: Qt.PointingHandCursor }
                             TapHandler {
                                 onTapped: {
-                                    team.setMember(pickPopup.slot, cand.modelData.key)
+                                    team.setMember(pickPopup.slot, cand.modelData.key,
+                                                   pickPopup.tab === "mine" ? "owned" : "game")
                                     pickPopup.close()
                                 }
                             }
@@ -180,6 +318,7 @@ ColumnLayout {
                                     width: 48; height: 48
                                     iconUrl: cand.modelData.iconUrl || ""
                                     name: cand.modelData.name || ""
+                                    rarity: cand.modelData.rarity || 5
                                 }
                                 Column {
                                     anchors.verticalCenter: parent.verticalCenter
@@ -193,6 +332,7 @@ ColumnLayout {
                                     }
                                     Text {
                                         width: parent.width
+                                        visible: pickPopup.tab === "mine"
                                         text: cand.modelData.source || ""
                                         color: Theme.textDim
                                         font.pixelSize: 10
@@ -203,21 +343,13 @@ ColumnLayout {
                     }
                 }
             }
-            GhostButton {
-                label: "Remove from team"
-                implicitHeight: 32
-                onClicked: {
-                    team.setMember(pickPopup.slot, "")
-                    pickPopup.close()
-                }
-            }
         }
     }
 
     // ── team ──────────────────────────────────────────────────────────
     Card {
         title: "Team"
-        subtitle: "Up to four characters. Showcase builds are used as they are; other characters come from your inventory scan with what they have equipped. Click a member to see their damage."
+        subtitle: "Up to four characters. Showcase builds are used as they are; other characters come from your inventory scan with what they have equipped, or from the full list with settings you choose. Click a member to see their damage."
 
         Row {
             spacing: 14
@@ -292,6 +424,117 @@ ColumnLayout {
                     }
                 }
             }
+        }
+
+        Text {
+            Layout.fillWidth: true
+            visible: panel.selectedMember.source === "game"
+            text: "Settings for " + (panel.selectedMember.name || "")
+            color: Theme.text
+            font.pixelSize: 14
+            font.weight: Font.DemiBold
+        }
+        Flow {
+            id: gameSettings
+            Layout.fillWidth: true
+            visible: panel.selectedMember.source === "game"
+            spacing: 16
+            readonly property var st: panel.selectedMember.settings || ({})
+
+            Column {
+                spacing: 4
+                Text { text: "Level"; color: Theme.textDim; font.pixelSize: 12 }
+                NumBox {
+                    from: 1; to: 100
+                    value: gameSettings.st.level || 1
+                    onValueModified: team.setSetting(panel.selectedSlot, "level", value)
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Constellation"; color: Theme.textDim; font.pixelSize: 12 }
+                Row {
+                    spacing: 6
+                    Repeater {
+                        model: 7
+                        delegate: Pill {
+                            required property int index
+                            label: "C" + index
+                            checked: (gameSettings.st.constellation || 0) === index
+                            onClicked: team.setSetting(panel.selectedSlot, "constellation", index)
+                        }
+                    }
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Normal"; color: Theme.textDim; font.pixelSize: 12 }
+                NumBox {
+                    from: 1; to: 10
+                    value: gameSettings.st.auto || 1
+                    onValueModified: team.setSetting(panel.selectedSlot, "auto", value)
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Skill"; color: Theme.textDim; font.pixelSize: 12 }
+                NumBox {
+                    from: 1; to: 10
+                    value: gameSettings.st.skill || 1
+                    onValueModified: team.setSetting(panel.selectedSlot, "skill", value)
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Burst"; color: Theme.textDim; font.pixelSize: 12 }
+                NumBox {
+                    from: 1; to: 10
+                    value: gameSettings.st.burst || 1
+                    onValueModified: team.setSetting(panel.selectedSlot, "burst", value)
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Weapon"; color: Theme.textDim; font.pixelSize: 12 }
+                Combo {
+                    model: team.weaponChoices || []
+                    currentIndex: panel.weaponIndex(team.weaponChoices, gameSettings.st.weapon)
+                    onActivated: (i) => team.setSetting(panel.selectedSlot, "weapon", team.weaponChoices[i].key)
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Weapon level"; color: Theme.textDim; font.pixelSize: 12 }
+                NumBox {
+                    from: 1; to: 90
+                    value: gameSettings.st.weaponLevel || 1
+                    onValueModified: team.setSetting(panel.selectedSlot, "weaponLevel", value)
+                }
+            }
+            Column {
+                spacing: 4
+                Text { text: "Refinement"; color: Theme.textDim; font.pixelSize: 12 }
+                Row {
+                    spacing: 6
+                    Repeater {
+                        model: 5
+                        delegate: Pill {
+                            required property int index
+                            label: "R" + (index + 1)
+                            checked: (gameSettings.st.refinement || 1) === index + 1
+                            onClicked: team.setSetting(panel.selectedSlot, "refinement", index + 1)
+                        }
+                    }
+                }
+            }
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: panel.selectedMember.source === "game"
+            text: "Characters from the full list have no artifacts here; their talents, passives, constellations and weapon still apply."
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
         }
     }
 
@@ -382,98 +625,180 @@ ColumnLayout {
             Layout.fillWidth: true
             spacing: 6
             Repeater {
-                model: panel.conditions
+                model: panel.groupConditions(panel.conditions)
                 delegate: ColumnLayout {
-                    id: cond
+                    id: grp
                     required property var modelData
-                    required property int index
-                    readonly property var prev: index > 0 ? (panel.conditions[index - 1] || ({})) : ({})
-                    readonly property bool newMember: index === 0 || (modelData.member || "") !== (prev.member || "")
-                    readonly property bool newSheet: newMember || (modelData.sheetTitle || "") !== (prev.sheetTitle || "")
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 6
 
                     Text {
                         Layout.fillWidth: true
-                        visible: cond.newMember && !!cond.modelData.member
+                        visible: grp.modelData.newMember && !!grp.modelData.member
                         topPadding: 8
-                        text: cond.modelData.member || ""
+                        text: grp.modelData.member
                         color: Theme.text
                         font.pixelSize: 14
                         font.weight: Font.DemiBold
                     }
                     Text {
                         Layout.fillWidth: true
-                        visible: cond.newSheet && !!cond.modelData.sheetTitle
-                        text: cond.modelData.sheetTitle || ""
+                        visible: !!grp.modelData.sheetTitle
+                        text: grp.modelData.sheetTitle
                         color: Theme.accent
                         font.pixelSize: 12
                     }
-                    RowLayout {
+                    Flow {
                         Layout.fillWidth: true
-                        spacing: 10
-                        Text {
-                            id: condLabel
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                            text: cond.modelData.label || cond.modelData.name || ""
-                            color: Theme.text
-                            font.pixelSize: 13
-                            wrapMode: Text.WordWrap
-                            HoverHandler { id: condHover }
-                            ToolTip.visible: condHover.hovered && !!cond.modelData.detail
-                            ToolTip.delay: 400
-                            ToolTip.timeout: 20000
-                            ToolTip.text: cond.modelData.detail || ""
-                        }
-                        Loader {
-                            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                            sourceComponent: cond.modelData.type === "num" ? numCtl
-                                           : (cond.modelData.type === "list" ? listCtl : boolCtl)
-                        }
-                        Component {
-                            id: boolCtl
-                            Pill {
-                                label: cond.modelData.value ? "✅ On" : "❌ Off"
-                                checked: !!cond.modelData.value
-                                onClicked: team.setConditional(cond.modelData.id, !cond.modelData.value)
-                            }
-                        }
-                        Component {
-                            id: numCtl
-                            NumBox {
-                                from: cond.modelData.min || 0
-                                to: cond.modelData.max || 10
-                                value: cond.modelData.value || 0
-                                onValueModified: team.setConditional(cond.modelData.id, value)
-                            }
-                        }
-                        Component {
-                            id: listCtl
-                            Row {
-                                spacing: 6
-                                Pill {
-                                    label: "Off"
-                                    checked: cond.modelData.value === null || cond.modelData.value === undefined
-                                             || cond.modelData.value === ""
-                                    onClicked: team.setConditional(cond.modelData.id, "")
+                        spacing: 8
+                        Repeater {
+                            model: grp.modelData.rows
+                            delegate: Rectangle {
+                                id: tile
+                                required property var modelData
+                                readonly property string kind: modelData.type === "num" ? "num"
+                                    : (modelData.type === "list" ? "list" : "bool")
+                                readonly property var val: modelData.value
+                                readonly property bool unset: val === null || val === undefined || val === ""
+                                readonly property bool active: kind === "bool" ? !!val
+                                    : (kind === "num" ? Number(val || 0) > 0 : !unset)
+                                readonly property int lo: modelData.min || 0
+                                readonly property int hi: modelData.max || 10
+                                function setNum(n) {
+                                    team.setConditional(modelData.id, Math.max(lo, Math.min(hi, n)))
                                 }
-                                Repeater {
-                                    model: cond.modelData.options || []
-                                    delegate: Pill {
-                                        required property var modelData
-                                        label: modelData.label
-                                        checked: cond.modelData.value === modelData.value
-                                        onClicked: team.setConditional(cond.modelData.id, modelData.value)
+
+                                implicitWidth: tileBody.implicitWidth + 24
+                                width: Math.min(260, implicitWidth)
+                                height: Math.max(44, tileBody.implicitHeight + 16)
+                                radius: 10
+                                color: Theme.bgAlt
+                                border.width: 1
+                                border.color: active ? Theme.accent : Theme.border
+
+                                HoverHandler {
+                                    id: tileHover
+                                    cursorShape: tile.kind === "bool" ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                }
+                                TapHandler {
+                                    enabled: tile.kind === "bool"
+                                    onTapped: team.setConditional(tile.modelData.id, !tile.val)
+                                }
+                                ToolTip.visible: tileHover.hovered && !!tile.modelData.detail
+                                ToolTip.delay: 400
+                                ToolTip.timeout: 20000
+                                ToolTip.text: tile.modelData.detail || ""
+
+                                ColumnLayout {
+                                    id: tileBody
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.leftMargin: 12
+                                    anchors.rightMargin: 12
+                                    spacing: 6
+
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 8
+                                        Rectangle {
+                                            visible: tile.kind === "bool"
+                                            Layout.preferredWidth: 16
+                                            Layout.preferredHeight: 16
+                                            Layout.alignment: Qt.AlignVCenter
+                                            radius: 4
+                                            color: tile.active ? Theme.accent : "transparent"
+                                            border.width: 1
+                                            border.color: tile.active ? Theme.accent : Theme.border
+                                            Text {
+                                                anchors.centerIn: parent
+                                                visible: tile.active
+                                                text: "✓"
+                                                color: "#FFFFFF"
+                                                font.pixelSize: 11
+                                                font.weight: Font.Bold
+                                            }
+                                        }
+                                        Text {
+                                            Layout.fillWidth: true
+                                            Layout.alignment: Qt.AlignVCenter
+                                            text: tile.modelData.label || tile.modelData.name || ""
+                                            color: Theme.text
+                                            font.pixelSize: 12
+                                            wrapMode: Text.WordWrap
+                                            maximumLineCount: 2
+                                            elide: Text.ElideRight
+                                        }
+                                        Row {
+                                            visible: tile.kind === "num"
+                                            Layout.alignment: Qt.AlignVCenter
+                                            spacing: 2
+                                            Rectangle {
+                                                width: 22; height: 22; radius: 6
+                                                color: Theme.surfaceGlass
+                                                Text { anchors.centerIn: parent; text: "−"; color: Theme.text; font.pixelSize: 14 }
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: tile.setNum(Number(tile.val || 0) - 1)
+                                                }
+                                            }
+                                            Text {
+                                                width: 24; height: 22
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                                text: String(tile.val || 0)
+                                                color: Theme.text
+                                                font.pixelSize: 12
+                                            }
+                                            Rectangle {
+                                                width: 22; height: 22; radius: 6
+                                                color: Theme.surfaceGlass
+                                                Text { anchors.centerIn: parent; text: "+"; color: Theme.text; font.pixelSize: 14 }
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: tile.setNum(Number(tile.val || 0) + 1)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Flow {
+                                        visible: tile.kind === "list"
+                                        Layout.fillWidth: true
+                                        spacing: 4
+                                        Repeater {
+                                            model: [{ value: "", label: "Off" }].concat(tile.modelData.options || [])
+                                            delegate: Rectangle {
+                                                id: opt
+                                                required property var modelData
+                                                readonly property bool on: modelData.value === ""
+                                                    ? tile.unset : tile.val === modelData.value
+                                                implicitWidth: optText.implicitWidth + 16
+                                                height: 22
+                                                radius: 11
+                                                color: on ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.18)
+                                                          : Theme.surfaceGlass
+                                                border.width: 1
+                                                border.color: on ? Theme.accent : Theme.border
+                                                Text {
+                                                    id: optText
+                                                    anchors.centerIn: parent
+                                                    text: opt.modelData.label
+                                                    color: opt.on ? Theme.accent : Theme.text
+                                                    font.pixelSize: 11
+                                                }
+                                                MouseArea {
+                                                    anchors.fill: parent
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: team.setConditional(tile.modelData.id, opt.modelData.value)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 1
-                        color: Qt.rgba(1, 1, 1, 0.05)
                     }
                 }
             }

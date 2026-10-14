@@ -351,15 +351,29 @@ weapon stats and passives, artifact sets, elemental resonance, team buffs,
 enemy level and resistance and amplifying/catalyze reactions are included, as
 GO models them.
 
-- **Team:** up to four characters. Showcase builds are used as they are; other
-  characters come from the inventory scan with what they have equipped.
-- **Conditions:** every conditional the team can have, as a toggle (or a stack
-  count, or a choice such as the element swirled), grouped by character, weapon,
-  set, resonance and enemy state; hovering shows the game's description.
+- **Team:** up to four characters, picked from **My characters** (showcase
+  builds as they are, or scanned characters with what they have equipped) or
+  **All characters** -- every character in the game, with the level,
+  constellation, talents, weapon and refinement you set (and no artifacts).
+- **Conditions:** every conditional the team can have, as a compact tile with a
+  checkbox (or a stack counter, or a choice such as the element swirled),
+  grouped by character, weapon, set, resonance and enemy state; hovering shows
+  the game's description.
 - **Damage:** each character's final stats and every damage instance, as an
   average, a crit or a non-crit hit.
 - **Rotation & DPS:** how many times each hit lands in a rotation and how long
   the rotation is give each character's damage, the team's, and DPS.
+
+The Optimize tab's **Team damage** mode searches your artifacts for the build
+that maximizes one of a character's hits, or their whole rotation, with that
+team, its conditions and the enemy -- exact damage, not an estimate. It works
+the way Genshin Optimizer's own solver does: the target is detached from the
+team calculation so that only the character's artifact stats and set counts
+remain free, compiled into a plain function, pruned, and evaluated for every
+combination of a 4-piece set plus an off-piece (a few hundred to tens of
+thousands of builds in about a second). The character's equipped artifacts are
+always among the candidates, so a suggestion is never worse than what they wear,
+even when the inventory scan is older than the showcase.
 
 The engine is bundled by `tools/build_go_engine.py` from a pinned Genshin
 Optimizer commit and runs in Qt's own JavaScript engine (about 1.4 s per

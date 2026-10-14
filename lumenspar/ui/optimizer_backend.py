@@ -16,11 +16,12 @@ from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, Signal, Slot
 
-from .. import akasha, builds, passives
+from .. import akasha, builds, damage, passives, teamopt
 from .. import optimizer as O
 from ..wishes import icons
 from .backend import _Worker
 from .builds_backend import art_names, decorate, make_panel, panel_name
+from .team_backend import formula_group
 
 LABELS = {"hp": "HP", "hp_": "HP%", "atk": "ATK", "atk_": "ATK%", "def": "DEF", "def_": "DEF%",
           "eleMas": "Elemental Mastery", "enerRech_": "Energy Recharge",
@@ -219,12 +220,14 @@ class OptimizerBackend(QObject):
     akashaTop1Changed = Signal()
     akashaBoardsChanged = Signal()
     akashaInfoChanged = Signal()
+    teamInfoChanged = Signal()
     _critReady = Signal(object)
     _artArrived = Signal()
 
-    def __init__(self, settings, parent: QObject | None = None) -> None:
+    def __init__(self, settings, parent: QObject | None = None, team=None) -> None:
         super().__init__(parent)
         self._settings = settings
+        self.team = team                      # the TeamBackend whose team, conditions and enemy apply
         self._collection = builds.latest()
         self._selected = ""
         self._source = str(settings.export_path)
@@ -249,6 +252,9 @@ class OptimizerBackend(QObject):
         self._akasha_info = ""
         self._art_fetch = False
         self._art_tried: set[str] = set()
+        self._tjob: dict | None = None        # a team-damage search in progress
+        self._team_connected = False
+        self._team_info: dict = {}
         self._critReady.connect(self._on_crit)
         self._artArrived.connect(self._on_art)
         self._load_pieces()
@@ -256,6 +262,11 @@ class OptimizerBackend(QObject):
         if cards:
             self._selected = next((b for b in cards if "fight" in b), cards[0])["avatarId"]
         self._fetch_art()
+        self.changed.connect(self._refresh_team_info)
+        if team is not None:
+            for sig in (team.changed, team.formulasUpdated, team.damageChanged):
+                sig.connect(self._refresh_team_info)
+        self._refresh_team_info()
 
     # -- what the page shows ----------------------------------------------
 
@@ -334,6 +345,10 @@ class OptimizerBackend(QObject):
     @Property("QVariantMap", notify=akashaTop1Changed)
     def akashaTop1(self) -> dict:
         return self._akasha_top1
+
+    @Property("QVariantMap", notify=teamInfoChanged)
+    def teamInfo(self) -> dict:
+        return self._team_info
 
     @Property(bool, notify=busyChanged)
     def busy(self) -> bool:
@@ -722,6 +737,139 @@ class OptimizerBackend(QObject):
         self._worker = w
         w.start()
 
+    # -- team damage ----------------------------------------------------------
+
+    @Slot()
+    def _refresh_team_info(self) -> None:
+        card = self._card()
+        info = {"inTeam": False, "name": card["name"] if card else "", "targets": [],
+                "rotationCount": 0, "hasFormulas": False}
+        ctx = self.team.optimize_context(card["key"]) if card and self.team is not None else None
+        if ctx is not None:
+            info["inTeam"] = True
+            info["rotationCount"] = sum(ctx["rotation"].values())
+            hits = [f for f in ctx["formulas"] if f.get("q") == "dmg"]
+            info["hasFormulas"] = bool(hits)
+            info["targets"] = [{"key": "rotation",
+                                "label": "Rotation (hit counts from Team & damage)"}] + [
+                {"key": f"{f['sheet']}:{f['name']}",
+                 "label": damage.formula_label(f["sheet"], f["name"], f.get("move", "")),
+                 "group": formula_group(f)} for f in hits]
+        if info != self._team_info:
+            self._team_info = info
+            self.teamInfoChanged.emit()
+
+    @Slot(str, str, "QVariantMap", "QVariantMap", int, bool)
+    def runTeam(self, target: str, set_key: str, mains: dict, minimums: dict,
+                min_level: int, use_equipped: bool) -> None:
+        """Find the artifacts that maximize the character's exact damage with the team."""
+        card = self._card()
+        if self._busy:
+            self._set_status("Another job is running.")
+            return
+        if card is None:
+            self._set_status("Choose a character first.")
+            return
+        ctx = self.team.optimize_context(card["key"]) if self.team is not None else None
+        if ctx is None:
+            self._set_status(f"Add {card['name']} to the team in Team & damage first.")
+            return
+        try:
+            frames = teamopt.frames(target, ctx["rotation"], ctx["formulas"])
+            base = O.base_from_card(card)
+        except ValueError as exc:
+            self._set_status(str(exc))
+            return
+        try:
+            good = json.loads(Path(self._source).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            self._set_status("Could not read the artifact file … scan your inventory first, "
+                             "or choose a .GOOD file.")
+            return
+        pieces = teamopt.with_card_pieces(O.load_pieces(good), card)
+        allowed = {str(slot): [str(v) for v in (values or [])]
+                   for slot, values in dict(mains or {}).items() if slot in _MAIN_SLOTS}
+        owner = card["key"]
+        keys = [set_key] if set_key else teamopt.sets_with_four(
+            pieces, allowed, min_level, use_equipped, owner)
+        fams = teamopt.families(pieces, keys, allowed, min_level, use_equipped, owner)
+        if not fams:
+            self._set_status("No artifacts match the set and main-stat choices.")
+            return
+        base_req = {"members": ctx["members"], "conditionals": ctx["conditionals"],
+                    "enemy": ctx["enemy"],
+                    "target": {"member": ctx["index"], "frames": frames}}
+        engine = self.team.engine()
+        if not self._team_connected:
+            self._team_connected = True
+            engine.finished.connect(self._on_team_finished)
+            engine.failed.connect(self._on_team_failed)
+        mins = {k: v for k, v in _numbers(minimums).items() if v > 0}
+        current = teamopt.card_candidates(card)
+        job = {"card": card, "base": base, "by_id": {p.id: p for p in pieces},
+               "cur_id": None, "search_id": None, "cur": None, "search": None}
+        self._tjob = job
+        if current:
+            job["cur_id"] = engine.request("optimize", {
+                **base_req, "minimums": [], "families": [[[c] for c in current]], "top": 1})
+        job["search_id"] = engine.request("optimize", {
+            **base_req, "minimums": teamopt.engine_minimums(mins), "families": fams, "top": 5})
+        self._stop = False
+        self._busy = True
+        self.busyChanged.emit()
+        self._set_status(f"Searching {len(fams)} families…")
+
+    @Slot(int, object)
+    def _on_team_finished(self, req_id: int, out) -> None:
+        job = self._tjob
+        if job is None:
+            return
+        if req_id == job["cur_id"]:
+            job["cur_id"], job["cur"] = None, out
+        elif req_id == job["search_id"]:
+            job["search_id"], job["search"] = None, out
+        else:
+            return
+        if job["cur_id"] is None and job["search_id"] is None:
+            self._tjob = None
+            self._finish()
+            self._publish_team(job)
+
+    @Slot(int, str)
+    def _on_team_failed(self, req_id: int, message: str) -> None:
+        job = self._tjob
+        if job is None or req_id not in (job["cur_id"], job["search_id"]):
+            return
+        self._tjob = None
+        self._finish()
+        self._set_status(message)
+
+    def _publish_team(self, job: dict) -> None:
+        card, base = job["card"], job["base"]
+        if card["avatarId"] != self._selected:
+            return                                  # another character was chosen meanwhile
+        search = job["search"] or {}
+        builds_ = (job["cur"] or {}).get("builds") or []
+        cur_val = builds_[0]["value"] if builds_ else 0.0
+        results = []
+        for b in search.get("builds", []):
+            pieces = [job["by_id"][i] for i in b["ids"] if i in job["by_id"]]
+            if len(pieces) == 5:
+                results.append(O.result_of(pieces, base, float(b["value"])))
+        cur = dataclasses.replace(O.current(card, base, card["element"], O.Goal(), 0.0),
+                                  damage=cur_val, score=cur_val)
+        self._publish(card, results, cur, f"Damage {cur_val:,.0f}" if cur_val else "",
+                      [f"Damage {r.damage:,.0f}" for r in results],
+                      [f"{(r.damage / cur_val - 1) * 100:+.1f}%" if cur_val else ""
+                       for r in results])
+        if results:
+            best = self._results[0]
+            text = f"Searched {search.get('evaluated', 0):,} builds " \
+                   f"({search.get('pruned', 0):,} after pruning) · best: {best['setName']}"
+            self._set_status(text + (f", {best['change']}" if best["change"] else ""))
+        else:
+            self._set_status("No build meets the minimums.")
+
     @Slot(bool, str)
     def _job_done(self, ok: bool, err: str) -> None:
         done, self._on_done = self._on_done, None
@@ -730,6 +878,11 @@ class OptimizerBackend(QObject):
 
     @Slot()
     def stop(self) -> None:
+        if self._tjob is not None:           # engine requests can't be cancelled; drop theirs
+            self._tjob = None
+            self._finish()
+            self._set_status("Stopped.")
+            return
         self._stop = True
         self._set_status("Stopping…")
 

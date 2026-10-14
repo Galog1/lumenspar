@@ -29,6 +29,16 @@ Item {
     property string lastSelected: ""
     property string boardId: ""
     property string boardVariant: ""
+    property string teamChoice: ""   // the hit picked for Team damage; "" = the default
+
+    readonly property var teamInfo: optimizer.teamInfo || ({})
+    readonly property var teamTargets: teamInfo.targets || []
+    readonly property string teamTarget: {
+        for (let i = 0; i < teamTargets.length; i++)
+            if (teamTargets[i].key === teamChoice) return teamChoice
+        if ((teamInfo.rotationCount || 0) > 0 || teamTargets.length < 2) return "rotation"
+        return teamTargets[1].key
+    }
 
     readonly property var substats: optimizer.substats || []
     readonly property var results: optimizer.results || []
@@ -351,7 +361,7 @@ Item {
                     // 1. scaling stat
                     RowLayout {
                         Layout.fillWidth: true
-                        visible: page.mode !== "akasha"
+                        visible: page.mode !== "akasha" && page.mode !== "teamdmg"
                         spacing: 10
                         RowLabel { text: "Scaling stat" }
                         Flow {
@@ -381,7 +391,8 @@ Item {
                             Repeater {
                                 model: [{ key: "damage", label: "Damage estimate" }, { key: "weights", label: "Stat weights" },
                                         { key: "targets", label: "Target values" }, { key: "ratio", label: "Ratio" },
-                                        { key: "akasha", label: "Akasha ranking" }]
+                                        { key: "akasha", label: "Akasha ranking" },
+                                        { key: "teamdmg", label: "Team damage" }]
                                 delegate: Pill {
                                     required property var modelData
                                     label: modelData.label
@@ -395,7 +406,7 @@ Item {
                     // 3. priority stats
                     RowLayout {
                         Layout.fillWidth: true
-                        visible: page.mode !== "akasha"
+                        visible: page.mode !== "akasha" && page.mode !== "teamdmg"
                         spacing: 10
                         RowLabel { text: "Priority stats" }
                         Flow {
@@ -688,6 +699,68 @@ Item {
                         }
                     }
 
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        visible: page.mode === "teamdmg"
+                        spacing: 8
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Exact damage from the Team & damage tab: its team, conditions and enemy apply. Lumenspar searches your artifacts for the build that maximizes the chosen hit, or the whole rotation."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            visible: !page.teamInfo.inTeam
+                            spacing: 10
+                            Text {
+                                text: (page.teamInfo.name || "This character") + " isn't in the team yet."
+                                color: Theme.text
+                                font.pixelSize: 13
+                            }
+                            GhostButton {
+                                label: "Add to team"
+                                implicitHeight: 32
+                                onClicked: team.addOwned(optimizer.card.key)
+                            }
+                            Item { Layout.fillWidth: true }
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            visible: !!page.teamInfo.inTeam
+                            spacing: 10
+                            RowLabel { text: "Target" }
+                            Combo {
+                                Layout.preferredWidth: 420
+                                model: page.teamTargets.map(function(t) { return t.label })
+                                currentIndex: {
+                                    for (let i = 0; i < page.teamTargets.length; i++)
+                                        if (page.teamTargets[i].key === page.teamTarget) return i
+                                    return 0
+                                }
+                                onActivated: function(i) { page.teamChoice = page.teamTargets[i].key }
+                            }
+                            Item { Layout.fillWidth: true }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            visible: !!page.teamInfo.inTeam && !page.teamInfo.hasFormulas
+                            text: "Open Team & damage and select " + (page.teamInfo.name || "the character") + " once to list their hits."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            visible: !!page.teamInfo.inTeam && page.teamTarget === "rotation" && (page.teamInfo.rotationCount || 0) === 0
+                            text: "Set hit counts in Team & damage first."
+                            color: Theme.textDim
+                            font.pixelSize: 12
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
                     // 5. main stats
                     Repeater {
                         model: [{ slot: "sands", name: "Sands" }, { slot: "goblet", name: "Goblet" },
@@ -794,7 +867,7 @@ Item {
                     // 8. conditional crit rate
                     RowLayout {
                         Layout.fillWidth: true
-                        visible: page.mode !== "akasha"
+                        visible: page.mode !== "akasha" && page.mode !== "teamdmg"
                         spacing: 10
                         RowLabel { text: "Conditional CRIT Rate" }
                         ColumnLayout {
@@ -928,6 +1001,11 @@ Item {
                                     page.shown = 0
                                     optimizer.runAkasha(page.boardId, page.boardVariant, page.minLevel, page.useEquipped)
                                 }
+                                else if (page.mode === "teamdmg") {
+                                    page.shown = 0
+                                    optimizer.runTeam(page.teamTarget, page.setKey, page.mains,
+                                                      page.goal().minimums, page.minLevel, page.useEquipped)
+                                }
                                 else { page.shown = 0; optimizer.run(page.goal()) }
                             }
                         }
@@ -972,9 +1050,11 @@ Item {
                         Layout.fillWidth: true
                         text: page.showCurrent
                               ? ((optimizer.current && optimizer.current.scoreText) || "")
-                              : (page.entry ? (page.mode === "damage" ? "" : (page.entry.scoreText || "") + "  ·  ")
-                                              + "damage estimate " + page.entry.damageText
-                                              + " (" + page.entry.change + ")" : "")
+                              : (page.entry ? (page.mode === "teamdmg"
+                                                 ? (page.entry.scoreText || "") + " (" + page.entry.change + ")"
+                                                 : (page.mode === "damage" ? "" : (page.entry.scoreText || "") + "  ·  ")
+                                                   + "damage estimate " + page.entry.damageText
+                                                   + " (" + page.entry.change + ")") : "")
                         color: Theme.text
                         font.pixelSize: 13
                         wrapMode: Text.WordWrap

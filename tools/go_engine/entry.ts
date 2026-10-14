@@ -14,7 +14,10 @@
 // Each (member, mode) is one full calculation, about a second in QJSEngine,
 // so callers ask only for what they show.
 // Percent stats are fractions (0.466), as in GO.
+import { allArtifactSetKeys } from '@genshin-optimizer/gi/consts'
+import { compile, detach, prod, prune, sum } from '@genshin-optimizer/pando/engine'
 import {
+  Read,
   artifactsData, charData, conditionalEntries, conditionals as allConds,
   enemyDebuff, genshinCalculatorWithEntries, own, ownBuff,
   pandoContextEntries, teamData, weaponData, withMember,
@@ -126,4 +129,82 @@ function conditionals(json: string): string {
   return JSON.stringify(out)
 }
 
-;(globalThis as any).LumensparGO = { compute, conditionals }
+// --- optimizing ------------------------------------------------------------
+// The way Genshin Optimizer's own solver works (libs/gi/pando-solver): build
+// the team with the target member's artifacts left empty, read the target
+// (a sum of formulas times hit counts) and stat minimums, and `detach` them so
+// that only the member's artifact stats (sheet "dyn") and set counts remain
+// free; `prune` the candidates against those formulas; `compile` to a plain
+// function, and evaluate every combination of one candidate per slot.
+//
+// Request: compute's fields plus
+//   target: { member, frames: [{ sheet, name, q, multiplier }] },
+//   minimums: [{ q, ele?, value }]            final stats, fractions
+//   families: [ [slot candidates] x5 ]        each family is searched in full;
+//            candidate = { id, <stat key>: value (fractions), <set key>: 1 }
+//   top: number
+// Response: { builds: [{ ids, value }], evaluated, pruned }
+const artSets = new Set<string>(allArtifactSetKeys as readonly string[])
+
+function optimize(json: string): string {
+  const req: any = JSON.parse(json)
+  const t = String(req.target.member)
+  const members = req.members.map((m: any, i: number) =>
+    String(i) === t ? { ...m, artifacts: [] } : m)
+  const calc = genshinCalculatorWithEntries(entries({ ...req, members }, t, 'avg'))
+  const listed = calc.withTag({ src: t } as any).listFormulas(own.listing.formulas)
+  const frames = (req.target.frames as any[]).map((f) => {
+    const hit = listed.find((g: any) => g.tag.sheet === f.sheet && g.tag.name === f.name &&
+      g.tag.q === (f.q ?? 'dmg'))
+    if (!hit) throw new Error(`no formula ${f.sheet}:${f.name}`)
+    return prod(f.multiplier ?? 1, new (Read as any)({ ...(hit as any).tag, src: t }, undefined))
+  })
+  const mins = (req.minimums ?? []) as any[]
+  const undetached = [
+    sum(...frames),
+    ...mins.map((m) => new (Read as any)({
+      et: 'own', sheet: 'agg', src: t, qt: 'final', q: m.q, ...(m.ele ? { ele: m.ele } : {}),
+    }, undefined)),
+  ]
+  const nodes = detach(undetached as any, calc as any, (tag: any) => {
+    if (tag.src !== t || tag.et !== 'own') return undefined
+    if (tag.sheet === 'dyn' && tag.qt === 'premod') return { q: tag.q }
+    if (tag.q === 'count' && artSets.has(tag.sheet)) return { q: tag.sheet }
+    return undefined
+  })
+  const minimum = [Number.NEGATIVE_INFINITY, ...mins.map((m) => m.value - 1e-7)]
+  const top: number = req.top ?? 5
+  let best: { ids: any[]; value: number }[] = []
+  let floor = Number.NEGATIVE_INFINITY
+  let evaluated = 0, pruned = 0
+  for (const family of req.families as any[][][]) {
+    const p: any = prune(nodes as any, family as any, 'q', minimum, top)
+    const cands = p.candidates as any[][]
+    let count = 1
+    for (const c of cands) count *= c.length
+    pruned += count
+    if (!count) continue
+    const f = compile(p.nodes, 'q', cands.length)
+    const pick: any[] = new Array(cands.length)
+    const walk = (i: number) => {
+      if (i === cands.length) {
+        const out = f(pick)
+        evaluated++
+        for (let k = 1; k < out.length; k++) if (out[k] < p.minimum[k]) return
+        const v = out[0]
+        if (best.length < top || v > floor) {
+          best.push({ ids: pick.map((c) => c.id), value: v })
+          best.sort((a, b) => b.value - a.value)
+          if (best.length > top) best.length = top
+          floor = best.length === top ? best[best.length - 1].value : Number.NEGATIVE_INFINITY
+        }
+        return
+      }
+      for (const c of cands[i]) { pick[i] = c; walk(i + 1) }
+    }
+    walk(0)
+  }
+  return JSON.stringify({ builds: best, evaluated, pruned })
+}
+
+;(globalThis as any).LumensparGO = { compute, conditionals, optimize }

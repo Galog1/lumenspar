@@ -450,6 +450,20 @@ def current(card: dict, base: Base, element: str, goal: Goal, cond: float) -> Re
     return Result([], set_key, stats, float(damage[0]), float(score[0]), cond)
 
 
+def result_of(pieces: list[Piece], base: Base, damage: float) -> Result:
+    """A build of five pieces with its final stats; `damage` (from elsewhere) is its score."""
+    pieces = sorted(pieces, key=lambda p: SLOTS.index(p.slot))
+    counts = Counter(p.set_key for p in pieces)
+    total = base.vec + sum((np.array(p.vec) for p in pieces), np.zeros(D))
+    for set_key, n in counts.items():
+        if n >= 2:
+            total = total + bonus_for(set_key)
+    final = final_stats(base, total[None, :])
+    stats = {k: float(final[0, IDX[k]]) for k in KEYS}
+    set_key = counts.most_common(1)[0][0] if counts else ""
+    return Result(pieces, set_key, stats, damage, damage, 0.0)
+
+
 def _roll_count(rarity: int, key: str, value: float) -> int:
     try:
         top = float(_stats()["substat_rolls"][str(rarity)][key][-1])

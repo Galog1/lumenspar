@@ -178,3 +178,43 @@ def test_engine_signal(app):
     assert got.get("id") == rid
     assert "err" not in got
     assert got["res"]
+
+
+def test_option_label_lunar_reactions():
+    assert damage.option_label("lunarbloom") == "Lunar-Bloom"
+    assert damage.option_label("lunarcharged") == "Lunar-Charged"
+    assert damage.option_label("lunarcrystallize") == "Lunar-Crystallize"
+
+
+def test_ascension_for():
+    assert [damage.ascension_for(n) for n in (1, 20, 21, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 100)] == [
+        0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6]
+
+
+def test_default_settings():
+    s = damage.default_settings("Furina")
+    assert s == {"level": 90, "constellation": 0, "auto": 9, "skill": 9, "burst": 9,
+                 "weapon": "FavoniusSword", "weaponLevel": 90, "refinement": 1}
+    assert damage.default_settings("Diluc")["weapon"] == "FavoniusGreatsword"
+    assert damage.default_settings("Zhongli")["weapon"] == "FavoniusLance"
+    assert damage.default_settings("Nahida")["weapon"] == "FavoniusCodex"
+    assert damage.default_settings("Venti")["weapon"] == "FavoniusWarbow"
+    assert damage.default_settings("TravelerAnemo")["weapon"] == "FavoniusSword"
+    assert damage.default_settings("Nobody")["weapon"] == "FavoniusSword"
+
+
+def test_member_from_settings():
+    s = damage.default_settings("Venti")
+    s.update(level=72, weaponLevel=45, refinement=3, constellation=2, burst=10)
+    m = damage.member_from_settings("Venti", s)
+    assert m == {
+        "char": {"key": "Venti", "level": 72, "constellation": 2, "ascension": 5,
+                 "talent": {"auto": 9, "skill": 9, "burst": 10}},
+        "weapon": {"key": "FavoniusWarbow", "level": 45, "ascension": 2, "refinement": 3},
+        "artifacts": [],
+    }
+
+
+def test_cond_label_survives_nested_labels():
+    assert damage.cond_label("Nahida", "c2Bloom") == "Opponent is marked by Seed of Skandha"
+    assert isinstance(damage.cond_label("Yanfei", "p1Seals"), str)
