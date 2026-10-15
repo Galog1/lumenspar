@@ -1,6 +1,6 @@
 [project]
 name = "lumenspar"
-version = "0.3.1"
+version = "0.3.2"
 description = "Linux inventory scanner for Genshin Impact: screen -> OCR -> .GOOD JSON"
 readme = "README.md"
 license = "MIT"
