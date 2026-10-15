@@ -10,6 +10,7 @@ _LABELS = {
     "shattered": "Shattered", "burning": "Burning", "bloom": "Bloom",
     "hyperbloom": "Hyperbloom", "burgeon": "Burgeon", "lunarbloom": "Lunar-Bloom",
     "lunarcrystallize": "Lunar-Crystallize", "crystallize": "Crystallize (shield)",
+    "stellarconduct": "Stellarconduct", "stellarswirl": "Stellarswirl",
 }
 
 
@@ -55,6 +56,10 @@ def reaction_row_allowed(name: str, element: str, team: set[str]) -> bool:
         return both(("electro",), {"hydro", "dendro"})
     if name == "burgeon":
         return both(("pyro",), {"hydro", "dendro"})
+    if name == "stellarconduct":
+        return both(("electro", "cryo"), {"electro", "cryo"})
+    if name == "stellarswirl":
+        return both(("anemo", "cryo"), {"anemo", "cryo"})
     if name in ("crystallize", "lunarcrystallize"):
         return element == "geo" and bool(team & {"pyro", "hydro", "electro", "cryo"})
     return True

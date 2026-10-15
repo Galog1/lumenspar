@@ -21,7 +21,6 @@ from .. import optimizer as O
 from ..wishes import icons
 from .backend import _Worker
 from .builds_backend import art_names, decorate, make_panel, panel_name
-from .team_backend import formula_group
 
 LABELS = {"hp": "HP", "hp_": "HP%", "atk": "ATK", "atk_": "ATK%", "def": "DEF", "def_": "DEF%",
           "eleMas": "Elemental Mastery", "enerRech_": "Energy Recharge",
@@ -264,7 +263,8 @@ class OptimizerBackend(QObject):
         self._fetch_art()
         self.changed.connect(self._refresh_team_info)
         if team is not None:
-            for sig in (team.changed, team.formulasUpdated, team.damageChanged):
+            for sig in (team.changed, team.formulasUpdated, team.damageChanged,
+                        team.comboChanged):
                 sig.connect(self._refresh_team_info)
         self._refresh_team_info()
 
@@ -747,17 +747,20 @@ class OptimizerBackend(QObject):
         ctx = self.team.optimize_context(card["key"]) if card and self.team is not None else None
         if ctx is not None:
             info["inTeam"] = True
-            hits = [f for f in ctx["formulas"] if f.get("q") == "dmg"]
+            rows = ctx["rows"]
+            hits = [r for r in rows if r["q"] == "dmg"]
             info["hasFormulas"] = bool(hits)
-            info["targets"] = [
-                {"key": f"{f['sheet']}:{f['name']}",
-                 "label": damage.formula_label(f["sheet"], f["name"], f.get("move", "")),
-                 "group": formula_group(f)} for f in hits]
-            moves = [f for f in hits if f.get("move") in ("skill", "burst", "normal", "charged")]
-            best = max(moves, key=lambda f: f.get("avg") or 0, default=None) or (
+            info["targets"] = [{"key": r["key"], "label": r["label"], "group": r["group"]}
+                               for r in hits]
+            moves = [r for r in hits if r["group"] != "Reactions"]
+            best = max(moves, key=lambda r: r.get("avg") or 0, default=None) or (
                 hits[0] if hits else None)
             if best is not None:
-                info["defaultTarget"] = f"{best['sheet']}:{best['name']}"
+                info["defaultTarget"] = best["key"]
+            if ctx.get("combo"):
+                info["targets"].insert(0, {"key": "combo", "group": "Combo",
+                                           "label": f"Akasha combo · {ctx.get('comboTitle', '')}"})
+                info["defaultTarget"] = "combo"
         if info != self._team_info:
             self._team_info = info
             self.teamInfoChanged.emit()
@@ -778,7 +781,12 @@ class OptimizerBackend(QObject):
             self._set_status(f"Add {card['name']} to the team in Team & damage first.")
             return
         try:
-            frames = teamopt.frames(target, {}, ctx["formulas"])
+            if target == "combo":
+                frames = ctx.get("combo") or []
+                if not frames:
+                    raise ValueError("Load the Akasha combo in Team & damage first.")
+            else:
+                frames = teamopt.frames(target, ctx["formulas"])
             base = O.base_from_card(card)
         except ValueError as exc:
             self._set_status(str(exc))
@@ -799,8 +807,8 @@ class OptimizerBackend(QObject):
         if not fams:
             self._set_status("No artifacts match the set and main-stat choices.")
             return
-        base_req = {"members": ctx["members"], "conditionals": ctx["conditionals"],
-                    "enemy": ctx["enemy"],
+        base_req = {"members": ctx["members"], "conditional": ctx["conditional"],
+                    "enemy": ctx["enemy"], "reactions": ctx["reactions"],
                     "target": {"member": ctx["index"], "frames": frames}}
         engine = self.team.engine()
         if not self._team_connected:

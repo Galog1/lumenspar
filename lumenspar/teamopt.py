@@ -3,7 +3,7 @@
 The search itself runs in the bundled Genshin Optimizer engine (damage.py,
 function "optimize"): these helpers turn Lumenspar's pieces, minimums and hits
 into its request. Stats there are in engine units: percent stats are fractions
-and Energy Recharge leaves out the base 100%.
+and Energy Recharge is the total, base 100% included.
 """
 
 from __future__ import annotations
@@ -76,17 +76,8 @@ def with_card_pieces(pieces: list[Piece], card: dict) -> list[Piece]:
 
 def engine_minimums(minimums: dict[str, float]) -> list[dict]:
     """The optimizer's percent-unit minimums as engine final-stat minimums."""
-    out = []
-    for key, value in minimums.items():
-        if key == "enerRech_":
-            out.append({"q": key, "value": value / 100 - 1})
-        elif key.endswith("_dmg_"):
-            out.append({"q": "dmg_", "ele": key[:-len("_dmg_")], "value": value / 100})
-        elif key.endswith("_"):
-            out.append({"q": key, "value": value / 100})
-        else:
-            out.append({"q": key, "value": value})
-    return out
+    return [{"key": key, "value": value / 100 if key.endswith("_") else value}
+            for key, value in minimums.items()]
 
 
 def _usable(pieces: list[Piece], mains: dict[str, list[str]], min_level: int,
@@ -129,21 +120,9 @@ def sets_with_four(pieces: list[Piece], mains: dict[str, list[str]], min_level: 
                   key=lambda k: (-counts[k], k))
 
 
-def frames(target: str, rotation: dict[str, int], formulas: list[dict]) -> list[dict]:
-    """The engine's target: the rotation's hits times their counts, or one hit."""
-    by_key = {f"{f['sheet']}:{f['name']}": f for f in formulas}
-    if target == "rotation":
-        out = []
-        for key, count in rotation.items():
-            if count > 0:
-                sheet, _, name = key.partition(":")
-                q = (by_key.get(key) or {}).get("q") or "dmg"
-                out.append({"sheet": sheet, "name": name, "q": q, "multiplier": count})
-        if not out:
-            raise ValueError("Set hit counts in Team & damage first.")
-        return out
-    f = by_key.get(target)
-    if f is None:
+def frames(target: str, formulas: list[dict]) -> list[dict]:
+    """The engine's target: one hit, by its formula id."""
+    if not any(f["id"] == target for f in formulas):
         raise ValueError("That hit isn't listed. Open Team & damage and select the character "
                          "once to list their hits.")
-    return [{"sheet": f["sheet"], "name": f["name"], "q": f.get("q") or "dmg", "multiplier": 1}]
+    return [{"id": target, "multiplier": 1}]

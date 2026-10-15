@@ -15,70 +15,128 @@ def app():
     return QCoreApplication.instance() or QCoreApplication([])
 
 
-def test_formula_group():
-    assert T.formula_group({"q": "heal", "move": "skill"}) == "Healing"
-    assert T.formula_group({"q": "shield", "move": "burst"}) == "Shield"
-    assert T.formula_group({"q": "dmg", "move": "normal"}) == "Normal Attack"
-    assert T.formula_group({"q": "dmg", "move": "charged"}) == "Charged Attack"
-    assert T.formula_group({"q": "dmg", "move": "plunging"}) == "Plunging Attack"
-    assert T.formula_group({"q": "dmg", "move": "skill"}) == "Elemental Skill"
-    assert T.formula_group({"q": "dmg", "move": "burst"}) == "Elemental Burst"
-    assert T.formula_group({"q": "dmg", "move": ""}) == "Other"
-    assert T.formula_group({"q": "dmg"}) == "Other"
+def _f(fid, section, label=None, avg=1.0, variant="hydro", **extra):
+    name = {"ns": "sheet", "key": label} if label else None
+    return dict({"id": fid, "section": section, "name": name, "variant": variant,
+                 "subVariant": variant, "multi": None, "avg": avg}, **extra)
+
+
+def test_formula_rows():
+    fs = [_f("auto:1:0", "auto", "hitOp.electro", crit=2.0, nonCrit=0.5),
+          _f("skill:1:0", "skill", "hitOp.electro"),
+          _f("skill:1:1", "skill", "hitOp.electro"),            # same label again
+          _f("skill:1:2", "skill", "hitOp.electro"),
+          _f("burst:2:0", "burst", "hitOp.pyro", variant="heal"),
+          _f("burst:2:1", "burst", None),                       # unnamed: from the id
+          _f("burst:2:2", "burst", avg=None),                   # no value: skipped
+          _f("passive1:1:0", "passive1", "hitOp.electro"),
+          _f("reaction:overloaded", "reaction"),
+          _f("reaction:bloom", "reaction"),
+          _f("reaction:swirl_pyro", "reaction")]
+    rows = T.formula_rows(fs, "Furina", "Pyro", {"pyro", "electro", "anemo"})
+    assert [r["key"] for r in rows] == [
+        "auto:1:0", "skill:1:0", "skill:1:1", "skill:1:2", "burst:2:0", "burst:2:1",
+        "passive1:1:0", "reaction:overloaded"]
+    by = {r["key"]: r for r in rows}
+    assert by["auto:1:0"]["group"] == "Normal Attack"
+    assert by["auto:1:0"]["label"] == "After dealing Electro DMG"
+    assert by["auto:1:0"]["crit"] == 2.0 and by["auto:1:0"]["nonCrit"] == 0.5
+    assert by["skill:1:0"]["crit"] is None
+    assert [by[k]["label"] for k in ("skill:1:0", "skill:1:1", "skill:1:2")] == [
+        "After dealing Electro DMG", "After dealing Electro DMG (2)", "After dealing Electro DMG (3)"]
+    assert by["skill:1:0"]["group"].startswith("Elemental Skill")
+    assert by["passive1:1:0"]["group"].startswith("Passive")
+    assert by["auto:1:0"]["label"] == by["passive1:1:0"]["label"]       # other group: no suffix
+    assert by["burst:2:0"]["q"] == "heal" and by["burst:2:0"]["label"] == "After dealing Pyro DMG"
+    assert by["burst:2:1"]["label"] == "Burst:2:1"
+    assert by["reaction:overloaded"]["group"] == "Reactions"
+    assert by["reaction:overloaded"]["label"] == "Overloaded"
+    assert by["auto:1:0"]["q"] == "dmg"
+    # a hydro member of an anemo team gets Bloom only with dendro, and no pyro Swirl
+    rows = T.formula_rows(fs, "Furina", "hydro", {"hydro", "dendro", "anemo"})
+    assert [r["key"] for r in rows if r["group"] == "Reactions"] == ["reaction:bloom"]
+    rows = T.formula_rows(fs, "Venti", "anemo", {"anemo", "pyro"})
+    assert [r["key"] for r in rows if r["group"] == "Reactions"] == ["reaction:swirl_pyro"]
+
+
+def test_formula_rows_shield():
+    f = _f("skill:1:0", "skill", "hitOp.electro")
+    f["name"] = "Shield DMG Absorption"
+    assert T.formula_rows([f], "Furina", "hydro", set())[0]["q"] == "shield"
+
+
+def _state_cond(src, sheet, name, kind, section, states, label="x"):
+    return {"src": src, "sheet": sheet, "name": name, "label": label, "teamBuff": False,
+            "kind": kind, "section": section,
+            "states": [{"value": v, "label": None} for v in states]}
 
 
 CONDS = [
-    {"src": "0", "sheet": "Furina", "name": "c1Cond", "type": "bool"},
-    {"src": "0", "sheet": "SplendorOfTranquilWaters", "name": "stacks", "type": "num",
-     "min": 0, "max": 3},
-    {"src": "1", "sheet": "Bennett", "name": "c6Cond", "type": "bool"},
-    {"src": "0", "sheet": "GoldenTroupe", "name": "set4", "type": "bool"},
-    {"src": "1", "sheet": "ViridescentVenerer", "name": "swirl", "type": "list",
-     "list": ["pyro", "hydro"]},
-    {"src": "0", "sheet": "reso", "name": "nearbyDendro1", "type": "bool"},
-    {"src": "1", "sheet": "reso", "name": "nearbyDendro1", "type": "bool"},
-    {"src": "0", "sheet": "static", "name": "enemyFrozen", "type": "bool"},
+    _state_cond("0", "Furina", "c1Cond", "char", "constellation1", ["1"],
+                label={"ns": "sheet", "key": "hitOp.electro"}),
+    _state_cond("0", "SplendorOfTranquilWaters", "stacks", "weapon", "weapon", ["1", "2", "3"]),
+    _state_cond("1", "Bennett", "c6Cond", "char", "constellation6", ["1"]),
+    _state_cond("0", "GoldenTroupe", "set4", "artifact", "GoldenTroupe:4", ["1"]),
+    _state_cond("1", "ViridescentVenerer", "swirl", "artifact", "ViridescentVenerer:4",
+                ["pyro", "hydro"]),
+    _state_cond("0", "reso", "nearbyDendro1", "team", "resonance", ["1"]),
+    _state_cond("0", "reso", "nearbyDendro2", "team", "resonance", ["1"]),
 ]
 
 
 def test_condition_rows_order_names_and_values():
-    state = {"Furina": {"Furina": {"c1Cond": 1}},
-             T.TEAM: {"reso": {"nearbyDendro1": 1}},
+    state = {"Furina": {"Furina": {"c1Cond": "1"}},
+             T.TEAM: {"reso": {"nearbyDendro1": "1"}},
              "Bennett": {"ViridescentVenerer": {"swirl": "hydro"}}}
     rows = T.condition_rows(CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"], state)
-    # member 0 (char, weapon, artifact), member 1 (char, artifact), then the team, once each
+    # member 0 (char, weapon, artifact), member 1 (char, artifact), then the team
     assert [r["id"] for r in rows] == [
         "0|Furina|c1Cond", "0|SplendorOfTranquilWaters|stacks", "0|GoldenTroupe|set4",
         "1|Bennett|c6Cond", "1|ViridescentVenerer|swirl",
-        "0|reso|nearbyDendro1", "0|static|enemyFrozen"]
-    by_id = {r["id"]: r for r in rows}
-    assert by_id["0|Furina|c1Cond"]["member"] == "Furina"
-    assert by_id["0|Furina|c1Cond"]["memberKey"] == "Furina"
-    assert by_id["1|Bennett|c6Cond"]["member"] == "Bennett"
-    assert by_id["0|reso|nearbyDendro1"]["member"] == "Team"
-    assert by_id["0|reso|nearbyDendro1"]["memberKey"] == "_team"
-    assert by_id["0|Furina|c1Cond"]["value"] == 1
-    assert by_id["0|reso|nearbyDendro1"]["value"] == 1
-    assert by_id["0|static|enemyFrozen"]["value"] is None
-    assert by_id["0|SplendorOfTranquilWaters|stacks"]["max"] == 3
-    swirl = by_id["1|ViridescentVenerer|swirl"]
-    assert swirl["value"] == "hydro"
+        "0|reso|nearbyDendro1", "0|reso|nearbyDendro2"]
+    by = {r["id"]: r for r in rows}
+    assert by["0|Furina|c1Cond"]["member"] == "Furina"
+    assert by["0|Furina|c1Cond"]["memberKey"] == "Furina"
+    assert by["1|Bennett|c6Cond"]["member"] == "Bennett"
+    assert by["0|reso|nearbyDendro1"]["member"] == "Team"
+    assert by["0|reso|nearbyDendro1"]["memberKey"] == "_team"
+    assert by["0|Furina|c1Cond"]["value"] == "1"
+    assert by["0|reso|nearbyDendro1"]["value"] == "1"
+    assert by["0|reso|nearbyDendro2"]["value"] is None
+    c1 = by["0|Furina|c1Cond"]
+    assert c1["type"] == "bool" and c1["onValue"] == "1"
+    assert c1["label"] == "After dealing Electro DMG"
+    assert c1["sheetTitle"].startswith("C1")
+    assert by["0|Furina|c1Cond"]["detail"] == ""
+    assert by["0|SplendorOfTranquilWaters|stacks"]["type"] == "list"
+    assert by["0|SplendorOfTranquilWaters|stacks"]["sheetTitle"] == damage.sheet_title(
+        "SplendorOfTranquilWaters")
+    assert [o["value"] for o in by["0|SplendorOfTranquilWaters|stacks"]["options"]] == ["1", "2", "3"]
+    assert by["0|GoldenTroupe|set4"]["sheetTitle"] == damage.sheet_title("GoldenTroupe") + " 4-piece"
+    assert by["0|reso|nearbyDendro1"]["sheetTitle"] == "Elemental Resonance"
+    swirl = by["1|ViridescentVenerer|swirl"]
+    assert swirl["value"] == "hydro" and swirl["kind"] == "artifact"
     assert swirl["options"] == [{"value": "pyro", "label": "Pyro"},
                                 {"value": "hydro", "label": "Hydro"}]
-    assert by_id["0|Furina|c1Cond"]["label"]
-    assert by_id["0|Furina|c1Cond"]["sheetTitle"]
 
 
 def test_condition_rows_member_before_team_even_if_listed_late():
-    conds = [{"src": "0", "sheet": "reso", "name": "x", "type": "bool"},
-             {"src": "1", "sheet": "Bennett", "name": "c6Cond", "type": "bool"}]
+    conds = [_state_cond("0", "reso", "x", "team", "resonance", ["1"]),
+             _state_cond("1", "Bennett", "c6Cond", "char", "constellation6", ["1"])]
     rows = T.condition_rows(conds, ["A", "Bennett"], ["A", "B"], {})
     assert [r["sheet"] for r in rows] == ["Bennett", "reso"]
 
 
+def test_condition_rows_duplicate_labels_are_told_apart():
+    conds = [_state_cond("0", "Venti", "swirlPyro", "char", "burst", ["1"], label="Swirled"),
+             _state_cond("0", "Venti", "swirlHydro", "char", "burst", ["1"], label="Swirled")]
+    rows = T.condition_rows(conds, ["Venti"], ["Venti"], {})
+    assert [r["label"] for r in rows] == ["Swirled (Swirl Pyro)", "Swirled (Swirl Hydro)"]
+
+
 def test_stat_rows():
     stats = {"hp": 21345.6, "atk": 1234.4, "def": 800, "eleMas": 120.2, "critRate_": 0.655,
-             "critDMG_": 1.31, "enerRech_": 0.123, "heal_": 0, "hydro_dmg_": 0.466,
+             "critDMG_": 1.31, "enerRech_": 1.123, "heal_": 0, "hydro_dmg_": 0.466,
              "pyro_dmg_": 0, "physical_dmg_": 0.05, "cryo_dmg_": 0.1}
     rows = T.stat_rows(stats, "hydro")
     by = {r["label"]: r["text"] for r in rows}
@@ -101,21 +159,6 @@ def test_stat_rows():
 def test_stat_rows_own_element_always_shown():
     by = {r["label"]: r["text"] for r in T.stat_rows({"hp": 1}, "Pyro")}
     assert by["Pyro DMG Bonus"] == "0.0%"
-
-
-def test_stack_options():
-    assert T.stack_options(0, 3) == [{"value": 0, "label": "Off"}, {"value": 1, "label": "1"},
-                                     {"value": 2, "label": "2"}, {"value": 3, "label": "3"}]
-    assert [o["value"] for o in T.stack_options(0, 6)] == [0, 1, 2, 3, 4, 5, 6]
-    assert [o["value"] for o in T.stack_options(1, 4)] == [0, 2, 3, 4]
-    big = T.stack_options(0, 10)
-    assert big == [{"value": 0, "label": "Off"}, {"value": 5, "label": "½"},
-                   {"value": 10, "label": "Max"}]
-    assert T.stack_options(0, 7)[1]["value"] == 4          # round(3.5) -> 4
-    rows = T.condition_rows(CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"], {})
-    by = {r["id"]: r for r in rows}
-    assert [o["value"] for o in by["0|SplendorOfTranquilWaters|stacks"]["options"]] == [0, 1, 2, 3]
-    assert [o["value"] for o in by["1|ViridescentVenerer|swirl"]["options"]] == ["pyro", "hydro"]
 
 
 # -- saved state ---------------------------------------------------------------------
@@ -174,17 +217,17 @@ def test_state_round_trip(app, tmp_path, monkeypatch):
                                 {"key": "Bennett", "source": "owned"}, {}, {}]
     assert saved["selected"] == 1
     assert "rotation" not in saved and "enemy" not in saved
-    assert saved["conditionals"]["Furina"] == {"Furina": {"c1Cond": 1},
-                                               "SplendorOfTranquilWaters": {"stacks": 2}}
+    assert saved["conditionals"]["Furina"] == {"Furina": {"c1Cond": "1"},
+                                               "SplendorOfTranquilWaters": {"stacks": "2"}}
     assert saved["conditionals"]["Bennett"] == {"ViridescentVenerer": {"swirl": "hydro"}}
-    assert saved["conditionals"]["_team"] == {"reso": {"nearbyDendro1": 1}}
+    assert saved["conditionals"]["_team"] == {"reso": {"nearbyDendro1": "1"}}
 
     # removing values
     b.setConditional("0|Furina|c1Cond", False)
-    b.setConditional("0|SplendorOfTranquilWaters|stacks", 0)
+    b.setConditional("0|SplendorOfTranquilWaters|stacks", "")
     b.setConditional("1|ViridescentVenerer|swirl", "")
     b._timer.stop()
-    assert b._state["conditionals"] == {"_team": {"reso": {"nearbyDendro1": 1}}}
+    assert b._state["conditionals"] == {"_team": {"reso": {"nearbyDendro1": "1"}}}
 
     b2 = T.TeamBackend(settings, state_path=tmp_path / "team.json")
     b2._timer.stop()
@@ -208,12 +251,11 @@ def test_formulas_rows(app, tmp_path, monkeypatch):
     _, b = _make(tmp_path, monkeypatch)
     b.setMember(0, "Furina")
     b._raw_key = "Furina"
-    b._raw_formulas = [{"sheet": "Furina", "name": "burst", "move": "burst", "q": "dmg",
-                        "ele": "hydro", "avg": 10.0}]
+    b._raw_formulas = [_f("burst:1:0", "burst", "hitOp.electro", avg=10.0)]
     b._timer.stop()
     rows = b.formulas
-    assert rows[0]["key"] == "Furina:burst" and "count" not in rows[0]
-    assert rows[0]["group"] == "Elemental Burst"
+    assert rows[0]["key"] == "burst:1:0" and "count" not in rows[0]
+    assert rows[0]["group"].startswith("Elemental Burst")
     assert rows[0]["crit"] is None
 
 
@@ -224,13 +266,15 @@ def test_corrupt_or_missing_state_means_defaults(app, tmp_path, monkeypatch):
     assert b._state == T._default_state()
     path.write_text(json.dumps({"members": ["Furina", "Furina", 5], "selected": 9,
                                 "enemy": {"level": "x"}, "seconds": -1, "rotation": {"Furina": {"a": 2}},
-                                "conditionals": {"Furina": {"Furina": {"c1Cond": 1}}}}),
+                                "conditionals": {"Furina": {"Furina": {"c1Cond": "1", "old": 1, "n": 2.5,
+                                                                      "flag": True}}}}),
                     encoding="utf-8")
     state = T._load_state(path)
     assert state["members"] == [{"key": "Furina", "source": "owned"}, {}, {}, {}]
     assert state["selected"] == 0
     assert "rotation" not in state and "seconds" not in state and "enemy" not in state
-    assert state["conditionals"] == {"Furina": {"Furina": {"c1Cond": 1}}}
+    # strings and positive ints (old toggles, migrated later) survive
+    assert state["conditionals"] == {"Furina": {"Furina": {"c1Cond": "1", "old": "1"}}}
 
 
 # -- the full character list -----------------------------------------------------------
@@ -403,13 +447,43 @@ def test_reaction_per_member(app, tmp_path, monkeypatch):
     assert b.reaction == "vaporize"
     active = b._active()
     p = b._payload(active, [1], ["avg"])
-    assert p["enemy"]["amp"] == "vaporize" and p["enemy"]["cata"] == ""
-    p0 = b._payload(active, [0], ["avg"])
-    assert p0["enemy"]["amp"] == ""
-    assert b.optimize_context("Xiangling")["enemy"]["amp"] == "vaporize"
+    assert p["reactions"] == ["", "vaporize"]
+    assert "amp" not in p["enemy"] and "cata" not in p["enemy"]
+    assert b.optimize_context("Xiangling")["reactions"] == ["", "vaporize"]
     b.setMember(0, "")                          # team changed: choice no longer allowed
     assert b.reaction == ""
-    assert b._payload(b._active(), [0], ["avg"])["enemy"]["amp"] == ""
+    assert b._payload(b._active(), [0], ["avg"])["reactions"] == [""]
+
+
+def test_payload_merges_conditionals_of_the_whole_team(app, tmp_path, monkeypatch):
+    b = _make3(tmp_path, monkeypatch)
+    b.setMember(0, "Furina")
+    b.setMember(1, "Xiangling")
+    b._timer.stop()
+    b._state["conditionals"] = {"Furina": {"Furina": {"a": "1"}},
+                                "Xiangling": {"Furina": {"b": "2"}, "Xiangling": {"c": "3"}},
+                                T.TEAM: {"reso": {"d": "1"}}}
+    p = b._payload(b._active(), [0], ["avg"])
+    assert p["conditional"] == {"Furina": {"a": "1", "b": "2"}, "Xiangling": {"c": "3"},
+                                "reso": {"d": "1"}}
+    ctx = b.optimize_context("Xiangling")
+    assert ctx["conditional"] == p["conditional"] and ctx["index"] == 1
+    assert ctx["formulas"] == [] and ctx["rows"] == []
+
+
+def test_set_conditional_bool_and_list(app, tmp_path, monkeypatch):
+    _, b = _make(tmp_path, monkeypatch)
+    b._conds = (CONDS, ["Furina", "Bennett"], ["Furina", "Bennett"])
+    b._cond_rows = T.condition_rows(*b._conds, b._state["conditionals"])
+    b.setConditional("0|Furina|c1Cond", True)
+    b.setConditional("0|SplendorOfTranquilWaters|stacks", 3)
+    b._timer.stop()
+    assert b._state["conditionals"]["Furina"] == {"Furina": {"c1Cond": "1"},
+                                                  "SplendorOfTranquilWaters": {"stacks": "3"}}
+    b.setConditional("0|Furina|c1Cond", False)
+    b.setConditional("0|SplendorOfTranquilWaters|stacks", "")
+    b._timer.stop()
+    assert b._state["conditionals"] == {}
 
 
 def test_old_enemy_and_rotation_state_ignored(app, tmp_path, monkeypatch):
@@ -425,19 +499,100 @@ def test_old_enemy_and_rotation_state_ignored(app, tmp_path, monkeypatch):
     assert b._payload(b._active(), [0], ["avg"])["enemy"]["res"] == pytest.approx(0.1)
 
 
-def test_visible_formulas_filters_static_rows():
-    fs = [{"sheet": "Furina", "name": "burst"},
-          {"sheet": "static", "name": "swirl_pyro"},
-          {"sheet": "static", "name": "overloaded"},
-          {"sheet": "static", "name": "bloom"}]
-    team = {"anemo", "pyro", "hydro", "dendro"}
-    assert [f["name"] for f in T.visible_formulas(fs, "anemo", team)] == ["burst", "swirl_pyro"]
-    assert [f["name"] for f in T.visible_formulas(fs, "hydro", team)] == ["burst", "bloom"]
-
-
 def test_long_option_lists_are_thinned():
     from lumenspar.ui.team_backend import _thin
     opts = [str(v) for v in range(10, 205, 5)]        # 39 options
     out = _thin(opts)
     assert len(out) == 8 and out[0] == "10" and out[-1] == "200"
     assert _thin(["a", "b"]) == ["a", "b"]
+
+
+# -- Akasha combo -----------------------------------------------------------------------
+
+def _combo_setup(tmp_path, monkeypatch):
+    from lumenspar import akasha
+    _, b = _make(tmp_path, monkeypatch)
+    b.setMember(0, "Furina")
+    b._timer.stop()
+    boards = [akasha.Board(name="Burst nuke", short="Nuke", details="d", calculation_id="c1",
+                           weapon="Other Sword", refinement=1, default_variant="", variants=[]),
+              akasha.Board(name="Skill combo", short="Skill", details="dd", calculation_id="c2",
+                           weapon="Splendor of Tranquil Waters", refinement=1,
+                           default_variant="v", variants=[])]
+    seen = []
+    monkeypatch.setattr(akasha, "boards", lambda aid: boards)
+    monkeypatch.setattr(akasha, "combo", lambda cid, variant="": (
+        seen.append(cid) or [akasha.Hit(name="Salon Solitaire DMG", quantity=2.0,
+                                        kind="x", value=100.0)]))
+    monkeypatch.setattr(T, "_avatar_ids", lambda: {"Furina": "10000089"})
+    rows = [{"key": "skill:1", "label": "Salon Solitaire", "group": "Skill", "q": "dmg", "avg": 100.0}]
+    monkeypatch.setattr(T, "formula_rows", lambda *a, **k: rows)
+    b._raw_key = "Furina"
+    b._formulas_by_key["Furina"] = [{"id": "skill:1"}]
+    return b, seen
+
+
+def test_combo_loads_picks_weapon_board_and_matches(app, tmp_path, monkeypatch):
+    b, seen = _combo_setup(tmp_path, monkeypatch)
+    b._combo_work("Furina", "", "Splendor of Tranquil Waters", [])
+    c = b.combo
+    assert c["board"] == "c2" and seen == ["c2"]
+    assert [x["id"] for x in c["boards"]] == ["c1", "c2"]
+    assert c["boards"][1]["label"] == "Skill · Splendor of Tranquil Waters"
+    assert c["hits"][0]["label"] == "Salon Solitaire DMG × 2"
+    assert c["hits"][0]["matched"] == "Salon Solitaire"
+    assert c["total"] == 200.0 and c["missing"] == 0
+    ctx = b.optimize_context("Furina")
+    assert ctx["combo"] == [{"id": "skill:1", "multiplier": 2.0}]
+    assert ctx["comboTitle"] == "Skill combo"
+
+
+def test_combo_board_choice_is_saved(app, tmp_path, monkeypatch):
+    b, seen = _combo_setup(tmp_path, monkeypatch)
+    b._combo_work("Furina", "", "Splendor of Tranquil Waters", [])
+    b.setComboBoard("c1")
+    b._combo_threads["Furina"].join()
+    assert json.loads((tmp_path / "team.json").read_text(encoding="utf-8"))["combo"] == {"Furina": "c1"}
+    assert b._state["combo"] == {"Furina": "c1"}
+    b._combo_work("Furina", "c1", "x", [])
+    assert b.combo["board"] == "c1"
+    b.setComboBoard("nope")
+    assert b._state["combo"] == {"Furina": "c1"}
+
+
+def test_combo_error_and_unknown_character(app, tmp_path, monkeypatch):
+    from lumenspar import akasha
+    b, _ = _combo_setup(tmp_path, monkeypatch)
+
+    def boom(cid, variant=""):
+        raise akasha.AkashaError("no breakdown")
+    monkeypatch.setattr(akasha, "combo", boom)
+    b._combo_work("Furina", "", "", [])
+    assert b.combo["error"] == "no breakdown" and "hits" not in b.combo
+    assert b.optimize_context("Furina")["combo"] == []
+    monkeypatch.setattr(T, "_avatar_ids", lambda: {})
+    b._combo_work("Furina", "", "", [])
+    assert "no leaderboard" in b.combo["error"]
+
+
+def test_avatar_ids_skip_variants():
+    ids = T._avatar_ids()
+    assert ids["Jean"] == "10000003"
+    assert "TravelerPyro" not in ids
+
+
+def test_fix_conditionals_migrates_old_values():
+    conds = [{"sheet": "Flins", "name": "c2AfterElectro", "states": [{"value": "on"}]},
+             {"sheet": "Columbina", "name": "a1Stacks",
+              "states": [{"value": "1"}, {"value": "2"}, {"value": "3"}]},
+             {"sheet": "Sucrose", "name": "absorption",
+              "states": [{"value": "hydro"}, {"value": "electro"}]}]
+    state = {"Flins": {"Flins": {"c2AfterElectro": "1"}},
+             "Columbina": {"Columbina": {"a1Stacks": "3", "gone": "1"}},
+             "Sucrose": {"Sucrose": {"absorption": "anemo"}},
+             "_team": {"static": {"hasShield": "1"}}}
+    assert T.fix_conditionals(conds, state)
+    assert state == {"Flins": {"Flins": {"c2AfterElectro": "on"}},
+                     "Columbina": {"Columbina": {"a1Stacks": "3", "gone": "1"}},
+                     "_team": {"static": {"hasShield": "1"}}}
+    assert not T.fix_conditionals(conds, state)

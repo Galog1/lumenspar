@@ -345,8 +345,8 @@ Bonus) come out approximately.
 ## Team & damage
 
 The Optimizer's **Team & damage** tab calculates damage the way
-[Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/) does -- with its
-own formula engine, so every character's talents, passives and constellations,
+[Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/) does -- with the
+same formula engine its website runs, so every character's talents, passives and constellations,
 weapon stats and passives, artifact sets, elemental resonance, team buffs,
 enemy level and resistance and amplifying/catalyze reactions are included, as
 GO models them.
@@ -356,31 +356,32 @@ GO models them.
   **All characters** -- every character in the game, with the level,
   constellation, talents, weapon and refinement you set (and no artifacts).
 - **Conditions:** every conditional the team can have, as a compact tile with a
-  checkbox (or a stack counter, or a choice such as the element swirled),
-  grouped by character, weapon, set, resonance and enemy state; hovering shows
-  the game's description.
+  checkbox (or a choice such as a stack count or the element swirled), grouped
+  by character, weapon, set and resonance, with Genshin Optimizer's wording.
 - **Damage:** each character's final stats and every damage instance, as an
   average, a crit or a non-crit hit.
-- **Rotation & DPS:** how many times each hit lands in a rotation and how long
-  the rotation is give each character's damage, the team's, and DPS.
+- **Akasha combo:** the combo an [Akasha.cv](https://akasha.cv) leaderboard
+  ranks the character by (which hits, how many times, and partial shares such
+  as "Lunar-Charged DMG (60%)"), recomputed with your team. Akasha doesn't
+  publish rotation lengths, so this is damage per combo rather than DPS.
 
 The Optimize tab's **Team damage** mode searches your artifacts for the build
-that maximizes one of a character's hits, or their whole rotation, with that
+that maximizes one of a character's hits, or their Akasha combo, with that
 team, its conditions and the enemy -- exact damage, not an estimate. It works
-the way Genshin Optimizer's own solver does: the target is detached from the
+the way Genshin Optimizer's own solver does: the target is folded over the
 team calculation so that only the character's artifact stats and set counts
-remain free, compiled into a plain function, pruned, and evaluated for every
+remain free, pruned, compiled into a plain function, and evaluated for every
 combination of a 4-piece set plus an off-piece (a few hundred to tens of
 thousands of builds in about a second). The character's equipped artifacts are
 always among the candidates, so a suggestion is never worse than what they wear,
 even when the inventory scan is older than the showcase.
 
 The engine is bundled by `tools/build_go_engine.py` from a pinned Genshin
-Optimizer commit and runs in Qt's own JavaScript engine (about 1.4 s per
-character), so neither Lumenspar nor its builds need Node.js. The script also
-works around Qt's older JavaScript engine and patches two engine issues; each
-patch is documented there and fails the build loudly if GO's code changes under
-it.
+Optimizer commit (its `gi/wr`, `gi/sheets` and `gi/uidata` libraries, with the
+website's React/MUI parts replaced by an inert stub) and runs in Qt's own
+JavaScript engine (about 0.3 s per calculation), so neither Lumenspar nor its
+builds need Node.js. The script also works around Qt's older JavaScript engine
+and writes GO's English texts to `go_locale.json` for the labels.
 
 ## Characters from Enka.Network
 

@@ -3,14 +3,20 @@
 
 Genshin Optimizer (MIT, https://github.com/frzyc/genshin-optimizer) models
 every character's talents, passives and constellations, every weapon passive,
-artifact set and elemental resonance, with their conditionals. Its formula
-library (libs/gi/formula, "pando") has no UI dependencies, so instead of
-re-implementing it Lumenspar bundles it into one JavaScript file and runs it
-in Qt's QJSEngine, which PySide6 already ships.
+artifact set and elemental resonance, with their conditionals. Lumenspar
+bundles the engine behind genshin-optimizer.com itself, "WR" (libs/gi/wr,
+libs/gi/sheets, libs/gi/uidata), into one JavaScript file and runs it in Qt's
+QJSEngine, which PySide6 already ships, instead of re-implementing it.
+
+The sheets are written for a React UI, so the UI-only modules (React, MUI,
+icons, images, i18n) are replaced by a generated inert stub whose JSX returns
+plain label objects ({ns, key, values} or {children}) that Lumenspar resolves
+against go_locale.json.
 
 Outputs (committed, so neither the app nor its release builds need Node.js):
   lumenspar/gamedata/go_engine.js     the engine, polyfills first
   lumenspar/gamedata/go_labels.json   English names for formulas/conditionals
+  lumenspar/gamedata/go_locale.json   GO's English locale namespaces, for labels
   lumenspar/gamedata/GO_LICENSE.txt   Genshin Optimizer's licence
 
 Bundling needs Node.js: a local `node`/`npm` is used when present, otherwise
@@ -45,14 +51,11 @@ GO_REPO = "https://github.com/frzyc/genshin-optimizer.git"
 GO_COMMIT = "05c370688e1acb500e7eb92e1c737d48150ab595"   # 2026-10-10
 CONTAINER = "registry.fedoraproject.org/fedora-toolbox:44"
 
-SPARSE = [
-    "/LICENSE", "/tsconfig.base.json",
-    "/libs/gi/formula/", "/libs/pando/", "/libs/gi/stats/", "/libs/gi/consts/",
-    "/libs/gi/good/", "/libs/common/util/", "/libs/game-opt/engine/",
-    "/libs/game-opt/formula/", "/libs/gi/schema/",
-    "/libs/gi/localization/assets/locales/en/",
-    "/libs/gi/dm-localization/assets/locales/en/",
-]
+SPARSE = ["/LICENSE", "/tsconfig.base.json", "/package.json", "/libs/"]
+STUBBED = ["react", "react/jsx-runtime", "react-dom", "@mui/material", "@mui/icons-material",
+           "@mui/material/styles", "i18next", "react-i18next", "@genshin-optimizer/common/ui",
+           "@genshin-optimizer/gi/svgicons", "@genshin-optimizer/common/svgicons",
+           "@genshin-optimizer/gi/assets", "@genshin-optimizer/gi/i18n"]
 NPM = ["esbuild", "zod", "fflate", "@babel/core", "@babel/cli",
        "@babel/plugin-transform-parameters"]
 
@@ -63,9 +66,12 @@ npm init -y >/dev/null
 npm install --silent --no-audit --no-fund {npm} >/dev/null
 ln -sfn /tmp/deps/node_modules /repo/node_modules
 cd /repo
+A=""
+for m in {stubbed}; do A="$A --alias:$m=./lumenspar_stub.js"; done
 /tmp/deps/node_modules/.bin/esbuild lumenspar_entry.ts --bundle --format=iife \
   --platform=neutral --main-fields=module,main --target=es2016 \
-  --tsconfig=tsconfig.base.json '--define:process.env.NODE_ENV="production"' \
+  --tsconfig=tsconfig.base.json '--define:process.env.NODE_ENV="production"' --jsx=automatic $A \
+  --loader:.png=empty --loader:.svg=empty --loader:.webp=empty --loader:.gif=empty --loader:.jpg=empty \
   --outfile=/repo/go_esbuild.js --log-level=warning
 /tmp/deps/node_modules/.bin/babel go_esbuild.js --config-file /repo/lumenspar_babel.json \
   -o /repo/go_bundle.js
@@ -73,21 +79,9 @@ rm -f /repo/node_modules
 """
 
 # Textual patches to the bundle (Babel's compact output): (reason, old, new,
-# expected count). A patch that stops matching fails the build loudly.
-PATCHES = [
-    ("Aloy has no region in GO's data (undefined, not ''); Node's Proxy semantics "
-     "hide the resulting count[undefined], QJSEngine's do not",
-     'region!==""?[ownBuff.common.count[region]', "region?[ownBuff.common.count[region]", 1),
-    ("GO's critMode 'crit' multiplies by 1 + CRIT Rate instead of 1 + CRIT DMG "
-     "(data/common/dmg.ts; GO's UI only uses 'avg', so it went unnoticed)",
-     "crit:sum(1,own.common.cappedCritRate_)", "crit:sum(1,own.final.critDMG_)", 1),
-    ("`compile` inlines custom operations (e.g. the resistance multiplier) into "
-     "generated code via Function.toString(); QJSEngine returns '[native code]' "
-     "for that, so expose the registry and reference it instead",
-     "var customOps={}", "var customOps=globalThis.__lumensparOps={}", 1),
-    ("(continued) reference the registered operation rather than its source text",
-     "${f.calc.toString()}", "globalThis.__lumensparOps[${JSON.stringify(name)}].calc", 1),
-]
+# expected count). A patch that stops matching fails the build loudly. WR needs
+# none: its level tables already reach 100 and it does not use Function.toString.
+PATCHES: list[tuple[str, str, str, int]] = []
 
 
 def run(cmd: list[str], **kw) -> None:
@@ -106,12 +100,49 @@ def checkout(work: Path, commit: str) -> Path:
     return repo
 
 
+def write_stub(repo: Path) -> None:
+    """Generate the inert stub for UI-only modules: it must export every name
+    the sources import from them, or esbuild fails on the missing export."""
+    imp = re.compile(r"import\s+(?:type\s+)?(?:(\w+)\s*,?\s*)?(?:\{([^}]*)\})?\s*from\s*'([^']+)'", re.S)
+    names = {"jsx", "jsxs", "Fragment"}
+    for f in [*(repo / "libs").rglob("*.ts"), *(repo / "libs").rglob("*.tsx")]:
+        for _, named, mod in imp.findall(f.read_text(encoding="utf-8", errors="ignore")):
+            if mod in STUBBED or mod.startswith("@mui/"):
+                for n in (named or "").split(","):
+                    n = re.sub(r"^\s*type\s+", "", n.strip()).split(" as ")[0].strip()
+                    if re.fullmatch(r"[A-Za-z_$][\w$]*", n):
+                        names.add(n)
+    names -= {"jsx", "jsxs", "default"}
+    lines = [
+        "// Inert stand-in for UI-only modules (React, MUI, icons, images, i18n).",
+        "const handler = { get(t, k) { if (k === Symbol.toPrimitive || k === 'toString') "
+        "return () => ''; return stub },",
+        "  apply() { return null }, construct() { return {} } }",
+        "const stub = new Proxy(function () { return null }, handler)",
+        "// JSX elements become plain label objects: <Translate ns key18 values/> -> "
+        "{ns, key, values};",
+        "// anything else keeps its children so Lumenspar can join the text.",
+        "function label(type, props) {",
+        "  props = props || {}",
+        "  if (props.key18 !== undefined) return { ns: props.ns, key: props.key18, "
+        "values: props.values }",
+        "  return { children: props.children }",
+        "}",
+        "export const jsx = label",
+        "export const jsxs = label",
+        *(f"export const {n} = stub" for n in sorted(names)),
+        "export default stub",
+    ]
+    (repo / "lumenspar_stub.js").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def bundle(repo: Path) -> str:
+    write_stub(repo)
     shutil.copy(HERE / "entry.ts", repo / "lumenspar_entry.ts")
     (repo / "lumenspar_babel.json").write_text(json.dumps(
         {"plugins": ["@babel/plugin-transform-parameters"], "comments": False}),
         encoding="utf-8")
-    script = BUILD_SH.format(npm=" ".join(NPM))
+    script = BUILD_SH.format(npm=" ".join(NPM), stubbed=" ".join(STUBBED))
     if shutil.which("node") and shutil.which("npm"):
         # Local Node: same steps, with /repo pointing at the checkout.
         script = script.replace("/repo", str(repo))
@@ -179,6 +210,16 @@ def _text(v) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", v)).strip()
 
 
+def locale(repo: Path) -> dict:
+    """Every English locale namespace (file stem -> parsed JSON), which the
+    label objects emitted by the stub refer to."""
+    out: dict = {}
+    for d in ("libs/gi/localization/assets/locales/en", "libs/gi/dm-localization/assets/locales/en"):
+        for f in sorted((repo / d).glob("*.json")):
+            out[f.stem] = json.loads(f.read_text(encoding="utf-8"))
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--commit", default=GO_COMMIT, help="Genshin Optimizer commit to bundle")
@@ -198,8 +239,10 @@ def main() -> int:
     (OUT / "go_labels.json").write_text(
         json.dumps({"commit": args.commit, **labels(repo)}, ensure_ascii=False,
                    separators=(",", ":")), encoding="utf-8")
+    (OUT / "go_locale.json").write_text(
+        json.dumps(locale(repo), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     shutil.copy(repo / "LICENSE", OUT / "GO_LICENSE.txt")
-    for f in ("go_engine.js", "go_labels.json", "GO_LICENSE.txt"):
+    for f in ("go_engine.js", "go_labels.json", "go_locale.json", "GO_LICENSE.txt"):
         print(f"wrote {OUT / f} ({(OUT / f).stat().st_size / 1e6:.2f} MB)")
     return 0
 

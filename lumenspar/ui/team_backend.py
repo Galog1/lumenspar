@@ -17,39 +17,64 @@ from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, QTimer, Signal, Slot
 
-from .. import builds, damage, reactions
+from .. import akasha, builds, damage, reactions, teamcombo
 from ..config import DATA_DIR
 from ..wishes import icons
 from .builds_backend import _url
 
-MOVE_GROUPS = {"normal": "Normal Attack", "charged": "Charged Attack",
-               "plunging": "Plunging Attack", "skill": "Elemental Skill",
-               "burst": "Elemental Burst"}
-
 TEAM = "_team"                      # state key of the team-wide conditionals
-TEAM_SHEETS = ("reso", "static")
 SLOTS = 4
 ENEMY = {"level": 100, "res": 10.0}  # fixed: level and resistance in percent
 _KIND_ORDER = {"char": 0, "weapon": 1, "artifact": 2}
 _ELEMENTS = ("pyro", "hydro", "electro", "cryo", "anemo", "geo", "dendro", "physical")
 
 
+_AVATAR_IDS: dict[str, str] | None = None
+
+
+def _avatar_ids() -> dict[str, str]:
+    """{character key: avatar id} from the bundled Enka data; Traveler and Manekin
+    variants (ids with a depot suffix) are left out: they have no leaderboard."""
+    global _AVATAR_IDS
+    if _AVATAR_IDS is None:
+        try:
+            raw = json.loads((Path(__file__).resolve().parent.parent / "gamedata" / "enka.json")
+                             .read_text(encoding="utf-8"))
+            avatars = raw.get("avatars") or {}
+        except (OSError, ValueError, AttributeError):
+            avatars = {}
+        _AVATAR_IDS = {a["key"]: aid for aid, a in avatars.items()
+                       if "-" not in aid and isinstance(a, dict) and a.get("key")}
+    return _AVATAR_IDS
+
+
 # -- pure helpers ---------------------------------------------------------------
 
-def formula_group(f: dict) -> str:
-    """The heading a formula is listed under."""
-    if f.get("q") == "heal":
-        return "Healing"
-    if f.get("q") == "shield":
-        return "Shield"
-    return MOVE_GROUPS.get(f.get("move"), "Other")
-
-
-def visible_formulas(formulas: list[dict], element: str, team: set[str]) -> list[dict]:
-    """The formulas to list: transformative / Lunar rows only when the member can trigger them."""
-    return [f for f in formulas
-            if f.get("sheet") != "static"
-            or reactions.reaction_row_allowed(f.get("name", ""), element.lower(), team)]
+def formula_rows(formulas: list[dict], char_key: str, element: str, team: set[str]) -> list[dict]:
+    """The engine's formulas as list rows: label, heading and kind (dmg / heal /
+    shield), in engine order; transformative / Lunar rows only when the member
+    can trigger them."""
+    rows: list[dict] = []
+    seen: dict[tuple[str, str], int] = {}
+    for f in formulas:
+        if f.get("avg") is None:
+            continue
+        if f["id"].startswith("reaction:"):
+            name = f["id"][len("reaction:"):]
+            if not reactions.reaction_row_allowed(name, element.lower(), team):
+                continue
+            label = reactions.reaction_label(name) or damage.humanize(name)
+            group = "Reactions"
+        else:
+            label = damage.render_label(f.get("name")) or damage.humanize(f["id"])
+            group = damage.talent_title(char_key, f["section"])
+        n = seen[(group, label)] = seen.get((group, label), 0) + 1
+        if n > 1:
+            label = f"{label} ({n})"
+        q = "heal" if f.get("variant") == "heal" else ("shield" if "shield" in label.lower() else "dmg")
+        rows.append({"key": f["id"], "label": label, "group": group, "q": q,
+                     "avg": f["avg"], "crit": f.get("crit"), "nonCrit": f.get("nonCrit")})
+    return rows
 
 
 def _thin(options: list, keep: int = 8) -> list:
@@ -67,57 +92,84 @@ def condition_rows(conds: list[dict], keys: list[str], names: list[str], state: 
 
     Members come in slot order and, within a member, the character's own
     conditions first, then the weapon's, then the artifact sets'. Team-wide
-    sheets are listed once, last, and their state lives under "_team".
+    conditions (elemental resonance) are listed last, and their state lives
+    under "_team".
     """
     member_rows: list[tuple[int, int, int, dict]] = []
     team_rows: list[dict] = []
-    seen: set[tuple[str, str]] = set()
     for n, c in enumerate(conds):
-        sheet, name = c["sheet"], c["name"]
-        team = sheet in TEAM_SHEETS
+        sheet, name, kind = c["sheet"], c["name"], c.get("kind")
+        team = kind == "team"
         if team:
-            if (sheet, name) in seen:
-                continue
-            seen.add((sheet, name))
             member, member_key, store = "Team", TEAM, TEAM
         else:
             src = int(c["src"])
             member, member_key, store = names[src], keys[src], keys[src]
-        kind = damage.sheet_kind(sheet)
+        section = str(c.get("section") or "")
+        if kind == "char":
+            title = damage.talent_title(member_key, section)
+        elif kind == "weapon":
+            title = damage.sheet_title(sheet)
+        elif kind == "artifact":
+            pieces = section.rpartition(":")[2]
+            title = f"{damage.sheet_title(sheet)} {pieces}-piece" if pieces else damage.sheet_title(sheet)
+        else:
+            title = "Elemental Resonance"
+        states = _thin(c.get("states") or [])
         row = {
             "id": f"{c['src']}|{sheet}|{name}",
             "member": member,
             "memberKey": member_key,
             "sheet": sheet,
-            "sheetTitle": damage.sheet_title(sheet),
+            "sheetTitle": title,
             "kind": kind,
             "name": name,
-            "label": damage.cond_label(sheet, name),
-            "detail": damage.cond_detail(sheet, name),
-            "type": c.get("type"),
-            "min": c.get("min"),
-            "max": c.get("max"),
-            "options": (stack_options(c.get("min"), c.get("max")) if c.get("type") == "num"
-                        else [{"value": v, "label": damage.option_label(v)}
-                              for v in _thin(c.get("list", []))]),
+            "label": damage.render_label(c.get("label")) or damage.humanize(name),
+            "detail": "",
+            "type": "bool" if len(c.get("states") or []) == 1 else "list",
+            "options": [{"value": s["value"],
+                         "label": damage.render_label(s.get("label")) or damage.option_label(s["value"])}
+                        for s in states],
             "value": ((state.get(store) or {}).get(sheet) or {}).get(name),
         }
+        if row["type"] == "bool":
+            row["onValue"] = states[0]["value"]
         if team:
             team_rows.append(row)
         else:
             member_rows.append((int(c["src"]), _KIND_ORDER.get(kind, 3), n, row))
     member_rows.sort(key=lambda t: t[:3])
     rows = [r for *_, r in member_rows] + team_rows
-    # GO sometimes gives several conditions of one sheet the same text
-    # (e.g. Venti's per-element Stormeye swirls); tell them apart.
+    # Several conditions of one source can share a label; tell them apart.
     seen: dict[tuple, int] = {}
     for r in rows:
-        k = (r["memberKey"], r["sheet"], r["label"])
+        k = (r["memberKey"], r["sheetTitle"], r["label"])
         seen[k] = seen.get(k, 0) + 1
     for r in rows:
-        if seen[(r["memberKey"], r["sheet"], r["label"])] > 1:
+        if seen[(r["memberKey"], r["sheetTitle"], r["label"])] > 1:
             r["label"] = f"{r['label']} ({damage.humanize(r['name'])})"
     return rows
+
+
+def fix_conditionals(conds: list[dict], state: dict) -> bool:
+    """Map saved values that are not a state of their conditional (toggles saved
+    by the old engine: "1" for on, "3" for three stacks) onto one, or drop them.
+    Conditionals the team no longer lists are kept. Returns whether anything changed."""
+    states = {(c["sheet"], c["name"]): [s["value"] for s in c["states"]] for c in conds}
+    changed = False
+    for sheets in state.values():
+        for sheet, values in sheets.items():
+            for name, v in list(values.items()):
+                allowed = states.get((sheet, name))
+                if allowed is None or v in allowed:
+                    continue
+                if len(allowed) == 1 and v.isdigit() and int(v) > 0:
+                    values[name] = allowed[0]
+                else:
+                    del values[name]
+                changed = True
+    _compact(state)
+    return changed
 
 
 def _whole(v: float) -> str:
@@ -138,8 +190,7 @@ def stat_rows(stats: dict, element: str) -> list[dict]:
         {"label": "Elemental Mastery", "text": _whole(g("eleMas", 0))},
         {"label": "CRIT Rate", "text": _pct(g("critRate_", 0) * 100)},
         {"label": "CRIT DMG", "text": _pct(g("critDMG_", 0) * 100)},
-        # The engine's enerRech_ leaves out the base 100%.
-        {"label": "Energy Recharge", "text": _pct((1 + g("enerRech_", 0)) * 100)},
+        {"label": "Energy Recharge", "text": _pct(g("enerRech_", 0) * 100)},
     ]
     if g("heal_", 0) > 0:
         rows.append({"label": "Healing Bonus", "text": _pct(g("heal_", 0) * 100)})
@@ -152,22 +203,11 @@ def stat_rows(stats: dict, element: str) -> list[dict]:
     return rows
 
 
-def stack_options(lo, hi) -> list[dict]:
-    """Choices for a stacking condition: Off, then every stack count when there
-    are few of them, otherwise half and max."""
-    lo = int(lo or 0)
-    hi = int(hi if hi is not None else lo)
-    off = {"value": 0, "label": "Off"}
-    if hi - lo <= 6:
-        return [off] + [{"value": v, "label": str(v)} for v in range(lo + 1, hi + 1)]
-    return [off, {"value": round((lo + hi) / 2), "label": "½"}, {"value": hi, "label": "Max"}]
-
-
 # -- state ------------------------------------------------------------------------
 
 def _default_state() -> dict:
     return {"members": [{} for _ in range(SLOTS)], "selected": 0, "settings": {},
-            "conditionals": {}, "reactions": {}}
+            "conditionals": {}, "reactions": {}, "combo": {}}
 
 
 def _load_state(path: Path) -> dict:
@@ -210,8 +250,11 @@ def _load_state(path: Path) -> dict:
             for sheet, values in sheets.items():
                 if not isinstance(values, dict):
                     continue
-                good = {n: v for n, v in values.items()
-                        if isinstance(v, (int, str)) and not isinstance(v, bool)}
+                # numbers come from the old engine's toggles (1 = on, n = stacks);
+                # fix_conditionals maps them onto the current states
+                good = {n: (v if isinstance(v, str) else str(v)) for n, v in values.items()
+                        if (isinstance(v, str) and v)
+                        or (isinstance(v, int) and not isinstance(v, bool) and v > 0)}
                 if good:
                     state["conditionals"].setdefault(key, {})[sheet] = good
     chosen = raw.get("reactions")
@@ -219,6 +262,11 @@ def _load_state(path: Path) -> dict:
         for key, v in chosen.items():
             if isinstance(key, str) and v in _REACTIONS and v:
                 state["reactions"][key] = v
+    chosen_combo = raw.get("combo")
+    if isinstance(chosen_combo, dict):
+        for key, v in chosen_combo.items():
+            if isinstance(key, str) and isinstance(v, str) and v:
+                state["combo"][key] = v
     return state
 
 
@@ -277,7 +325,9 @@ class TeamBackend(QObject):
     damageChanged = Signal()
     formulasUpdated = Signal()
     allCharactersChanged = Signal()
+    comboChanged = Signal()
     _portraitsDone = Signal()
+    _comboFetched = Signal(str, object, object, str)
 
     DEBOUNCE_MS = 300
 
@@ -290,7 +340,7 @@ class TeamBackend(QObject):
         self._cands: dict[str, dict] = {}       # key -> {key, name, element, icon, source, member}
         self._engine: damage.Engine | None = None
         self._ids: dict[str, int | None] = {"cond": None, "avg": None, "detail": None}
-        self._cond_sig: tuple | None = None
+        self._cond_sig: str | None = None
         self._conds: tuple[list, list, list] = ([], [], [])   # engine list, keys, names
         self._cond_rows: list[dict] = []
         self._raw_key = ""                       # whose formulas/stats are shown
@@ -308,6 +358,10 @@ class TeamBackend(QObject):
         self._portraits_started = False
         self._portraits_thread: threading.Thread | None = None
         self._portraitsDone.connect(self._on_portraits)
+        self._combo: dict[str, dict] = {}       # key -> {boards, board, hits, error, loading}
+        self._combo_threads: dict[str, threading.Thread] = {}
+        self._comboFetched.connect(self._on_combo)
+        self.damageChanged.connect(self.comboChanged)
         self._rebuild_all_public()
         self._read_sources()
         # Portraits for the team's and the player's characters, in the background.
@@ -526,15 +580,48 @@ class TeamBackend(QObject):
         key = self._selected_key()
         if not key or key != self._raw_key:
             return []
-        rows = []
-        for f in visible_formulas(self._raw_formulas, self._entry(key)["element"], self._team_set()):
-            fk = f"{f['sheet']}:{f['name']}"
-            rlabel = reactions.reaction_label(f["name"]) if f["sheet"] == "static" else None
-            label = rlabel or damage.formula_label(f["sheet"], f["name"], f.get("move", ""))
-            rows.append({"key": fk, "label": label,
-                         "group": "Reactions" if rlabel else formula_group(f), "q": f.get("q"), "avg": f.get("avg"),
-                         "crit": f.get("crit"), "nonCrit": f.get("nonCrit")})
-        return rows
+        return formula_rows(self._raw_formulas, key, self._entry(key)["element"], self._team_set())
+
+    def _combo_match(self, key: str) -> dict | None:
+        """The key's combo hits matched to its damage rows, or None while either is missing."""
+        c = self._combo.get(key)
+        if not c or not c.get("hits"):
+            return None
+        formulas = self._formulas_by_key.get(key)
+        entry = self._entry(key)
+        if not formulas or entry is None:
+            return None
+        rows = formula_rows(formulas, key, entry["element"], self._team_set())
+        if not rows:
+            return None
+        return teamcombo.match(c["hits"], rows)
+
+    @Property("QVariantMap", notify=comboChanged)
+    def combo(self) -> dict:
+        key = self._selected_key()
+        c = self._combo.get(key) if key else None
+        if not c:
+            return {}
+        boards = c.get("boards") or []
+        cur = next((b for b in boards if b.calculation_id == c.get("board")), None)
+        out: dict = {
+            "boards": [{"id": b.calculation_id, "label": f"{b.short or b.name} · {b.weapon}"}
+                       for b in boards],
+            "board": c.get("board") or "",
+            "title": cur.name if cur else "",
+            "details": cur.details if cur else "",
+            "loading": bool(c.get("loading")),
+            "error": c.get("error") or "",
+        }
+        m = self._combo_match(key) if key == self._raw_key else None
+        if m is not None:
+            out["hits"] = [{"label": f"{h['name']} × {h['quantity']:g}",
+                            "matched": h["label"] or "not found",
+                            "group": h["group"] or "", "total": h["total"]}
+                           for h in m["hits"]]
+            out["total"] = m["total"]
+            out["missing"] = m["missing"]
+        return out
 
     @Property(bool, notify=busyChanged)
     def busy(self) -> bool:
@@ -619,9 +706,7 @@ class TeamBackend(QObject):
             return
         kind = row["type"]
         if kind == "bool":
-            v = 1 if _truthy(value) else None
-        elif kind == "num":
-            v = _int(value) or None
+            v = row["onValue"] if _truthy(value) else None
         else:
             v = str(value) if value not in (None, "") else None
         store = self._state["conditionals"]
@@ -688,6 +773,83 @@ class TeamBackend(QObject):
         if self._engine is not None:
             self._engine.shutdown()
 
+    # -- Akasha combo -----------------------------------------------------------------
+
+    def _ensure_combo(self, key: str) -> None:
+        """Start loading the Akasha combo of the selected member unless it is loaded or loading."""
+        if not key:
+            return
+        c = self._combo.get(key)
+        if c and (c.get("loading") or c.get("hits") or c.get("error")):
+            return
+        self._fetch_combo(key)
+
+    def _fetch_combo(self, key: str, board_id: str = "") -> None:
+        """Load the boards and the chosen board's hits in a background thread."""
+        t = self._combo_threads.get(key)
+        if t is not None and t.is_alive():
+            return
+        entry = self._entry(key)
+        weapon = ""
+        if entry is not None:
+            weapon = damage.sheet_title(entry["member"]["weapon"]["key"])
+        c = self._combo.setdefault(key, {"boards": [], "board": "", "hits": [], "error": "",
+                                         "loading": True})
+        c.update(loading=True, error="")
+        if board_id:
+            c["hits"] = []
+        chosen = board_id or self._state["combo"].get(key, "")
+        known = list(c.get("boards") or [])
+        self.comboChanged.emit()
+        t = threading.Thread(target=self._combo_work, args=(key, chosen, weapon, known),
+                             daemon=True)
+        self._combo_threads[key] = t
+        t.start()
+
+    def _combo_work(self, key: str, chosen: str, weapon: str, known: list) -> None:
+        aid = _avatar_ids().get(key)
+        if aid is None:
+            self._comboFetched.emit(key, None, None, "Akasha.cv has no leaderboard for this character.")
+            return
+        try:
+            boards = known or akasha.boards(aid)
+            if not boards:
+                raise akasha.AkashaError("Akasha.cv has no leaderboard for this character.")
+            board = (next((b for b in boards if b.calculation_id == chosen), None)
+                     or next((b for b in boards if b.weapon.lower() == weapon.lower()), None)
+                     or boards[0])
+            # The combo is the same in every ER variant, but only the unfiltered
+            # board names partial hits with their share ("Lunar-Charged DMG (60%)").
+            hits = akasha.combo(board.calculation_id, "")
+        except (akasha.AkashaError, OSError) as exc:
+            self._comboFetched.emit(key, {"boards": list(known), "board": chosen}, None, str(exc))
+            return
+        self._comboFetched.emit(key, {"boards": boards, "board": board.calculation_id}, hits, "")
+
+    @Slot(str, object, object, str)
+    def _on_combo(self, key: str, boards, hits, error: str) -> None:
+        c = self._combo.setdefault(key, {"boards": [], "board": "", "hits": [], "error": "",
+                                         "loading": False})
+        c["loading"] = False
+        c["error"] = error
+        if boards:
+            c["boards"] = list(boards["boards"])
+            c["board"] = boards["board"]
+        c["hits"] = list(hits) if hits else []
+        self.comboChanged.emit()
+
+    @Slot(str)
+    def setComboBoard(self, calc_id: str) -> None:
+        key = self._selected_key()
+        c = self._combo.get(key)
+        if not key or not calc_id or not c or not any(
+                b.calculation_id == calc_id for b in c.get("boards") or []):
+            return
+        self._state["combo"][key] = calc_id
+        self._save()
+        c["board"] = calc_id
+        self._fetch_combo(key, calc_id)
+
     # -- state changes -----------------------------------------------------------------
 
     def _touch(self) -> None:
@@ -724,32 +886,28 @@ class TeamBackend(QObject):
         keys = [k for _, k in active]
         if char_key not in keys:
             return None
-        base = self._payload(active, [], [], char_key)
-        return {"members": base["members"], "conditionals": base["conditionals"],
-                "enemy": base["enemy"], "index": keys.index(char_key),
-                "formulas": list(self._formulas_by_key.get(char_key, []))}
+        base = self._payload(active, [], [])
+        formulas = list(self._formulas_by_key.get(char_key, []))
+        rows = formula_rows(formulas, char_key, self._entry(char_key)["element"], self._team_set())
+        m = self._combo_match(char_key) if rows else None
+        c = self._combo.get(char_key) or {}
+        cur = next((b for b in c.get("boards") or [] if b.calculation_id == c.get("board")), None)
+        return {"members": base["members"], "conditional": base["conditional"],
+                "enemy": base["enemy"], "reactions": base["reactions"],
+                "index": keys.index(char_key), "formulas": formulas, "rows": rows,
+                "combo": teamcombo.frames(m) if m is not None else [],
+                "comboTitle": cur.name if cur else ""}
 
-    def _payload(self, active: list[tuple[int, str]], only: list[int], modes: list[str],
-                 enemy_key: str | None = None) -> dict:
+    def _payload(self, active: list[tuple[int, str]], only: list[int], modes: list[str]) -> dict:
         conds: dict = {}
         stored = self._state["conditionals"]
-        team = stored.get(TEAM, {})
-        for idx, (_, key) in enumerate(active):
-            sheets = {s: dict(v) for s, v in stored.get(key, {}).items()}
-            if idx == 0:
-                for s, v in team.items():
-                    sheets.setdefault(s, {}).update(v)
-            if sheets:
-                conds[str(idx)] = sheets
-        enemy = ENEMY
-        if enemy_key is None:
-            enemy_key = active[only[0]][1] if only else ""
-        reaction = self._reaction_for(enemy_key) if enemy_key else ""
+        for key in [TEAM] + [k for _, k in active]:
+            for sheet, values in stored.get(key, {}).items():
+                conds.setdefault(sheet, {}).update(values)
         return {"members": [self._entry(k)["member"] for _, k in active],
-                "conditionals": conds,
-                "enemy": {"level": enemy["level"], "res": enemy["res"] / 100,
-                          "amp": reaction if reaction in ("vaporize", "melt") else "",
-                          "cata": reaction if reaction in ("spread", "aggravate") else ""},
+                "conditional": conds,
+                "enemy": {"level": ENEMY["level"], "res": ENEMY["res"] / 100},
+                "reactions": [self._reaction_for(k) for _, k in active],
                 "only": only, "modes": modes}
 
     def _request(self, purpose: str, fn: str, payload: dict) -> None:
@@ -772,18 +930,18 @@ class TeamBackend(QObject):
         active = self._active()
         if not active:
             self._raw_key, self._raw_stats, self._raw_formulas = "", {}, []
-            self._conds, self._cond_rows, self._cond_sig = ([], [], []), [], ()
+            self._conds, self._cond_rows, self._cond_sig = ([], [], []), [], ""
             self._ids["avg"] = self._ids["detail"] = self._ids["cond"] = None
             self._update_busy()
             self._set_status("")
             self.conditionsChanged.emit()
             self.damageChanged.emit()
             return
-        keys = tuple(k for _, k in active)
-        if keys != self._cond_sig:
-            self._cond_sig = keys
-            self._request("cond", "conditionals",
-                          {"members": [self._entry(k)["member"] for _, k in active]})
+        payload = self._payload(active, [], [])
+        sig = json.dumps(payload["members"], sort_keys=True)
+        if sig != self._cond_sig:
+            self._cond_sig = sig
+            self._request("cond", "conditionals", payload)
         key = self._selected_key()
         if not key:
             self._ids["avg"] = self._ids["detail"] = None
@@ -791,6 +949,7 @@ class TeamBackend(QObject):
             self._set_status("")
             self.damageChanged.emit()
             return
+        self._ensure_combo(key)
         idx = [k for _, k in active].index(key)
         self._ids["detail"] = None
         self._set_status(f"Calculating {self._entry(key)['name']}…")
@@ -815,6 +974,8 @@ class TeamBackend(QObject):
             keys = [k for _, k in active]
             names = [self._entry(k)["name"] for k in keys]
             self._conds = (list(out), keys, names)
+            if fix_conditionals(self._conds[0], self._state["conditionals"]):
+                self._touch()
             self._cond_rows = condition_rows(*self._conds, self._state["conditionals"])
             self._settle("cond")
             self.conditionsChanged.emit()
@@ -842,9 +1003,9 @@ class TeamBackend(QObject):
             idx = keys.index(key) if key in keys else -1
             res = (out.get("members") or [None] * (idx + 1))[idx] if idx >= 0 else None
             if res is not None and key == self._raw_key:
-                found = {(f["sheet"], f["name"], f.get("q")): f for f in res.get("formulas", [])}
+                found = {f["id"]: f for f in res.get("formulas", [])}
                 for f in self._raw_formulas:
-                    g = found.get((f["sheet"], f["name"], f.get("q")))
+                    g = found.get(f["id"])
                     if g:
                         f["crit"], f["nonCrit"] = g.get("crit"), g.get("nonCrit")
                 self.damageChanged.emit()

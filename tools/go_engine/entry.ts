@@ -1,208 +1,281 @@
-// Lumenspar's entry point into Genshin Optimizer's formula engine
-// (libs/gi/formula, "pando"; MIT License, https://github.com/frzyc/genshin-optimizer).
-// Bundled by tools/build_go_engine.py and run in Qt's QJSEngine.
+// Lumenspar's entry point into Genshin Optimizer's production formula engine
+// ("WR": libs/gi/wr, libs/gi/sheets, libs/gi/uidata, what genshin-optimizer.com
+// runs; MIT License, https://github.com/frzyc/genshin-optimizer).
+// Bundled by tools/build_go_engine.py and run in Qt's QJSEngine. The sheets'
+// UI is replaced by an inert stub whose JSX yields label objects:
+// {ns, key, values} | {children} | string, passed through as-is.
 //
-//   LumensparGO.compute(json)      -> json   stats and every formula, per member
+//   LumensparGO.compute(json)      -> json   stats and every named formula, per member
 //   LumensparGO.conditionals(json) -> json   the conditionals a team can toggle
+//   LumensparGO.optimize(json)     -> json   best artifact builds for a target
 //
-// Request: { members: [{ char: ICharacter, weapon: IWeapon,
-//                        artifacts: [{ set, stats: [{ key, value }] }] }],
-//            conditionals: { [src member]: { [sheet]: { [name]: value } } },
-//            enemy: { level, res, amp, cata },
-//            only: [member indices to compute] (default all),
-//            modes: ['avg' | 'crit' | 'nonCrit'] (default ['avg']) }
-// Each (member, mode) is one full calculation, about a second in QJSEngine,
-// so callers ask only for what they show.
-// Percent stats are fractions (0.466), as in GO.
+// Shared request fields:
+//   members: [{ char: { key, level, constellation, ascension, talent: { auto, skill, burst } },
+//               weapon: { key, level, ascension, refinement },
+//               artifacts?: [{ set, stats: [{ key, value }] }] }]   percent stats are fractions
+//   conditional?: { [sheetKey]: { [condKey]: string } }   one map for the whole team
+//   enemy?: { level?, res? }   res is a fraction (default level 100, res 0.1)
+//   reactions?: string[]   per member: '' | 'vaporize' | 'melt' | 'spread' | 'aggravate'
+//
+// compute: + only?: number[] (default all), modes?: ('avg' | 'crit' | 'nonCrit')[] (default ['avg'])
+//   -> { members: [null | { stats: { hp, atk, ..., <ele>_dmg_ },
+//        formulas: [{ id, section, name, variant, subVariant, multi, <mode>: value }] }] }
+//   Formula ids: `<talentKey>:<doc>:<field>`, `weapon:<doc>:<field>`, `reaction:<name>`.
+//   Each mode is one full calculation, so callers ask only for what they show.
+//
+// conditionals: -> [{ src, sheet, name, label, teamBuff, kind, section, states: [{ value, label }] }]
+//   (set `conditional[sheet][name] = value` to enable one)
+//
+// optimize: + target: { member, frames: [{ id, multiplier? }] },
+//             minimums?: [{ key, value }]  final stats, fractions for %,
+//             families: [[candidates x 5 slots]]  candidate = { id, <statKey>: value, <setKey>: 1 },
+//             top?: number (default 5)
+//   -> { builds: [{ ids, value }], evaluated, pruned }
+//   The way GO's own optimizer works (TabOptimize + ComputeWorker): the target
+//   member gets no artifacts, the artifact stats stay free ("dyn"), and every
+//   family is pruned, precompiled and searched in full.
 import { allArtifactSetKeys } from '@genshin-optimizer/gi/consts'
-import { compile, detach, prod, prune, sum } from '@genshin-optimizer/pando/engine'
 import {
-  Read,
-  artifactsData, charData, conditionalEntries, conditionals as allConds,
-  enemyDebuff, genshinCalculatorWithEntries, own, ownBuff,
-  pandoContextEntries, teamData, weaponData, withMember,
-} from '@genshin-optimizer/gi/formula'
+  allArtifactData, getArtSheet, getCharSheet, getMoonsignSheet, getWeaponSheet,
+  reactionData, resonanceData, resonanceSheets,
+} from '@genshin-optimizer/gi/sheets'
+import { uiDataForTeam } from '@genshin-optimizer/gi/uidata'
+import {
+  common, constant, dataObjForCharacterNew, dataObjForWeapon, dynamicData, infoManager,
+  input, mergeData, optimize as wrOptimize, percent, precompute, prod, sum,
+} from '@genshin-optimizer/gi/wr'
+// The package index also pulls in the solver's workers; only this is needed.
+import { pruneAll } from './libs/gi/solver/src/common'
 
+type Member = { char: any; weapon: any; artifacts?: { set: string; stats: { key: string; value: number }[] }[] }
 type Req = {
-  members: { char: any; weapon: any; artifacts?: any[] }[]
-  conditionals?: Record<string, Record<string, Record<string, number | string>>>
-  enemy?: { level?: number; res?: number; amp?: string; cata?: string }
-  only?: number[]
-  modes?: string[]
+  members: Member[]
+  conditional?: Record<string, Record<string, string>>
+  enemy?: { level?: number; res?: number }
+  reactions?: string[]
 }
 
 const STATS = ['hp', 'atk', 'def', 'eleMas', 'critRate_', 'critDMG_', 'enerRech_', 'heal_']
 const ELES = ['pyro', 'hydro', 'electro', 'cryo', 'anemo', 'geo', 'dendro', 'physical']
+const HIT_MODE: Record<string, string> = { avg: 'avgHit', crit: 'critHit', nonCrit: 'hit' }
+const SLOTS = ['flower', 'plume', 'sands', 'goblet', 'circlet']
+const artSets = new Set<string>(allArtifactSetKeys as readonly string[])
 
-function entries(req: Req, active: string, critMode: string): any[] {
-  const ids = req.members.map((_, i) => String(i))
-  return [
-    ...teamData(ids as any),
-    ...pandoContextEntries({ memberKeys: ids as any, activeMember: active }),
-    ...req.members.flatMap((m, i) =>
-      withMember(String(i) as any, ...charData(m.char), ...weaponData(m.weapon),
-        ...artifactsData(m.artifacts ?? []))),
-    ...conditionalRows(req, ids),
-    enemyDebuff.common.lvl.add(req.enemy?.level ?? 100),
-    enemyDebuff.common.preRes.add(req.enemy?.res ?? 0.1),
-    enemyDebuff.reaction.amp.add(req.enemy?.amp ?? ''),
-    enemyDebuff.reaction.cata.add(req.enemy?.cata ?? ''),
-    ownBuff.common.critMode.add(critMode),
-  ]
+const num = (v: any): number | null => (typeof v === 'number' && isFinite(v) ? v : null)
+
+function sheets(m: Member) {
+  const key = m.char.key
+  const charSheet: any = getCharSheet(key, 'F')
+  const weaponSheet: any = getWeaponSheet(m.weapon.key)
+  if (!charSheet || !weaponSheet) throw new Error(`no sheet for ${key}`)
+  return { charSheet, weaponSheet }
 }
 
-// A conditional is set once, on its source. GO reads some conditionals per
-// (source, destination), others with the source and/or destination ignored
-// (e.g. "enemy frozen" ignores both), and the team listing does not say which;
-// conditionals are read with `max`, so writing every combination is exact.
-function conditionalRows(req: Req, ids: string[]): any[] {
-  const rows: any[] = []
-  for (const [src, sheets] of Object.entries(req.conditionals ?? {}))
-    for (const [sheet, conds] of Object.entries(sheets))
-      for (const [name, val] of Object.entries(conds)) {
-        const targets: [string | null, string | null][] = [[src, null], [null, null]]
-        for (const dst of ids) targets.push([src, dst], [null, dst])
-        for (const [s, d] of targets)
-          rows.push((conditionalEntries as any)(sheet, s, d)(name, val))
-      }
-  return rows
-}
-
-function member(req: Req, id: string, modes: string[]) {
-  // Each member is computed as the active (on-field) character.
-  const byMode: Record<string, any[]> = {}
-  const stats: Record<string, number> = {}
-  modes.forEach((mode, n) => {
-    const calc = genshinCalculatorWithEntries(entries(req, id, mode))
-    const mem = calc.withTag({ src: id } as any)
-    if (n === 0) {
-      for (const s of STATS) stats[s] = mem.compute((own.final as any)[s]).val
-      for (const e of ELES) stats[`${e}_dmg_`] = mem.compute((own.final as any).dmg_[e]).val
-    }
-    byMode[mode] = mem.listFormulas(own.listing.formulas)
-      .filter((f: any) => f.tag.qt === 'formula')
-      .map((f: any) => ({ tag: f.tag, value: calc.compute(f).val }))
+// Like GO's getCharDataBundle (useCustom = false). `emptyArtsFor` leaves that
+// member without artifacts: the optimizer's target.
+function teamData(req: Req, hitMode: string, emptyArtsFor?: number): Record<string, any[]> {
+  const res = (req.enemy?.res ?? 0.1) * 100
+  const out: Record<string, any[]> = {}
+  req.members.forEach((m, i) => {
+    const { charSheet, weaponSheet } = sheets(m)
+    const sheetData = mergeData([charSheet.data, weaponSheet.data, allArtifactData])
+    const arts = i === emptyArtsFor ? [] : (m.artifacts ?? []).map((a) => ({
+      art: Object.fromEntries(a.stats.map((s) => [s.key, s.key.endsWith('_') ? percent(s.value) : constant(s.value)])),
+      artSet: { [a.set]: constant(1) },
+    }))
+    out[m.char.key] = [
+      ...arts,
+      dataObjForCharacterNew({
+        key: m.char.key, level: m.char.level, constellation: m.char.constellation,
+        ascension: m.char.ascension, talent: m.char.talent, infusionAura: '',
+        customMultiTargets: [], conditional: req.conditional ?? {}, bonusStats: {},
+        enemyOverride: {
+          enemyLevel: req.enemy?.level ?? 100,
+          ...Object.fromEntries(ELES.map((e) => [`${e}_enemyRes_`, res])),
+        },
+        hitMode, reaction: req.reactions?.[i] || undefined,
+      } as any),
+      dataObjForWeapon({ id: `w${i}`, ...m.weapon } as any),
+      sheetData, common, resonanceData, reactionData,
+    ]
   })
-  const first = byMode[modes[0]]
-  const formulas = first.map((f: any) => {
-    const row: any = {
-      sheet: f.tag.sheet, name: f.tag.name, move: f.tag.move ?? '', ele: f.tag.ele ?? '',
-      q: f.tag.q,
-    }
-    for (const mode of modes)
-      row[mode] = (byMode[mode].find((g: any) => sameTag(g.tag, f.tag)) || {}).value
-    return row
-  })
-  return { stats, formulas }
+  return out
 }
 
-function sameTag(a: any, b: any): boolean {
-  return a.sheet === b.sheet && a.name === b.name && a.q === b.q && a.qt === b.qt
+function calcFor(req: Req, hitMode: string, idx: number): any {
+  const key = req.members[idx].char.key
+  return (uiDataForTeam(teamData(req, hitMode) as any, 'F', key) as any)[key]!.target
+}
+
+// Documents (with their index) a calc can show.
+function shown(docs: any[] | undefined, calc: any): [any, number][] {
+  return (docs ?? []).map((d, di) => [d, di] as [any, number])
+    .filter(([d]) => !(d.canShow && !calc.get(d.canShow).value))
+}
+
+function talentDocs(charSheet: any): [string, any[]][] {
+  return Object.entries(charSheet.talent).map(([k, t]: any) => [k, t?.sections ?? []])
 }
 
 function compute(json: string): string {
-  const req: Req = JSON.parse(json)
+  const req: Req & { only?: number[]; modes?: string[] } = JSON.parse(json)
   const modes = req.modes && req.modes.length ? req.modes : ['avg']
   const only = req.only ?? req.members.map((_, i) => i)
-  return JSON.stringify({
-    members: req.members.map((_, i) => (only.includes(i) ? member(req, String(i), modes) : null)),
+  const members = req.members.map((m, i) => {
+    if (!only.includes(i)) return null
+    const { charSheet, weaponSheet } = sheets(m)
+    const calcs = modes.map((mode) => calcFor(req, HIT_MODE[mode], i))
+    const calc = calcs[0]
+    const stats: Record<string, number | null> = {}
+    for (const k of STATS) stats[k] = num(calc.get((input.total as any)[k]).value)
+    for (const e of ELES) stats[`${e}_dmg_`] = num(calc.get((input.total as any)[`${e}_dmg_`]).value)
+
+    // Named formulas (info.path 'path_...'); stat-path fields are buffs, not hits.
+    const rows: any[] = []
+    const addDocs = (section: string, docs: any[], idOf: (di: number, fi: number) => string) => {
+      for (const [doc, di] of shown(docs, calc))
+        (doc.fields ?? []).forEach((f: any, fi: number) => {
+          if (!f.node) return
+          if (typeof f.canShow === 'function' && !f.canShow(calc)) return
+          const info: any = calc.get(f.node).info ?? {}
+          if (typeof info.path !== 'string' || !info.path.startsWith('path_')) return
+          const row: any = {
+            id: idOf(di, fi), section, name: (infoManager as any)[info.path]?.name ?? null,
+            variant: info.variant ?? '', subVariant: info.subVariant ?? '', multi: info.multi ?? null,
+          }
+          calcs.forEach((c, n) => { row[modes[n]] = num(c.get(f.node).value) })
+          rows.push(row)
+        })
+    }
+    for (const [tk, docs] of talentDocs(charSheet)) addDocs(tk, docs, (di, fi) => `${tk}:${di}:${fi}`)
+    addDocs('weapon', weaponSheet.document ?? [], (di, fi) => `weapon:${di}:${fi}`)
+    for (const [name, node] of Object.entries(calc.getDisplay()['reaction'] ?? {}) as [string, any][]) {
+      if (node.isEmpty || !((num(node.value) ?? 0) > 0)) continue
+      const row: any = {
+        id: `reaction:${name}`, section: 'reaction', name: null,
+        variant: node.info?.variant ?? '', subVariant: node.info?.subVariant ?? '', multi: null,
+      }
+      calcs.forEach((c, n) => { row[modes[n]] = num(c.getDisplay()['reaction']?.[name]?.value) })
+      rows.push(row)
+    }
+    return { stats, formulas: rows }
   })
+  return JSON.stringify({ members })
 }
 
 function conditionals(json: string): string {
-  // The sheets a team touches: each member's character, weapon and artifact
-  // sets, elemental resonance ("reso") and shared enemy/shield states ("static").
   const req: Req = JSON.parse(json)
   const out: any[] = []
-  req.members.forEach((m, i) => {
-    const sets = new Set((m.artifacts ?? []).map((a: any) => a.set))
-    const sheets = [m.char.key, m.weapon.key, ...sets]
-    for (const sheet of sheets) {
-      const conds = (allConds as any)[sheet]
-      if (!conds) continue
-      for (const c of Object.values(conds) as any[]) out.push({ src: String(i), ...c })
+  const seen = new Set<string>()
+  const add = (docs: any[], calc: any, src: string, kind: string, section: string) => {
+    for (const [doc] of shown(docs, calc)) {
+      if (!doc.states) continue
+      const st = typeof doc.states === 'function' ? doc.states(calc) : doc.states
+      const teamBuff = !!doc.teamBuff
+      const entries: any[] = doc.path
+        ? [{ src, sheet: doc.path[0], name: doc.path[1], label: doc.name ?? null, teamBuff, kind, section,
+             states: Object.entries(st).map(([k, v]: any) => ({ value: k, label: v.name ?? null })) }]
+        : Object.entries(st).filter(([, v]: any) => v.path).map(([k, v]: any) => ({
+            src, sheet: v.path[0], name: v.path[1], label: v.name ?? null, teamBuff, kind, section,
+            states: [{ value: k, label: null }] }))
+      for (const e of entries) {
+        const id = `${e.sheet}|${e.name}`
+        if (seen.has(id)) continue
+        seen.add(id)
+        out.push(e)
+      }
     }
+  }
+  req.members.forEach((m, i) => {
+    try {
+      const calc = calcFor(req, 'avgHit', i), src = String(i)
+      const { charSheet, weaponSheet } = sheets(m)
+      for (const [tk, docs] of talentDocs(charSheet))
+        try { add(docs, calc, src, 'char', tk) } catch (e) { /* one broken sheet must not fail the list */ }
+      try { add(weaponSheet.document ?? [], calc, src, 'weapon', 'weapon') } catch (e) { /* as above */ }
+      const count: Record<string, number> = {}
+      for (const a of m.artifacts ?? []) count[a.set] = (count[a.set] ?? 0) + 1
+      for (const [set, n] of Object.entries(count)) {
+        const sheet: any = getArtSheet(set as any)
+        for (const k of [2, 4]) {
+          if (n < k) continue
+          try { add(sheet?.setEffectDocument(k) ?? [], calc, src, 'artifact', `${set}:${k}`) } catch (e) { /* as above */ }
+        }
+      }
+    } catch (e) { /* as above */ }
   })
-  for (const sheet of ['reso', 'static'])
-    for (const c of Object.values((allConds as any)[sheet] ?? {}) as any[])
-      out.push({ src: '0', ...c })
+  try {
+    const calc = calcFor(req, 'avgHit', 0)
+    for (const r of [...resonanceSheets, getMoonsignSheet(calc)] as any[]) {
+      try {
+        if (!r.canShow(calc)) continue
+        add(r.sections ?? [], calc, '0', 'team', 'resonance')
+      } catch (e) { /* as above */ }
+    }
+  } catch (e) { /* as above */ }
   return JSON.stringify(out)
 }
 
-// --- optimizing ------------------------------------------------------------
-// The way Genshin Optimizer's own solver works (libs/gi/pando-solver): build
-// the team with the target member's artifacts left empty, read the target
-// (a sum of formulas times hit counts) and stat minimums, and `detach` them so
-// that only the member's artifact stats (sheet "dyn") and set counts remain
-// free; `prune` the candidates against those formulas; `compile` to a plain
-// function, and evaluate every combination of one candidate per slot.
-//
-// Request: compute's fields plus
-//   target: { member, frames: [{ sheet, name, q, multiplier }] },
-//   minimums: [{ q, ele?, value }]            final stats, fractions
-//   families: [ [slot candidates] x5 ]        each family is searched in full;
-//            candidate = { id, <stat key>: value (fractions), <set key>: 1 }
-//   top: number
-// Response: { builds: [{ ids, value }], evaluated, pruned }
-const artSets = new Set<string>(allArtifactSetKeys as readonly string[])
-
 function optimize(json: string): string {
-  const req: any = JSON.parse(json)
-  const t = String(req.target.member)
-  const members = req.members.map((m: any, i: number) =>
-    String(i) === t ? { ...m, artifacts: [] } : m)
-  const calc = genshinCalculatorWithEntries(entries({ ...req, members }, t, 'avg'))
-  const listed = calc.withTag({ src: t } as any).listFormulas(own.listing.formulas)
-  const frames = (req.target.frames as any[]).map((f) => {
-    const hit = listed.find((g: any) => g.tag.sheet === f.sheet && g.tag.name === f.name &&
-      g.tag.q === (f.q ?? 'dmg'))
-    if (!hit) throw new Error(`no formula ${f.sheet}:${f.name}`)
-    return prod(f.multiplier ?? 1, new (Read as any)({ ...(hit as any).tag, src: t }, undefined))
-  })
-  const mins = (req.minimums ?? []) as any[]
-  const undetached = [
-    sum(...frames),
-    ...mins.map((m) => new (Read as any)({
-      et: 'own', sheet: 'agg', src: t, qt: 'final', q: m.q, ...(m.ele ? { ele: m.ele } : {}),
-    }, undefined)),
-  ]
-  const nodes = detach(undetached as any, calc as any, (tag: any) => {
-    if (tag.src !== t || tag.et !== 'own') return undefined
-    if (tag.sheet === 'dyn' && tag.qt === 'premod') return { q: tag.q }
-    if (tag.q === 'count' && artSets.has(tag.sheet)) return { q: tag.sheet }
-    return undefined
-  })
-  const minimum = [Number.NEGATIVE_INFINITY, ...mins.map((m) => m.value - 1e-7)]
-  const top: number = req.top ?? 5
-  let best: { ids: any[]; value: number }[] = []
-  let floor = Number.NEGATIVE_INFINITY
+  const req: Req & { target: { member: number; frames: { id: string; multiplier?: number }[] };
+    minimums?: { key: string; value: number }[]; families: any[][][]; top?: number } = JSON.parse(json)
+  const t = req.target.member, top = req.top ?? 5
+  const key = req.members[t].char.key
+  const { charSheet, weaponSheet } = sheets(req.members[t])
+  const ui: any = (uiDataForTeam(teamData(req, 'avgHit', t) as any, 'F', key) as any)[key]!.target
+  const workerData: any = ui.data[0]
+  Object.assign(workerData, mergeData([workerData, dynamicData])) // mark art fields dynamic
+
+  const resolve = (id: string): any => {
+    const [a, b, c] = id.split(':')
+    const node = a === 'reaction' ? workerData.display?.reaction?.[b]
+      : a === 'weapon' ? weaponSheet.document?.[+b]?.fields?.[+c]?.node
+      : charSheet.talent[a]?.sections?.[+b]?.fields?.[+c]?.node
+    if (!node) throw new Error(`no formula ${id}`)
+    return node
+  }
+  const targetNode = sum(...req.target.frames.map((f) => prod(f.multiplier ?? 1, resolve(f.id))))
+  const mins = req.minimums ?? []
+  const nodes = wrOptimize(
+    [...mins.map((m) => (input.total as any)[m.key]), targetNode], workerData,
+    ({ path: [p] }: any) => p !== 'dyn')
+  const min = mins.map((m) => m.value - 1e-7)
+
+  const best: { ids: string[]; value: number }[] = []
   let evaluated = 0, pruned = 0
-  for (const family of req.families as any[][][]) {
-    const p: any = prune(nodes as any, family as any, 'q', minimum, top)
-    const cands = p.candidates as any[][]
-    let count = 1
-    for (const c of cands) count *= c.length
-    pruned += count
-    if (!count) continue
-    const f = compile(p.nodes, 'q', cands.length)
-    const pick: any[] = new Array(cands.length)
+  for (const family of req.families) {
+    const slot = (list: any[]) => list.map((c) => {
+      const { id, ...values } = c
+      return { id, set: Object.keys(values).find((k) => values[k] === 1 && artSets.has(k)), values }
+    })
+    const arts: any = {
+      base: {},
+      values: Object.fromEntries(SLOTS.map((s, i) => [s, slot(family[i])])),
+    }
+    const { nodes: n2, arts: pre } = pruneAll(nodes, min, arts, top, {} as any,
+      { pruneArtRange: true, pruneNodeRange: true })
+    const slots: any[][] = Object.values(pre.values).sort((a: any, b: any) => a.length - b.length)
+    let total = 1
+    for (const s of slots) total *= s.length
+    pruned += total
+    if (!total) continue
+    const f = precompute(n2, pre.base, (r: any) => r.path[1], slots.length)
+    const buffer: any[] = new Array(slots.length)
     const walk = (i: number) => {
-      if (i === cands.length) {
-        const out = f(pick)
+      if (i < 0) {
+        const result = f(buffer)
         evaluated++
-        for (let k = 1; k < out.length; k++) if (out[k] < p.minimum[k]) return
-        const v = out[0]
-        if (best.length < top || v > floor) {
-          best.push({ ids: pick.map((c) => c.id), value: v })
-          best.sort((a, b) => b.value - a.value)
-          if (best.length > top) best.length = top
-          floor = best.length === top ? best[best.length - 1].value : Number.NEGATIVE_INFINITY
-        }
+        if (!min.every((m, k) => m <= result[k])) return
+        const value = result[min.length]
+        if (best.length === top && value <= best[top - 1].value) return
+        best.push({ ids: buffer.map((x) => x.id), value })
+        best.sort((a, b) => b.value - a.value)
+        if (best.length > top) best.length = top
         return
       }
-      for (const c of cands[i]) { pick[i] = c; walk(i + 1) }
+      for (const a of slots[i]) { buffer[i] = a; walk(i - 1) }
     }
-    walk(0)
+    walk(slots.length - 1)
   }
   return JSON.stringify({ builds: best, evaluated, pruned })
 }

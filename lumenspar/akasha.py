@@ -527,6 +527,52 @@ def sample(calc: Calc, fetch: Callable[[str], bytes] | None = None, root: Path =
     return rows, top
 
 
+@dataclass(frozen=True)
+class Hit:
+    """One hit of a leaderboard's combo: its name, how many times it lands, its kind and damage."""
+    name: str
+    quantity: float
+    kind: str
+    value: float
+
+
+def combo(calculation_id: str, variant: str = "", fetch: Callable[[str], bytes] | None = None,
+          root: Path = CACHE_DIR, now: Callable[[], float] = time.time) -> list[Hit]:
+    """The combo Akasha's formula sums for a leaderboard: each hit and how many times it lands."""
+    path = root / f"combo-{calculation_id}-{variant or 'none'}.json"
+    cached = _read_cache(path, BOARD_TTL, now)
+    if cached is not None:
+        try:
+            return [Hit(**h) for h in cached["hits"]]
+        except (KeyError, TypeError, ValueError):
+            pass
+    params = {"sort": "calculation.result", "order": -1, "size": 1,
+              "calculationId": calculation_id, "variant": variant, "p": ""}
+    data = _get("leaderboards", params, fetch)
+    try:
+        extra = data[0]["calculation"]["additional"]
+        if not isinstance(extra, list) or not extra:
+            raise TypeError
+    except (KeyError, IndexError, TypeError):
+        raise AkashaError("This leaderboard has no damage breakdown.") from None
+    hits: list[Hit] = []
+    try:
+        for e in extra:
+            if not isinstance(e, dict) or not e.get("name"):
+                continue
+            quantity = float(e.get("quantity") or 0)
+            if quantity <= 0:
+                continue
+            hits.append(Hit(name=str(e["name"]), quantity=quantity, kind=str(e.get("type") or ""),
+                            value=float(e.get("value") or 0)))
+    except (ValueError, TypeError) as exc:
+        raise AkashaError("Akasha.cv sent something unexpected (its site may have changed)") from exc
+    if not hits:
+        raise AkashaError("This leaderboard has no damage breakdown.")
+    _write_cache(path, {"time": now(), "hits": [asdict(h) for h in hits]})
+    return hits
+
+
 def common(rows: list[Row], top_share: float = 0.5
            ) -> tuple[list[tuple[str, float]], dict[str, list[tuple[str, float]]]]:
     """What the best builds of a sample use: ([(set4 key, share)], {slot: [(main key, share)]})."""

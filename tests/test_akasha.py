@@ -415,3 +415,31 @@ def test_calc_for_board():
     assert none.name == "Alpha" and none.short == "A" and none.details == "da"
     assert none.result == 0.0 and none.ranking == 0 and none.weapon == "Spear" and none.sets == {}
     assert akasha.calc_for_board(board, "110er", []).variant_label == "110% ER"
+
+
+COMBO_ADDITIONAL = [
+    {"name": "Northland Spearstorm Avg DMG", "value": 24452.97, "quantity": 2, "type": "E"},
+    {"name": "Normal Attack 1 Avg DMG", "value": 7984.2, "quantity": 3, "type": "NA"},
+    {"name": "", "value": 5, "quantity": 1, "type": "NA"},
+    {"name": "Zero", "value": 5, "quantity": 0, "type": "NA"},
+    {"name": "Lunar-Charged DMG (60%)", "value": 57947.4, "quantity": 5, "type": "LC"},
+]
+
+
+def test_combo_parsing_and_cache(tmp_path):
+    calls = []
+    fetch = fake_fetch({"leaderboards": {"data": [{"calculation": {"additional": COMBO_ADDITIONAL}}]}},
+                       calls)
+    hits = akasha.combo("1000012000", "120er", fetch, root=tmp_path)
+    assert hits == [akasha.Hit("Northland Spearstorm Avg DMG", 2.0, "E", 24452.97),
+                    akasha.Hit("Normal Attack 1 Avg DMG", 3.0, "NA", 7984.2),
+                    akasha.Hit("Lunar-Charged DMG (60%)", 5.0, "LC", 57947.4)]
+    assert "calculationId=1000012000" in calls[0] and "variant=120er" in calls[0]
+    assert akasha.combo("1000012000", "120er", fetch, root=tmp_path) == hits
+    assert len(calls) == 1
+
+
+def test_combo_without_breakdown(tmp_path):
+    for payload in ({"data": []}, {"data": [{"calculation": {"result": 1}}]}):
+        with pytest.raises(akasha.AkashaError, match="no damage breakdown"):
+            akasha.combo("1", "", fake_fetch({"leaderboards": payload}), root=tmp_path)

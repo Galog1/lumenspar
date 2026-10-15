@@ -44,11 +44,11 @@ def test_card_candidates_in_slot_order():
 def test_engine_minimums():
     got = T.engine_minimums({"enerRech_": 160, "critRate_": 70, "eleMas": 200, "atk": 2000,
                              "pyro_dmg_": 50})
-    assert got[0] == {"q": "enerRech_", "value": pytest.approx(0.6)}
-    assert got[1] == {"q": "critRate_", "value": pytest.approx(0.7)}
-    assert got[2] == {"q": "eleMas", "value": 200}
-    assert got[3] == {"q": "atk", "value": 2000}
-    assert got[4] == {"q": "dmg_", "ele": "pyro", "value": pytest.approx(0.5)}
+    assert got[0] == {"key": "enerRech_", "value": pytest.approx(1.6)}
+    assert got[1] == {"key": "critRate_", "value": pytest.approx(0.7)}
+    assert got[2] == {"key": "eleMas", "value": 200}
+    assert got[3] == {"key": "atk", "value": 2000}
+    assert got[4] == {"key": "pyro_dmg_", "value": pytest.approx(0.5)}
     assert T.engine_minimums({}) == []
 
 
@@ -116,30 +116,17 @@ def test_sets_with_four():
 
 
 FORMULAS = [
-    {"sheet": "Furina", "name": "skill_dmg", "q": "dmg", "move": "skill"},
-    {"sheet": "Furina", "name": "burst_dmg", "q": "dmg", "move": "burst"},
-    {"sheet": "Furina", "name": "burst_heal", "q": "heal", "move": "burst"},
+    {"id": "skill:1:0", "section": "skill", "avg": 1.0},
+    {"id": "burst:1:0", "section": "burst", "avg": 2.0},
 ]
 
 
-def test_frames_rotation():
-    got = T.frames("rotation", {"Furina:skill_dmg": 3, "Furina:burst_heal": 2, "Furina:burst_dmg": 0},
-                   FORMULAS)
-    assert got == [{"sheet": "Furina", "name": "skill_dmg", "q": "dmg", "multiplier": 3},
-                   {"sheet": "Furina", "name": "burst_heal", "q": "heal", "multiplier": 2}]
-    # a hit the formulas don't list falls back to "dmg"
-    assert T.frames("rotation", {"X:y": 1}, [])[0]["q"] == "dmg"
-
-
-def test_frames_single_and_errors():
-    assert T.frames("Furina:burst_dmg", {}, FORMULAS) == [
-        {"sheet": "Furina", "name": "burst_dmg", "q": "dmg", "multiplier": 1}]
+def test_frames():
+    assert T.frames("burst:1:0", FORMULAS) == [{"id": "burst:1:0", "multiplier": 1}]
     with pytest.raises(ValueError):
-        T.frames("rotation", {}, FORMULAS)
+        T.frames("burst:9:9", FORMULAS)
     with pytest.raises(ValueError):
-        T.frames("rotation", {"Furina:skill_dmg": 0}, FORMULAS)
-    with pytest.raises(ValueError):
-        T.frames("Furina:nope", {}, FORMULAS)
+        T.frames("rotation", [])
 
 
 def test_card_pieces_join_the_search_and_replace_scan_copies():

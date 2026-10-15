@@ -80,3 +80,5 @@ var process = { env: { NODE_ENV: "production" } };
 // kept for the engine's lifetime instead of being collected.
 WeakMap = function WeakMap(entries) { return new Map(entries); };
 WeakSet = function WeakSet(values) { return new Set(values); };
+// zod references BigInt at load time; QJSEngine has none.
+if (typeof globalThis.BigInt === 'undefined') { globalThis.BigInt = function (v) { return Number(v) }; globalThis.BigInt.asIntN = function (b, v) { return v }; globalThis.BigInt.asUintN = function (b, v) { return v } }

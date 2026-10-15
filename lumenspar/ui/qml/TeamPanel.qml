@@ -19,6 +19,8 @@ ColumnLayout {
     readonly property var selectedMember: members[selectedSlot] || ({})
     property string col: "avg"   // damage column shown: "avg" | "crit" | "nonCrit"
 
+    readonly property var combo: team.combo || ({})
+
     function fmt(v) {
         if (v === null || v === undefined) return "…"
         return Number(v).toLocaleString(Qt.locale(), "f", 0)
@@ -769,6 +771,137 @@ ColumnLayout {
                         color: Qt.rgba(1, 1, 1, 0.05)
                     }
                 }
+            }
+        }
+
+        // Akasha combo
+        Text {
+            Layout.fillWidth: true
+            Layout.topMargin: 14
+            visible: (panel.combo.boards || []).length > 0 || !!panel.combo.loading || !!panel.combo.error
+            text: "Akasha combo"
+            color: Theme.text
+            font.pixelSize: 15
+            font.weight: Font.DemiBold
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: (panel.combo.boards || []).length > 0 || !!panel.combo.loading || !!panel.combo.error
+            text: "The hits Akasha's leaderboard counts, with your team's numbers. Akasha doesn't publish rotation length, so this is damage per combo, not DPS."
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
+        }
+        Flow {
+            Layout.fillWidth: true
+            spacing: 8
+            Repeater {
+                model: panel.combo.boards || []
+                delegate: Pill {
+                    required property var modelData
+                    label: modelData.label
+                    checked: modelData.id === panel.combo.board
+                    onClicked: team.setComboBoard(modelData.id)
+                }
+            }
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: !!panel.combo.details
+            text: panel.combo.details || ""
+            color: Theme.textDim
+            font.pixelSize: 12
+            wrapMode: Text.WordWrap
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: !!panel.combo.loading
+            text: "Loading Akasha combo…"
+            color: Theme.textDim
+            font.pixelSize: 13
+        }
+        Text {
+            Layout.fillWidth: true
+            visible: !!panel.combo.error
+            text: panel.combo.error || ""
+            color: Theme.textDim
+            font.pixelSize: 13
+            wrapMode: Text.WordWrap
+        }
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 0
+            visible: (panel.combo.hits || []).length > 0
+            Repeater {
+                model: panel.combo.hits || []
+                delegate: ColumnLayout {
+                    id: crow
+                    required property var modelData
+                    Layout.fillWidth: true
+                    spacing: 0
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.topMargin: 3
+                        Layout.bottomMargin: 3
+                        spacing: 10
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 0
+                            Text {
+                                Layout.fillWidth: true
+                                text: crow.modelData.label || ""
+                                color: Theme.text
+                                font.pixelSize: 13
+                                wrapMode: Text.WordWrap
+                            }
+                            Text {
+                                Layout.fillWidth: true
+                                text: (crow.modelData.group ? crow.modelData.group + " · " : "")
+                                      + (crow.modelData.matched || "")
+                                color: Theme.textDim
+                                font.pixelSize: 11
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+                        Text {
+                            text: crow.modelData.total === null || crow.modelData.total === undefined
+                                  ? "—" : panel.fmt(crow.modelData.total)
+                            color: Theme.text
+                            font.pixelSize: 13
+                            font.weight: Font.DemiBold
+                        }
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 1
+                        color: Qt.rgba(1, 1, 1, 0.05)
+                    }
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.topMargin: 4
+                Text {
+                    Layout.fillWidth: true
+                    text: "Total"
+                    color: Theme.text
+                    font.pixelSize: 13
+                    font.weight: Font.Bold
+                }
+                Text {
+                    text: panel.fmt(panel.combo.total || 0)
+                    color: Theme.text
+                    font.pixelSize: 13
+                    font.weight: Font.Bold
+                }
+            }
+            Text {
+                Layout.fillWidth: true
+                visible: (panel.combo.missing || 0) > 0
+                text: (panel.combo.missing || 0) + " hit(s) couldn't be matched and are left out."
+                color: Theme.textDim
+                font.pixelSize: 12
+                wrapMode: Text.WordWrap
             }
         }
     }
