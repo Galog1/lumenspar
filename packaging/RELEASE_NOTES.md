@@ -2,7 +2,17 @@ Lumenspar is a Genshin Impact companion for Linux and Windows: a wish
 counter with pity and 50/50 tracking, an inventory scanner that exports
 `.GOOD` files, build cards, and an artifact optimizer with team damage.
 
-## New in 0.3.4
+## New in 0.3.5
+
+- **Much smoother Build Cards page.** The page used to rebuild its whole
+  character list every time card art arrived, which could freeze the window for
+  seconds on slower computers. It now only updates what changed.
+- **Save card as image asks where to save.** A Save As window opens (starting in
+  your export folder) instead of writing straight to Documents.
+- **Web viewer.** Build cards there now match the app: CV/RV toggle with roll
+  values, element-tinted banners and Traveler art.
+
+## Earlier: 0.3.4
 
 - **Updates from inside Lumenspar.** A banner appears when a newer release is
   out (checked at start-up and every few hours, and from **Check for updates**
@@ -19,11 +29,11 @@ counter with pity and 50/50 tracking, an inventory scanner that exports
 > been run yet. Please report what happens on yours, with the log from
 > `Documents/Lumenspar/logs/`.
 
-## Linux: `Lumenspar-0.3.3-x86_64.AppImage`
+## Linux: `Lumenspar-0.3.5-x86_64.AppImage`
 
 ```sh
-chmod +x Lumenspar-0.3.3-x86_64.AppImage
-./Lumenspar-0.3.3-x86_64.AppImage
+chmod +x Lumenspar-0.3.5-x86_64.AppImage
+./Lumenspar-0.3.5-x86_64.AppImage
 ```
 
 Needs a 64-bit distribution about as new as Ubuntu 24.04 (Fedora 40+,
@@ -33,7 +43,7 @@ any current desktop), sends input through `/dev/uinput`, and has Tesseract
 built in. If the AppImage will not start for lack of FUSE, run it with
 `--appimage-extract-and-run`.
 
-## Windows: `Lumenspar-Setup-0.3.3.exe`
+## Windows: `Lumenspar-Setup-0.3.5.exe`
 
 The installer is not code-signed, so SmartScreen may need **More info → Run
 anyway**. Lumenspar asks for administrator rights at every start, because
