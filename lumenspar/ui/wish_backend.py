@@ -64,6 +64,11 @@ class WishBackend(QObject):
     def banners(self) -> list:
         return self._stats
 
+    @Property("QVariantMap", notify=changed)
+    def fiftyFifty(self) -> dict:
+        """Won, lost and win rate (None when nothing was decided) over all banners with a 50/50."""
+        return stats.fifty_fifty(self._stats)
+
     @Property(str, notify=changed)
     def account(self) -> str:
         return self._history.uid if self._history else ""

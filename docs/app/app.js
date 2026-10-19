@@ -231,6 +231,9 @@ function render() {
   renderBuilds(v);
 }
 
+// Share of decided 50/50s that were won, to one decimal (older backups have no precomputed rate).
+function rate(won, lost) { return (Math.round((1000 * won) / (won + lost)) / 10).toString(); }
+
 function pityColour(pity, hard) {
   const d = pity / Math.max(1, hard);
   return d <= 0.66 ? "var(--ok)" : d <= 0.83 ? "var(--r5)" : "var(--danger)";
@@ -250,9 +253,12 @@ function renderWishes(v) {
     box.append(el("p", { class: "dim" }, "No wish history backed up for this account yet."));
     return;
   }
+  const won = v.banners.reduce((t, b) => t + (b.hasFiftyFifty ? b.won : 0), 0);
+  const lost = v.banners.reduce((t, b) => t + (b.hasFiftyFifty ? b.lost : 0), 0);
   box.append(el("p", { class: "dim small" },
     `${(v.totalWishes || 0).toLocaleString()} wishes on record` +
-    (v.wishesUpdated ? " · last imported " + new Date(v.wishesUpdated).toLocaleString() : "")));
+    (v.wishesUpdated ? " · last imported " + new Date(v.wishesUpdated).toLocaleString() : "") +
+    (won + lost ? ` · average 50/50 win rate ${rate(won, lost)}% (won ${won} · lost ${lost})` : "")));
   const grid = el("div", { class: "banners" });
   for (const b of v.banners) {
     const pulls = el("div", { class: "pulls" }, ...(b.fives || []).map((f) => {
@@ -273,7 +279,7 @@ function renderWishes(v) {
       b.hasFiftyFifty && el("div", { class: "badges" },
         el("span", { class: "badge" + (b.guaranteed ? " guar" : "") },
           b.guaranteed ? "Next 5★ guaranteed featured" : "Next 5★ is a 50/50"),
-        el("span", {}, `50/50: won ${b.won} · lost ${b.lost}`)),
+        el("span", {}, `50/50: won ${b.won} · lost ${b.lost}` + (b.won + b.lost ? ` · ${rate(b.won, b.lost)}% win rate` : ""))),
       el("div", { class: "dim small" },
         `5★ ×${b.fiveCount} · 4★ ×${b.fourCount}` + (b.fiveCount ? ` · average 5★ pity ${b.averagePity}` : "")),
       b.scheduleStale && el("div", { class: "stale" }, "A 5★ is newer than the banner data, so its 50/50 result is unknown."),

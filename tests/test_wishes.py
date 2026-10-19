@@ -206,6 +206,24 @@ def test_a_lost_50_50_makes_the_next_5_star_guaranteed(schedule):
     assert (s["won"], s["lost"], s["guaranteed"], s["averagePity"]) == (1, 1, False, 42.0)
 
 
+def test_win_rate_counts_decided_50_50s_only(schedule):
+    wishes = ([_wish("Diluc", "5")] + [_wish("Vesna", "5")]                   # lost, then guaranteed
+              + [_wish("Vodyanitsa", "5")] + [_wish("Diluc", "5")]            # won, then lost
+              + [_wish("Vodyanitsa", "5")])                                    # guaranteed
+    s = stats.banner_stats("character", wishes)
+    assert (s["won"], s["lost"], s["winRate"]) == (1, 2, 33.3)
+    assert stats.banner_stats("character", [_wish("x", "3")])["winRate"] is None
+    assert stats.banner_stats("standard", [_wish("Diluc", "5")])["winRate"] is None   # no 50/50 there
+
+
+def test_fifty_fifty_summary_spans_banners_with_a_50_50(schedule):
+    banners = [stats.banner_stats("character", [_wish("Vodyanitsa", "5"), _wish("Diluc", "5")]),
+               stats.banner_stats("weapon", [_wish("Lion's Roar", "5")]),
+               stats.banner_stats("standard", [_wish("Diluc", "5")])]
+    assert stats.fifty_fifty(banners) == {"won": 2, "lost": 1, "winRate": 66.7}
+    assert stats.fifty_fifty([]) == {"won": 0, "lost": 0, "winRate": None}
+
+
 def test_the_featured_check_reaches_across_server_timezones(schedule):
     # A Furina pulled in America's evening of the banner's last day is past
     # its end in Asia time; the slack still counts it as featured.

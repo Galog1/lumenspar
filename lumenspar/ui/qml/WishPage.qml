@@ -310,6 +310,7 @@ Item {
             }
             Text {
                 text: "50/50: won " + card.b.won + " · lost " + card.b.lost
+                      + (card.b.winRate !== null && card.b.winRate !== undefined ? " · " + card.b.winRate + "% win rate" : "")
                 color: Theme.textDim
                 font.pixelSize: 12
             }
@@ -485,6 +486,15 @@ Item {
                 visible: wishes.account !== ""
                 text: "UID " + wishes.account + " · " + wishes.totalWishes.toLocaleString(Qt.locale(), "f", 0)
                       + " wishes on record" + (wishes.updated ? " · last imported " + wishes.updated : "")
+                color: Theme.textDim
+                font.pixelSize: 12
+            }
+
+            Text {
+                Layout.fillWidth: true
+                visible: wishes.account !== "" && wishes.fiftyFifty.winRate !== null && wishes.fiftyFifty.winRate !== undefined
+                text: "Average 50/50 win rate: " + wishes.fiftyFifty.winRate + "% (won " + wishes.fiftyFifty.won
+                      + " · lost " + wishes.fiftyFifty.lost + ", character and weapon banners)"
                 color: Theme.textDim
                 font.pixelSize: 12
             }

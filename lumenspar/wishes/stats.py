@@ -85,6 +85,18 @@ def featured_at(section: str, when: str) -> frozenset[str] | None:
     return frozenset().union(*hits) if hits else None
 
 
+def win_rate(won: int, lost: int) -> float | None:
+    """Percent of decided 50/50s that were won (one decimal), or None when none were decided."""
+    return round(100 * won / (won + lost), 1) if won + lost else None
+
+
+def fifty_fifty(banners: list[dict]) -> dict:
+    """The 50/50 record across every banner that has one: won, lost and the win rate."""
+    won = sum(b["won"] for b in banners if b["hasFiftyFifty"])
+    lost = sum(b["lost"] for b in banners if b["hasFiftyFifty"])
+    return {"won": won, "lost": lost, "winRate": win_rate(won, lost)}
+
+
 def banner_stats(key: str, wishes: list[dict]) -> dict:
     """Everything the counter shows for one banner. `wishes` oldest first."""
     rules = RULES[key]
@@ -134,6 +146,7 @@ def banner_stats(key: str, wishes: list[dict]) -> dict:
         "guaranteed": bool(guaranteed),
         "won": won,
         "lost": lost,
+        "winRate": win_rate(won, lost),
         # A 5★ newer than the bundled schedule: its result, and so the
         # guarantee, cannot be known until the game data is updated.
         "scheduleStale": unknown,
