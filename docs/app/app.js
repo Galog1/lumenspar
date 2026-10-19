@@ -8,6 +8,46 @@ const DRIVE = "https://www.googleapis.com/drive/v3/files";
 const ASSETS = "https://gi.yatta.moe/assets/UI/";
 const ELEMENT = { pyro: "#EF7938", hydro: "#4CC2F1", anemo: "#74C2A8", electro: "#B08FC2",
                   dendro: "#A5C83B", cryo: "#9FD6E3", geo: "#FAB632" };
+// Roll value (RV), the same as the desktop app's builds.py: a substat as a percentage
+// of the best single roll on a 5-star artifact. What counts follows the build: crit
+// always, the scaling stat its sands/goblet/circlet point at (ATK% by default), and
+// Energy Recharge when a main stat asks for it.
+const MAX_ROLL = { hp: 298.75, hp_: 5.83, atk: 19.45, atk_: 5.83, def: 23.15, def_: 7.29,
+                   critRate_: 3.89, critDMG_: 7.77, eleMas: 23.31, enerRech_: 6.48 };
+const SCALING = ["atk_", "hp_", "def_", "eleMas"];
+const SHORT = { critRate_: "CRIT Rate", critDMG_: "CRIT DMG", atk_: "ATK%", hp_: "HP%", def_: "DEF%",
+                eleMas: "EM", enerRech_: "ER" };
+const TRAVELER_ICON = { 10000005: "UI_AvatarIcon_PlayerBoy", 10000007: "UI_AvatarIcon_PlayerGirl" };
+const METRIC_KEY = "lumenspar.cardMetric";
+
+function countedStats(arts) {
+  const votes = {};
+  for (const a of arts) if (["sands", "goblet", "circlet"].includes(a.slot) && SCALING.includes(a.main.key))
+    votes[a.main.key] = (votes[a.main.key] || 0) + 1;
+  const scaling = SCALING.reduce((best, k) => ((votes[k] || 0) > (votes[best] || 0) ? k : best), "atk_");
+  const keys = ["critRate_", "critDMG_", scaling];
+  if (arts.some((a) => a.main.key === "enerRech_")) keys.push("enerRech_");
+  return keys;
+}
+
+// A card with roll values worked out and the Traveler's art filled in (a copy).
+function withRolls(b) {
+  const arts = b.artifacts || [];
+  const counted = countedStats(arts);
+  const icon = b.icon || TRAVELER_ICON[b.avatarId] || "";
+  const outArts = arts.map((a) => {
+    const subs = (a.subs || []).map((x) => {
+      const rv = MAX_ROLL[x.key] && x.value > 0 ? (x.value / MAX_ROLL[x.key]) * 100 : 0;
+      return { ...x, rv, counted: counted.includes(x.key) };
+    });
+    return { ...a, subs, rv: subs.reduce((t, x) => t + (x.counted ? x.rv : 0), 0) };
+  });
+  return { ...b, icon, splash: b.splash || icon.replace("UI_AvatarIcon_", "UI_Gacha_AvatarImg_"),
+           artifacts: outArts, rv: outArts.reduce((t, a) => t + a.rv, 0),
+           rvLabels: counted.map((k) => SHORT[k] || k).join(", ") };
+}
+const pct = (n) => Math.round(n).toLocaleString() + "%";
+
 const OWN_CLIENT_KEY = "lumenspar.webClientId";
 
 const $ = (id) => document.getElementById(id);
@@ -15,6 +55,7 @@ let token = "";
 let tokenClient = null;
 let views = [];           // parsed view files, one per account
 let current = 0;          // index into views
+let metric = storageGet(METRIC_KEY) === "rv" ? "rv" : "cv";
 let selectedBuild = 0;
 
 // ── small DOM helper: el("div", {class: "x"}, child, "text") ─────────────
@@ -255,7 +296,11 @@ function renderBuilds(v) {
                    style: "--tint:" + (ELEMENT[b.element] || "var(--accent)"),
                    onclick: () => { selectedBuild = i; renderBuilds(v); } },
       img(b.icon, ""), el("span", {}, b.name)))));
-  box.append(card(builds[selectedBuild]));
+  box.append(el("div", { class: "metric" },
+    el("span", {}, "Artifact score"),
+    ...["cv", "rv"].map((m) => el("button", { type: "button", "aria-pressed": String(metric === m),
+      onclick: () => { metric = m; storageSet(METRIC_KEY, m); renderBuilds(v); } }, m.toUpperCase()))));
+  box.append(card(withRolls(builds[selectedBuild])));
 }
 
 function card(b) {
@@ -268,10 +313,13 @@ function card(b) {
     el("div", { class: t.boosted ? "up" : "" },
       el("small", {}, t.slot === "auto" ? "Normal" : t.slot === "skill" ? "Skill" : "Burst"),
       el("strong", {}, String(t.level)))));
-  const hero = el("div", { class: "hero", style: b.splash ? `background-image:url("${asset(b.splash)}")` : "" },
+  const rv = metric === "rv";
+  const hero = el("div", { class: "hero", style: b.splash ? `--splash:url("${asset(b.splash)}")` : "" },
     el("div", { class: "who" },
+      el("div", { class: "tags" }, el("span", { class: "elem" }, (b.element || "").toUpperCase()),
+        el("span", { class: "stars" }, "★".repeat(b.rarity || 0))),
       el("h2", {}, b.name),
-      el("div", { class: "lv" }, `Lv. ${b.level} / ${b.maxLevel} · Friendship ${b.friendship}`),
+      el("div", { class: "lv" }, `Lv. ${b.level} / ${b.maxLevel}` + (b.friendship > 0 ? ` · Friendship ${b.friendship}` : "")),
       cons, talents));
   const mid = el("div", { class: "mid" },
     el("div", { class: "weapon" },
@@ -284,7 +332,9 @@ function card(b) {
     el("hr"),
     el("div", { class: "stats" }, ...(b.stats || []).map((s) => el("div", {}, el("span", {}, s.label), el("b", {}, s.text)))),
     el("hr"),
-    el("div", { class: "cv" }, el("span", {}, "Crit Value"), el("b", {}, (b.critValue || 0).toFixed(1))),
+    el("div", { class: "cv" }, el("span", {}, rv ? "Roll Value" : "Crit Value"),
+      el("b", {}, rv ? pct(b.rv) : (b.critValue || 0).toFixed(1))),
+    rv && el("div", { class: "cv-note" }, "Share of a perfect roll, counting " + b.rvLabels),
     el("div", { class: "sets" }, ...(b.sets || []).map((s) =>
       el("div", { title: (s.bonuses || []).join("\n\n") }, el("i", {}, s.count >= 4 ? "4" : "2"), s.name))));
   const arts = el("div", { class: "arts" }, ...(b.artifacts || []).map((a) =>
@@ -292,17 +342,19 @@ function card(b) {
       el("div", {}, el("div", { class: "art-ico" }, img(a.icon, a.slot)), el("div", { class: "lvl" }, "+" + a.level)),
       el("div", { class: "main" },
         el("small", {}, a.main.label), el("b", {}, a.main.text),
-        el("div", { class: "acv" }, "CV " + (a.critValue || 0).toFixed(1)),
-        el("div", { class: "set", title: a.setName }, a.setName)),
+        el("div", { class: "acv" }, rv ? "RV " + pct(a.rv) : "CV " + (a.critValue || 0).toFixed(1))),
       el("div", { class: "subs" }, ...(a.subs || []).map((s) => {
-        const crit = s.key === "critRate_" || s.key === "critDMG_";
-        return el("div", { class: crit ? "crit" : "" },
+        const hot = rv ? s.counted : s.key === "critRate_" || s.key === "critDMG_";
+        return el("div", { class: hot ? "crit" : "" },
           el("span", {}, s.label.replace("Elemental Mastery", "EM").replace("Energy Recharge", "ER")),
           el("b", {}, s.text),
-          el("span", { class: "dots", title: s.rolls + " roll(s)" }, "•".repeat(Math.max(0, s.rolls))));
+          rv ? el("span", { class: "dots", title: "share of a perfect roll" }, pct(s.rv))
+             : el("span", { class: "dots", title: s.rolls + " roll(s)" }, "•".repeat(Math.max(0, s.rolls))));
       })))));
+  const noArts = !(b.artifacts || []).length;
   return el("div", {},
-    el("article", { class: "card", style: "--tint:" + tint }, hero, mid, arts),
+    el("article", { class: "card", style: "--tint:" + tint }, hero, mid,
+      noArts ? el("div", { class: "arts empty" }, el("p", {}, "No artifacts equipped")) : arts),
     el("p", { class: "card-foot" }, "Read " + new Date((b.fetchedAt || 0) * 1000).toLocaleString()));
 }
 
