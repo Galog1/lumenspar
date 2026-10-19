@@ -121,6 +121,9 @@ class Settings:
     # Batches sent while the scan keeps going (see scanner._AiPipeline).
     ai_in_flight: int = 2
 
+    # updates: look for a newer release on GitHub at start-up and say so
+    check_updates: bool = True
+
     def __post_init__(self) -> None:
         # The Windows build is AI-only: it ships no Tesseract, so a config
         # written elsewhere (or an old file) can never select local OCR.

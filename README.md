@@ -37,6 +37,16 @@ page:
 
 The rest of this section is for running from source.
 
+**Updates.** Lumenspar checks GitHub for a newer release when it starts (and
+every few hours while it stays open) and shows a banner when there is one.
+**Update now** downloads the release's installer (Windows) or AppImage (Linux),
+checks its size and, when GitHub provides one, its SHA-256 checksum, installs it
+and restarts Lumenspar; it never runs while a scan or import is going. The main
+menu has a **Check for updates** button and a switch to turn the automatic
+check off. Only the AppImage and the Windows installer can update themselves; a
+source checkout is just pointed at the release page. The first release with
+this feature has to be installed by hand once.
+
 ## Requirements
 
 - Python 3.12+, Tesseract with English data

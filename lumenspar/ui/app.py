@@ -19,6 +19,7 @@ from .builds_backend import BuildsBackend
 from .hoyolab_backend import HoyolabBackend
 from .optimizer_backend import OptimizerBackend
 from .team_backend import TeamBackend
+from .update_backend import UpdateBackend
 from .wish_backend import WishBackend
 
 QML_DIR = Path(__file__).resolve().parent / "qml"
@@ -81,6 +82,12 @@ def main(argv: list[str] | None = None) -> int:
     hoyolab.cardsReady.connect(remember_uid)
     cards.collected.connect(wishes.syncSoon)
     wishes.restoredFromDrive.connect(cards.reload)
+    updates = UpdateBackend(
+        backend._s, app,
+        blocker=lambda: ("a scan is running" if backend.scanning
+                         else "a wish import or card read is running" if wishes.busy or cards.busy
+                         else ""))
+    engine.rootContext().setContextProperty("updates", updates)
     team = TeamBackend(backend._s, app)
     engine.rootContext().setContextProperty("team", team)
     cards.collected.connect(team.reload)
@@ -128,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
     if not engine.rootObjects():
         print("failed to load QML", file=sys.stderr)
         return 1
+    updates.start()
     return app.exec()
 
 
