@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lumenspar</title>
-<meta name="description" content="A Genshin Impact companion for Linux and Windows: wish counter and inventory scanner.">
+<meta name="description" content="A Genshin Impact companion for Linux and Windows: wish counter, inventory scanner, build cards and artifact optimizer.">
 <meta name="application-name" content="Lumenspar">
 <meta property="og:title" content="Lumenspar">
-<meta property="og:description" content="A Genshin Impact companion for Linux and Windows: wish counter and inventory scanner.">
+<meta property="og:description" content="A Genshin Impact companion for Linux and Windows: wish counter, inventory scanner, build cards and artifact optimizer.">
 <meta property="og:image" content="https://galog1.github.io/lumenspar/lumenspar-logo.png">
 <meta property="og:url" content="https://galog1.github.io/lumenspar/">
 <link rel="icon" href="lumenspar.svg">
@@ -23,7 +23,7 @@
   </div>
 </header>
 
-<p>Lumenspar is a free, open-source desktop app (MIT license). It has two tools:</p>
+<p>Lumenspar is a free, open-source desktop app (MIT license). It has four tools:</p>
 
 <section>
   <h2>Wish Counter</h2>
@@ -38,6 +38,30 @@
   <p>Reads your artifacts, weapons, characters and materials off the screen
   and writes a <code>.GOOD</code> file for Genshin Optimizer, SEELIE.me and
   other calculators.</p>
+</section>
+
+<section>
+  <h2>Build Cards</h2>
+  <p>Akasha-style cards for your characters: talents, weapon, artifacts with
+  exact roll counts, final stats and set bonuses, drawn on the character's
+  splash art in the element's colour and saveable as images. Switch the
+  artifact score between <b>CV</b> (crit value) and <b>RV</b> (roll value,
+  counting every substat the build uses). Cards come from your in-game
+  showcase through <a href="https://enka.network">Enka.Network</a>, or for
+  <b>every</b> character on your account through a HoYoLAB sign-in window
+  that keeps nothing: it is off the record, and Lumenspar never reads your
+  password or cookies. Each build also shows its live
+  <a href="https://akasha.cv">Akasha.cv</a> leaderboard rank.</p>
+</section>
+
+<section>
+  <h2>Optimizer &amp; team damage</h2>
+  <p>Finds the best artifacts from your scan for any character, by a damage
+  estimate, stat weights, targets, or an Akasha leaderboard. Build a team of
+  up to four and see each character's exact damage per hit, calculated with
+  <a href="https://frzyc.github.io/genshin-optimizer/">Genshin Optimizer</a>'s
+  own engine, with every conditional buff as a checkbox. Nothing is typed in:
+  every setting is a choice.</p>
 </section>
 
 <h2>Google Drive backup</h2>
@@ -58,7 +82,9 @@ your Drive.</p>
 
 <h2>Download</h2>
 <p>Releases for Linux (AppImage) and Windows (installer), and the source code, are on
-<a href="https://github.com/Galog1/lumenspar">GitHub</a>.</p>
+<a href="https://github.com/Galog1/lumenspar/releases">GitHub</a>. Lumenspar
+can update itself from there: a banner appears when a newer release is out,
+and one click downloads, verifies and installs it.</p>
 
 <footer>
   Lumenspar is not affiliated with HoYoverse. Genshin Impact is a trademark of
