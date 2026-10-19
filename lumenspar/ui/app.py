@@ -27,6 +27,10 @@ ICON = Path(__file__).resolve().parents[2] / "install" / "lumenspar.svg"
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv)
+    if os.environ.get("LUMENSPAR_SMOKE_TEST"):
+        # A crashed self-check run should say where (Python's stack at the fault).
+        import faulthandler
+        faulthandler.enable()
     netcerts.use_system_bundle()   # before any HTTPS request; see netcerts.py
     if hostos.is_windows():
         # Microsoft Store Python ignores PATH when resolving DLL dependencies,
