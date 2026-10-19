@@ -2,7 +2,21 @@ Lumenspar is a Genshin Impact companion for Linux and Windows: a wish
 counter with pity and 50/50 tracking, an inventory scanner that exports
 `.GOOD` files, build cards, and an artifact optimizer with team damage.
 
-## New in 0.3.5
+## New in 0.3.6
+
+- **Average 50/50 win rate.** The wish counter shows the win rate of your decided
+  50/50s on each banner that has one, and an overall average, in the app and in
+  the web viewer. A 5★ you got from the guarantee is not counted as a win.
+- **Lighter on slow computers.** Lumenspar no longer starts its damage engine
+  (a separate process of a few hundred MB) until you open the Optimizer, so
+  start-up memory is roughly halved. Card backdrops are also made one at a time,
+  which fixes a rare case where art stopped appearing.
+
+> **Pre-release.** On Windows, a complete in-game inventory scan has not
+> been run yet. Please report what happens on yours, with the log from
+> `Documents/Lumenspar/logs/`.
+
+## Earlier: 0.3.5
 
 - **Much smoother Build Cards page.** The page used to rebuild its whole
   character list every time card art arrived, which could freeze the window for
@@ -25,15 +39,11 @@ counter with pity and 50/50 tracking, an inventory scanner that exports
   sign in, and Lumenspar finds your Genshin account itself (if it cannot, or
   you have several, it asks for the UID). A typed UID still works as before.
 
-> **Pre-release.** On Windows, a complete in-game inventory scan has not
-> been run yet. Please report what happens on yours, with the log from
-> `Documents/Lumenspar/logs/`.
-
-## Linux: `Lumenspar-0.3.5-x86_64.AppImage`
+## Linux: `Lumenspar-0.3.6-x86_64.AppImage`
 
 ```sh
-chmod +x Lumenspar-0.3.5-x86_64.AppImage
-./Lumenspar-0.3.5-x86_64.AppImage
+chmod +x Lumenspar-0.3.6-x86_64.AppImage
+./Lumenspar-0.3.6-x86_64.AppImage
 ```
 
 Needs a 64-bit distribution about as new as Ubuntu 24.04 (Fedora 40+,
@@ -43,7 +53,7 @@ any current desktop), sends input through `/dev/uinput`, and has Tesseract
 built in. If the AppImage will not start for lack of FUSE, run it with
 `--appimage-extract-and-run`.
 
-## Windows: `Lumenspar-Setup-0.3.5.exe`
+## Windows: `Lumenspar-Setup-0.3.6.exe`
 
 The installer is not code-signed, so SmartScreen may need **More info → Run
 anyway**. Lumenspar asks for administrator rights at every start, because
