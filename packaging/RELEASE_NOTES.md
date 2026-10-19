@@ -2,38 +2,41 @@ Lumenspar is a Genshin Impact companion for Linux and Windows: a wish
 counter with pity and 50/50 tracking, an inventory scanner that exports
 `.GOOD` files, build cards, and an artifact optimizer with team damage.
 
-## New in 0.3.2
+## New in 0.3.3
 
-- **Build Cards.** Akasha-style cards of the characters in your Enka.Network
-  profile showcase: stats, artifacts with their roll counts, talents, weapon
-  and set bonuses, with each build's live Akasha.cv leaderboard rank.
-- **Optimizer.** Finds the best artifacts from your inventory scan for a
-  character: the best 4-piece set plus an off-piece, with main-stat choices,
-  stat minimums and conditional crit taken into account. Optimize by stat
-  weights, target values, a stat ratio, the average of Akasha's top 1%, or a
-  whole Akasha leaderboard (the sets and main stats follow from it).
-- **Team & damage.** Build a team of up to four from your characters or the
-  full roster and see each character's exact damage per hit, calculated with
-  Genshin Optimizer's own engine: talents, passives, constellations, weapons,
-  artifact sets, resonance and team buffs, with every conditional buff as a
-  checkbox. Includes the combo Akasha ranks the character by, recomputed with
-  your team, and the Optimizer can search for the artifacts that maximize it.
-  Nothing is typed in: every setting is a choice.
-- **Web viewer.** Your Drive backup (wishes and build cards) can be viewed at
-  galog1.github.io/lumenspar/app from any browser, signed in with the same
-  Google account.
-- **Fix: a Google sign-in that left out the Drive permission** now explains
-  what happened instead of failing with "insufficient scopes".
+- **Every character, through HoYoLAB.** The showcase only holds a few
+  characters; **Sign in to HoYoLAB** (Build Cards page) reads every character
+  on your account -- weapon, artifacts with roll counts, constellations,
+  talents and stats -- and makes a card for each. You sign in on HoYoLAB's own
+  page, in a window inside Lumenspar that keeps nothing: its browser profile
+  is off the record, so the sign-in is never written to disk, and Lumenspar
+  never reads your password, cookies or page storage. Characters the showcase
+  also covers keep Enka.Network's exact stats. Characters seen only through
+  HoYoLAB can't be used in the Optimizer or Team & damage until the showcase
+  has read them. Global accounts only (UIDs starting with 6, 7, 8 or 9). This
+  adds Qt's embedded browser, so the download is a good deal larger.
+- **Redesigned build cards.** Each card sits on its character's splash art with
+  a halo and rings in the element's colour, on consistent margins with nothing
+  clipped; the character you are looking at gets its art first, and the
+  Traveler finally has art too. Cards without artifacts say so.
+- **Roll value.** A **CV | RV** switch under the card changes the artifact
+  score. CV is crit value; RV counts every substat the build uses as a
+  percentage of the best possible roll (100% is one perfect roll), with
+  per-substat values and a total, and the card says what it counted.
+- **A scrolling character strip** instead of a wall of 95 chips, so the card
+  stays in reach.
+- **The Inter font ships with the app,** so Linux and Windows draw the
+  interface and the saved card images the same way (SIL Open Font License).
 
 > **Pre-release.** On Windows, a complete in-game inventory scan has not
 > been run yet. Please report what happens on yours, with the log from
 > `Documents/Lumenspar/logs/`.
 
-## Linux: `Lumenspar-0.3.2-x86_64.AppImage`
+## Linux: `Lumenspar-0.3.3-x86_64.AppImage`
 
 ```sh
-chmod +x Lumenspar-0.3.2-x86_64.AppImage
-./Lumenspar-0.3.2-x86_64.AppImage
+chmod +x Lumenspar-0.3.3-x86_64.AppImage
+./Lumenspar-0.3.3-x86_64.AppImage
 ```
 
 Needs a 64-bit distribution about as new as Ubuntu 24.04 (Fedora 40+,
@@ -43,7 +46,7 @@ any current desktop), sends input through `/dev/uinput`, and has Tesseract
 built in. If the AppImage will not start for lack of FUSE, run it with
 `--appimage-extract-and-run`.
 
-## Windows: `Lumenspar-Setup-0.3.2.exe`
+## Windows: `Lumenspar-Setup-0.3.3.exe`
 
 The installer is not code-signed, so SmartScreen may need **More info → Run
 anyway**. Lumenspar asks for administrator rights at every start, because
