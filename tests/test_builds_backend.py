@@ -136,3 +136,16 @@ def test_card_metric_is_remembered_and_validated(app):
     assert settings.saved == 1 and seen == ["rv"]
     settings.card_metric = "garbage"
     assert be.cardMetric == "cv"
+
+
+def test_save_dialog_suggests_and_normalises_a_png_path(app, sandbox, tmp_path):
+    be, settings = _backend(app)
+    settings.export_dir = str(tmp_path)
+    suggested = be.defaultCardFile("Furina/../x")
+    assert suggested.startswith("file://") and suggested.endswith(".png")
+    assert "/cards/" in suggested and ".." not in suggested
+    assert not (tmp_path / "cards").exists()                 # suggesting creates nothing
+    from PySide6.QtCore import QUrl
+    picked = QUrl.fromLocalFile(str(tmp_path / "mine" / "furina")).toString()
+    assert be.chosenCardPath(picked) == str(tmp_path / "mine" / "furina.png")
+    assert (tmp_path / "mine").is_dir()

@@ -262,12 +262,20 @@ class BuildsBackend(QObject):
             self._publish()
 
     @Slot(str, result=str)
-    def cardPath(self, name: str) -> str:
-        """Where "Save image" writes a card: <export folder>/cards/<name> <date>.png."""
+    def defaultCardFile(self, name: str) -> str:
+        """The save dialog's suggested file (a file:// URL) in <export folder>/cards."""
         folder = Path(self._settings.export_dir).expanduser() / "cards"
-        folder.mkdir(parents=True, exist_ok=True)
         safe = re.sub(r"[^\w\- ]", "", name).strip() or "card"
-        return str(folder / f"{safe} {datetime.now():%Y-%m-%d %H%M%S}.png")
+        return QUrl.fromLocalFile(str(folder / f"{safe} {datetime.now():%Y-%m-%d}.png")).toString()
+
+    @Slot(str, result=str)
+    def chosenCardPath(self, url: str) -> str:
+        """The local .png path for the file the player picked in the save dialog."""
+        path = Path(QUrl(url).toLocalFile())
+        if path.suffix.lower() != ".png":
+            path = path.with_name(path.name + ".png")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return str(path)
 
     @Slot(str, bool)
     def cardSaved(self, path: str, ok: bool) -> None:

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import QtQuick.Dialogs
 import Lumenspar
 
 // Build cards: every character from the Enka.Network showcase and HoYoLAB as
@@ -21,11 +22,22 @@ Item {
 
     function saveCard() {
         if (!page.card) return
-        const name = page.card.name
-        buildCard.grabToImage(function(result) {
-            const path = cards.cardPath(name)
-            cards.cardSaved(path, result.saveToFile(path))
-        }, Qt.size(buildCard.width * 2, buildCard.height * 2))
+        saveDlg.currentFile = cards.defaultCardFile(page.card.name)
+        saveDlg.open()
+    }
+
+    FileDialog {
+        id: saveDlg
+        title: "Save card as image"
+        fileMode: FileDialog.SaveFile
+        nameFilters: ["PNG image (*.png)"]
+        defaultSuffix: "png"
+        onAccepted: {
+            const path = cards.chosenCardPath(selectedFile.toString())
+            buildCard.grabToImage(function(result) {
+                cards.cardSaved(path, result.saveToFile(path))
+            }, Qt.size(buildCard.width * 2, buildCard.height * 2))
+        }
     }
 
     // The HoYoLAB sign-in window exists only while it is open, so the embedded
