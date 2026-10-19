@@ -55,12 +55,13 @@ jobs:
             libxshmfence1 libdrm2 libgbm1 libasound2t64
 
       - name: Install Python packages
-        # PySide6-Addons only for Qt WebEngine (the HoYoLAB sign-in window);
+        # PySide6-WebEngine only for Qt WebEngine (the HoYoLAB sign-in window;
+        # since PySide6 6.12 a wheel of its own, which pulls in PySide6-Addons);
         # PyInstaller bundles just the Qt modules the app imports.
         run: |
           python3 -m venv --system-site-packages .venv
           .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install PySide6-Essentials PySide6-Addons numpy Pillow pytesseract rapidfuzz pyinstaller pytest
+          .venv/bin/python -m pip install PySide6-Essentials PySide6-WebEngine numpy Pillow pytesseract rapidfuzz pyinstaller pytest
 
       - name: Run the tests
         run: .venv/bin/python -m pytest -q
