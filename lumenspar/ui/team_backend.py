@@ -332,9 +332,13 @@ class TeamBackend(QObject):
     DEBOUNCE_MS = 300
 
     def __init__(self, settings, parent: QObject | None = None,
-                 state_path: Path | None = None) -> None:
+                 state_path: Path | None = None, lazy: bool = False) -> None:
         super().__init__(parent)
         self._settings = settings
+        # A lazy backend leaves the damage engine (a child process of a few hundred MB
+        # that takes seconds of CPU per team member) alone until activate() is called,
+        # so players who never open the optimizer do not pay for it at start-up.
+        self._activated = not lazy
         self._path = Path(state_path) if state_path is not None else DATA_DIR / "team.json"
         self._state = _load_state(self._path)
         self._cands: dict[str, dict] = {}       # key -> {key, name, element, icon, source, member}
@@ -366,6 +370,15 @@ class TeamBackend(QObject):
         self._read_sources()
         # Portraits for the team's and the player's characters, in the background.
         QTimer.singleShot(0, self.ensurePortraits)
+        if self._activated and any(self._active()):
+            self._timer.start()
+
+    @Slot()
+    def activate(self) -> None:
+        """The optimizer page was opened: start computing (once)."""
+        if self._activated:
+            return
+        self._activated = True
         if any(self._active()):
             self._timer.start()
 
@@ -855,7 +868,8 @@ class TeamBackend(QObject):
     def _touch(self) -> None:
         """Save the state and schedule a recomputation."""
         self._save()
-        self._timer.start()
+        if self._activated:
+            self._timer.start()
 
     def _save(self) -> None:
         try:

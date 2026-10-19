@@ -96,7 +96,7 @@ def main(argv: list[str] | None = None) -> int:
                          else "a wish import or card read is running" if wishes.busy or cards.busy
                          else ""))
     engine.rootContext().setContextProperty("updates", updates)
-    team = TeamBackend(backend._s, app)
+    team = TeamBackend(backend._s, app, lazy=True)
     engine.rootContext().setContextProperty("team", team)
     cards.collected.connect(team.reload)
     wishes.restoredFromDrive.connect(team.reload)

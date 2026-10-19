@@ -149,3 +149,33 @@ def test_save_dialog_suggests_and_normalises_a_png_path(app, sandbox, tmp_path):
     picked = QUrl.fromLocalFile(str(tmp_path / "mine" / "furina")).toString()
     assert be.chosenCardPath(picked) == str(tmp_path / "mine" / "furina.png")
     assert (tmp_path / "mine").is_dir()
+
+
+def test_two_threads_asking_for_one_backdrop_bake_it_once(sandbox, tmp_path, monkeypatch):
+    import threading
+    import time
+    (tmp_path / "UI_Gacha_AvatarImg_Furina.png").write_bytes(b"x")          # the splash is cached
+    calls = []
+
+    def slow_bake(src, dst, element):
+        calls.append(dst.name)
+        time.sleep(0.05)
+        dst.write_bytes(b"jpg")
+        return True
+
+    monkeypatch.setattr(cardart, "bake", slow_bake)
+    card = _card()
+    threads = [threading.Thread(target=bb.ensure_backdrop, args=(card,)) for _ in range(4)]
+    for t in threads: t.start()
+    for t in threads: t.join()
+    assert len(calls) == 1
+
+
+def test_a_bake_that_raises_does_not_end_the_caller(sandbox, tmp_path, monkeypatch):
+    (tmp_path / "UI_Gacha_AvatarImg_Furina.png").write_bytes(b"x")
+
+    def broken(src, dst, element):
+        raise FileNotFoundError("gone")
+
+    monkeypatch.setattr(cardart, "bake", broken)
+    assert bb.ensure_backdrop(_card()) is False

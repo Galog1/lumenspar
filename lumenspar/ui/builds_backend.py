@@ -40,6 +40,13 @@ def backdrop_of(b: dict) -> str:
     return cardart.backdrop_name(b.get("splash", ""), b.get("element", ""))
 
 
+# The cards page and the optimizer both bake backdrops from their own threads; one
+# bake at a time keeps them from writing the same file at once (the second one's
+# rename failed and silently ended its thread) and caps the CPU and memory a burst
+# of new characters can take.
+_bake_lock = threading.Lock()
+
+
 def ensure_backdrop(b: dict) -> bool:
     """Bake a card's backdrop if its splash art is cached and it is not baked yet."""
     b = builds.fill_art(b)
@@ -50,7 +57,15 @@ def ensure_backdrop(b: dict) -> bool:
     if dst.is_file():
         return True
     src = icons.path(b["splash"])
-    return src.is_file() and cardart.bake(src, dst, b.get("element", ""))
+    if not src.is_file():
+        return False
+    with _bake_lock:
+        if dst.is_file():                     # another thread baked it while this one waited
+            return True
+        try:
+            return cardart.bake(src, dst, b.get("element", ""))
+        except OSError:
+            return False
 
 
 def decorate(b: dict) -> dict:

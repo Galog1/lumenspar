@@ -139,6 +139,9 @@ Item {
     onModeChanged: loadBoardsIfNeeded()
 
     // a new character resets the goal to sensible defaults for its element
+    // The damage engine only starts once this page has been opened.
+    onVisibleChanged: if (visible) team.activate()
+
     Component.onCompleted: {
         page.lastSelected = optimizer.selected
         page.resetForScaling()
