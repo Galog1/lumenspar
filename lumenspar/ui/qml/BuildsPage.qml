@@ -112,7 +112,7 @@ Item {
 
             Card {
                 title: "All characters"
-                subtitle: "The showcase holds only a few characters. HoYoLAB lists every character on your account with its weapon and artifacts, but it only answers to a signed-in account: Lumenspar opens a window where you sign in to HoYoLAB yourself. Your password goes to HoYoLAB only, and nothing about the sign-in is saved or sent anywhere else; closing the window forgets it. Characters with the same build in both sources keep the showcase's exact stats."
+                subtitle: "The showcase holds only a few characters. HoYoLAB lists every character on your account with its weapon and artifacts, but it only answers to a signed-in account: Lumenspar opens a window where you sign in to HoYoLAB yourself. Your password goes to HoYoLAB only, and nothing about the sign-in is saved or sent anywhere else; closing the window forgets it. Characters with the same build in both sources keep the showcase's exact stats. You do not need to enter your UID first: Lumenspar looks up your Genshin account after you sign in (if it cannot, it will ask for the UID)."
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -120,9 +120,13 @@ Item {
                     GhostButton {
                         id: hoyoButton
                         label: hoyolab.open ? "Window open…" : "Sign in to HoYoLAB"
-                        enabledState: hoyolab.available && !hoyolab.open && uidField.text !== ""
+                        // Stays clickable without a UID: begin() answers with what
+                        // is missing, shown beside the button, instead of the button
+                        // looking broken.
+                        enabledState: hoyolab.available && !hoyolab.open
                         onClicked: {
-                            backend.uid = uidField.text
+                            if (uidField.text !== "")
+                                backend.uid = uidField.text
                             hoyoNote.text = hoyolab.begin(uidField.text)
                         }
                     }

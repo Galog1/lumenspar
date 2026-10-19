@@ -73,6 +73,12 @@ def main(argv: list[str] | None = None) -> int:
     hoyolab = HoyolabBackend(app)
     engine.rootContext().setContextProperty("hoyolab", hoyolab)
     hoyolab.cardsReady.connect(cards.addHoyolab)
+
+    def remember_uid(uid: str, *_rest) -> None:
+        # A UID found after sign-in fills the field the other tools share.
+        if uid and not backend._s.uid.strip():
+            backend.uid = uid
+    hoyolab.cardsReady.connect(remember_uid)
     cards.collected.connect(wishes.syncSoon)
     wishes.restoredFromDrive.connect(cards.reload)
     team = TeamBackend(backend._s, app)
