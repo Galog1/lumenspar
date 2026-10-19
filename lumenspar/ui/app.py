@@ -26,12 +26,20 @@ QML_DIR = Path(__file__).resolve().parent / "qml"
 ICON = Path(__file__).resolve().parents[2] / "install" / "lumenspar.svg"
 
 
+_FAULT_FILE = None     # kept open for the life of the process (see main)
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv)
     if os.environ.get("LUMENSPAR_SMOKE_TEST"):
         # A crashed self-check run should say where (Python's stack at the fault).
         import faulthandler
-        faulthandler.enable()
+        # The packaged Windows app has no stderr (it is a windowed program), and
+        # enable() raises without one: the dump goes to a file beside the report.
+        global _FAULT_FILE
+        _FAULT_FILE = open(os.environ["LUMENSPAR_SMOKE_TEST"] + ".fault.txt", "w",
+                           encoding="utf-8")
+        faulthandler.enable(file=_FAULT_FILE)
     netcerts.use_system_bundle()   # before any HTTPS request; see netcerts.py
     if hostos.is_windows():
         # Microsoft Store Python ignores PATH when resolving DLL dependencies,

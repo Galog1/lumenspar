@@ -76,6 +76,7 @@ jobs:
         run: |
           $p = Start-Process -FilePath "dist\Lumenspar\Lumenspar.exe" -PassThru
           if (-not $p.WaitForExit(120000)) { $p.Kill(); throw "The app did not exit within 2 minutes" }
+          if (Test-Path "$env:LUMENSPAR_SMOKE_TEST.fault.txt") { Write-Host "--- fault dump"; Get-Content "$env:LUMENSPAR_SMOKE_TEST.fault.txt" }
           if (Test-Path $env:LUMENSPAR_SMOKE_TEST) { Get-Content $env:LUMENSPAR_SMOKE_TEST } else { throw "No self-check report was written (exit code $($p.ExitCode))" }
           if ($p.ExitCode -ne 0) { throw "Self-check failed (exit code $($p.ExitCode))" }
 
