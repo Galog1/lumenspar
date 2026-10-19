@@ -13,8 +13,10 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 
 from .. import hostos, netcerts
+from . import fonts
 from .backend import Backend
 from .builds_backend import BuildsBackend
+from .hoyolab_backend import HoyolabBackend
 from .optimizer_backend import OptimizerBackend
 from .team_backend import TeamBackend
 from .wish_backend import WishBackend
@@ -34,10 +36,22 @@ def main(argv: list[str] | None = None) -> int:
     # Basic is the only style that lets us restyle controls wholesale.
     QQuickStyle.setStyle("Basic")
 
+    # Qt's embedded browser (the HoYoLAB sign-in window) must be initialised
+    # before the application object exists; without it the feature is off.
+    try:
+        from PySide6.QtWebEngineQuick import QtWebEngineQuick
+        QtWebEngineQuick.initialize()
+    except ImportError:
+        pass
+
     app = QGuiApplication(argv)
     app.setWindowIcon(QIcon(str(ICON)))
     app.setApplicationName("Lumenspar")
     app.setOrganizationName("Lumenspar")
+    if fonts.load():         # every Text item uses the bundled font, whatever the system has
+        face = app.font()
+        face.setFamily(fonts.FAMILY)
+        app.setFont(face)
 
     engine = QQmlApplicationEngine()
     engine.addImportPath(str(QML_DIR))
@@ -52,6 +66,9 @@ def main(argv: list[str] | None = None) -> int:
     engine.rootContext().setContextProperty("wishes", wishes)
     cards = BuildsBackend(backend._s, app)
     engine.rootContext().setContextProperty("cards", cards)
+    hoyolab = HoyolabBackend(app)
+    engine.rootContext().setContextProperty("hoyolab", hoyolab)
+    hoyolab.cardsReady.connect(cards.addHoyolab)
     cards.collected.connect(wishes.syncSoon)
     wishes.restoredFromDrive.connect(cards.reload)
     team = TeamBackend(backend._s, app)

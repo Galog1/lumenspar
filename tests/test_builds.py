@@ -133,18 +133,187 @@ def test_artifact_icons_come_from_their_own_folder():
     assert icons.asset_url("UI_AvatarIcon_Furina").endswith("/UI/UI_AvatarIcon_Furina.png")
 
 
-def test_the_splash_panel_is_cut_to_the_card_with_rounded_corners(tmp_path):
+def test_the_card_backdrop_is_baked_from_splash_art(tmp_path):
     pytest.importorskip("PySide6")
-    from PySide6.QtGui import QColor, QImage
-    from lumenspar.ui import builds_backend as bb
-    src, dst = tmp_path / "splash.png", tmp_path / "panel.png"
-    img = QImage(2048, 1024, QImage.Format_RGB32)
-    img.fill(QColor("#336699"))
+    from PySide6.QtCore import Qt
+    from PySide6.QtGui import QColor, QImage, QPainter
+    from lumenspar import cardart
+    src, dst = tmp_path / "splash.png", tmp_path / "bg.jpg"
+    img = QImage(2048, 1024, QImage.Format_ARGB32)
+    img.fill(Qt.transparent)
+    p = QPainter(img)
+    p.fillRect(1500, 100, 200, 800, QColor("#cc3344"))      # the "character", right of centre
+    p.end()
     img.save(str(src))
-    assert bb.make_panel(src, dst)
+    assert cardart.centre_of(img) == pytest.approx(1600, abs=2)
+    assert cardart.bake(src, dst, "pyro")
     out = QImage(str(dst))
-    assert (out.width(), out.height()) == (bb.PANEL_W, bb.PANEL_H)
-    assert out.pixelColor(0, 0).alpha() == 0                   # rounded corner
-    assert out.pixelColor(bb.PANEL_W - 1, 0).alpha() == 255      # square on the right
-    assert out.pixelColor(400, 600).name() == "#336699"
-    assert not bb.make_panel(tmp_path / "missing.png", dst)
+    assert (out.width(), out.height()) == (cardart.W, cardart.H)
+    assert not dst.with_suffix(".part").exists()
+    # the element's colour reaches the art area, while the stats area stays quiet and dark
+    art, quiet = out.pixelColor(300, 640), out.pixelColor(cardart.W - 200, 640)
+    assert art.red() > art.blue()
+    assert quiet.lightness() < 60
+    assert not cardart.bake(tmp_path / "missing.png", dst, "pyro")
+
+
+def test_backdrops_are_named_per_splash_and_element():
+    from lumenspar import cardart
+    assert cardart.backdrop_name("", "pyro") == ""
+    a = cardart.backdrop_name("UI_Gacha_AvatarImg_PlayerGirl", "cryo")
+    b = cardart.backdrop_name("UI_Gacha_AvatarImg_PlayerGirl", "geo")
+    assert a != b and a.startswith("UI_Gacha_AvatarImg_PlayerGirl_cryo")
+    assert cardart.backdrop_path(a).suffix == ".jpg"
+
+
+# -- roll value ------------------------------------------------------------------
+
+def _rv_art(slot, main, subs):
+    return {"slot": slot, "main": {"key": main}, "critValue": 0.0,
+            "subs": [{"key": k, "value": v} for k, v in subs]}
+
+
+def test_roll_value_is_a_percentage_of_the_best_roll():
+    top = builds._max_rolls()
+    assert builds.roll_value("critRate_", top["critRate_"]) == pytest.approx(100)
+    assert builds.roll_value("critDMG_", top["critDMG_"] * 2.5) == pytest.approx(250)
+    assert builds.roll_value("atk", top["atk"] * 0.7) == pytest.approx(70)
+    assert builds.roll_value("heal_", 5.0) == 0          # not a substat
+    assert builds.roll_value("critRate_", 0) == 0
+
+
+def test_counted_stats_follow_what_the_main_stats_scale_with():
+    assert builds.counted_stats([]) == ["critRate_", "critDMG_", "atk_"]
+    hp = [_rv_art("sands", "hp_", []), _rv_art("goblet", "hp_", []),
+          _rv_art("circlet", "critRate_", []), _rv_art("flower", "hp", [])]
+    assert builds.counted_stats(hp) == ["critRate_", "critDMG_", "hp_"]
+    em = [_rv_art("sands", "eleMas", []), _rv_art("goblet", "pyro_dmg_", []),
+          _rv_art("circlet", "eleMas", [])]
+    assert builds.counted_stats(em) == ["critRate_", "critDMG_", "eleMas"]
+    er = [_rv_art("sands", "enerRech_", []), _rv_art("goblet", "atk_", [])]
+    assert builds.counted_stats(er) == ["critRate_", "critDMG_", "atk_", "enerRech_"]
+    # the flower and plume (always HP and ATK) never vote
+    assert builds.counted_stats([_rv_art("flower", "hp", []), _rv_art("plume", "atk", [])]) \
+        == ["critRate_", "critDMG_", "atk_"]
+
+
+def test_with_roll_values_counts_only_what_the_build_uses():
+    top = builds._max_rolls()
+    card = {"artifacts": [
+        {"slot": "sands", "main": {"key": "atk_"}, "critValue": 7.8,
+         "subs": [{"key": "critRate_", "value": top["critRate_"]},      # 100%
+                  {"key": "critDMG_", "value": top["critDMG_"]},        # 100%
+                  {"key": "def", "value": top["def"]},                  # 100%, not counted
+                  {"key": "atk_", "value": top["atk_"] / 2}]},          # 50%
+        {"slot": "circlet", "main": {"key": "critRate_"}, "critValue": 0.0,
+         "subs": [{"key": "atk_", "value": top["atk_"]}]}]}
+    out = builds.with_roll_values(card)
+    first, second = out["artifacts"]
+    assert [s["counted"] for s in first["subs"]] == [True, True, False, True]
+    assert first["subs"][2]["rvText"] == "100%"
+    assert first["rollValue"] == pytest.approx(250, abs=0.2) and first["rollText"] == "250%"
+    assert first["cvText"] == "7.8"
+    assert out["rollValue"] == pytest.approx(350, abs=0.3) and out["rollText"] == "350%"
+    assert out["cvText"] == "7.8"
+    assert out["rvLabels"] == "CRIT Rate, CRIT DMG, ATK%"
+    er = builds.with_roll_values({"artifacts": [_rv_art("sands", "enerRech_", [])]})
+    assert er["rvLabels"] == "CRIT Rate, CRIT DMG, ATK%, ER"        # short names keep the caption on the card
+    assert "rv" not in card["artifacts"][0]["subs"][0]            # the input is untouched
+
+
+def test_rolls_with_a_thousand_separator():
+    top = builds._max_rolls()
+    card = {"artifacts": [{"slot": "flower", "main": {"key": "hp"}, "critValue": 0,
+                           "subs": [{"key": "critRate_", "value": top["critRate_"] * 12.5}]}]}
+    assert builds.with_roll_values(card)["rollText"] == "1,250%"
+
+
+def test_the_traveler_gets_art_from_their_character_id():
+    girl = builds.fill_art({"avatarId": "10000007", "icon": ""})
+    assert girl["icon"] == "UI_AvatarIcon_PlayerGirl"
+    assert girl["splash"] == "UI_Gacha_AvatarImg_PlayerGirl"
+    assert builds.fill_art({"avatarId": "10000005", "icon": ""})["icon"] == "UI_AvatarIcon_PlayerBoy"
+    known = {"avatarId": "10000089", "icon": "UI_AvatarIcon_Furina", "splash": "x"}
+    assert builds.fill_art(known) is known
+    unknown = {"avatarId": "99", "icon": ""}
+    assert builds.fill_art(unknown) is unknown
+
+
+# -- two sources for the same character --------------------------------------------
+
+def _card(source=None, art_level=20, fetched=100, **extra):
+    art = {"slot": "flower", "setKey": "GladiatorsFinale", "setName": "Gladiator's Finale",
+           "level": art_level, "main": {"key": "hp", "value": 4780.0},
+           "subs": [{"key": "critRate_", "value": 10.5}, {"key": "atk", "value": 39.0}]}
+    card = {"avatarId": "10000120", "key": "Flins", "name": "Flins", "constellation": 2,
+            "weapon": {"key": "BloodsoakedRuins", "level": 90, "refinement": 1},
+            "artifacts": [art], "fetchedAt": fetched,
+            "talents": [{"slot": "auto", "base": 9, "level": 9, "boosted": False}]}
+    if source:
+        card["source"] = source
+    card.update(extra)
+    return card
+
+
+def _hoyolab(**kw):
+    kw.setdefault("talents", [{"slot": "auto", "base": None, "level": 11, "boosted": False}])
+    return _card("hoyolab", **kw)
+
+
+def test_gear_signature_ignores_formatting_noise():
+    a, b = _card(), _card()
+    b["artifacts"][0]["main"]["value"] = 4780.04
+    b["artifacts"][0]["subs"].reverse()
+    assert builds.gear_signature(a) == builds.gear_signature(b)
+    assert builds.gear_signature(a) != builds.gear_signature(_card(art_level=16))
+
+
+def test_same_build_from_both_sources_keeps_hoyolab_card_and_enka_extras():
+    enka_card = _card(fight={"2000": 18946.0}, friendship=10, fetched=200)
+    hl = _hoyolab(fetched=100, level=95)
+    for old, new in ((enka_card, hl), (hl, enka_card)):
+        out = builds.reconcile(old, new)
+        assert out["source"] == "hoyolab" and out["level"] == 95        # HoYoLAB's card
+        assert out["fight"] == {"2000": 18946.0} and out["friendship"] == 10
+        assert out["talents"][0]["base"] == 9                            # Enka's exact levels
+        assert out["fetchedAt"] == 200
+
+
+def test_different_build_is_just_the_newer_reading():
+    enka_card = _card(fight={"2000": 1.0})
+    hl = _hoyolab(art_level=16)
+    assert builds.reconcile(enka_card, hl) is hl
+    assert builds.reconcile(hl, enka_card) is enka_card
+    changed = _hoyolab(constellation=3)
+    assert builds.reconcile(_hoyolab(), changed) is changed
+
+
+def test_hoyolab_refetch_keeps_what_enka_added():
+    merged = builds.reconcile(_card(fight={"2000": 1.0}, friendship=7), _hoyolab())
+    again = builds.reconcile(merged, _hoyolab(fetched=300))
+    assert again["fight"] == {"2000": 1.0} and again["talents"][0]["base"] == 9
+    assert again["friendship"] == 7 and again["fetchedAt"] == 300
+
+
+def test_nothing_stored_means_the_new_card():
+    card = _hoyolab()
+    assert builds.reconcile(None, card) is card
+
+
+def test_collection_merge_cards(tmp_path):
+    c = builds.Collection("700000000", tmp_path)
+    assert c.merge_cards([_hoyolab()]) == (["Flins"], [])
+    assert c.merge_cards([_hoyolab(fetched=999)]) == ([], [])          # same build, later read
+    assert c.merge_cards([_hoyolab(art_level=12)]) == ([], ["Flins"])
+    c.remove("10000120")
+    assert c.merge_cards([_hoyolab()]) == (["Flins"], []) and "10000120" not in c.removed
+    assert builds.Collection("700000000", tmp_path).builds["10000120"]["source"] == "hoyolab"
+
+
+def test_enka_merge_does_not_downgrade_a_hoyolab_card(tmp_path):
+    c = builds.Collection("700000000", tmp_path)
+    c.merge_cards([_hoyolab(level=95)])
+    new, updated = c.merge({}, [_card(fight={"2000": 5.0}, fetched=500)], 0)
+    stored = c.builds["10000120"]
+    assert stored["source"] == "hoyolab" and stored["level"] == 95
+    assert stored["fight"] == {"2000": 5.0} and (new, updated) == ([], ["Flins"])

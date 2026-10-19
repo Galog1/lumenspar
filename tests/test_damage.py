@@ -33,6 +33,13 @@ def test_member_from_card():
     assert stats[2] == {"key": "atk", "value": 19}
 
 
+def test_member_from_card_refuses_unknown_talent_levels():
+    card = _card()
+    card["talents"] = [{"slot": "auto", "base": None, "level": 11, "boosted": False}]
+    with pytest.raises(ValueError):
+        damage.member_from_card(card)
+
+
 def test_member_from_card_needs_weapon():
     with pytest.raises(ValueError):
         damage.member_from_card(_card(weapon=False))

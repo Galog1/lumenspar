@@ -21,6 +21,7 @@ a = Analysis(
         # The app finds these relative to its own modules, so keep the layout.
         (str(root / "lumenspar" / "ui" / "qml"), "lumenspar/ui/qml"),
         (str(root / "lumenspar" / "gamedata"), "lumenspar/gamedata"),
+        (str(root / "lumenspar" / "fonts"), "lumenspar/fonts"),    # Inter, see ui/fonts.py
         (str(root / "install" / "lumenspar.svg"), "install"),
         # Lumenspar's Google sign-in client, when the release workflow wrote one.
         *([(str(root / "lumenspar" / "google_client.json"), "lumenspar")]

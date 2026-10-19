@@ -110,7 +110,7 @@ ApplicationWindow {
                 Text {
                     text: win.page === "scanner" ? "Inventory scanner · exports .GOOD"
                         : win.page === "wishes" ? "Wish counter · pity and 50/50 from your wish history"
-                        : win.page === "cards" ? "Build cards · your showcase builds via Enka.Network"
+                        : win.page === "cards" ? "Build cards · your characters via Enka.Network and HoYoLAB"
                         : win.page === "optimizer" ? "Optimizer · best artifacts for a character from your scan"
                         : "Genshin Impact companion"
                     color: Theme.textDim

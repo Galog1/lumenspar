@@ -16,11 +16,11 @@ from pathlib import Path
 
 from PySide6.QtCore import Property, QObject, Signal, Slot
 
-from .. import akasha, builds, damage, passives, teamopt
+from .. import akasha, builds, cardart, damage, passives, teamopt
 from .. import optimizer as O
 from ..wishes import icons
 from .backend import _Worker
-from .builds_backend import art_names, decorate, make_panel, panel_name
+from .builds_backend import art_names, backdrop_of, decorate, ensure_backdrop
 
 LABELS = {"hp": "HP", "hp_": "HP%", "atk": "ATK", "atk_": "ATK%", "def": "DEF", "def_": "DEF%",
           "eleMas": "Elemental Mastery", "enerRech_": "Energy Recharge",
@@ -942,19 +942,19 @@ class OptimizerBackend(QObject):
         for b in ([sel] if sel else []) + self._raw_cards:
             names += art_names(b)
         missing = [n for n in icons.missing_assets(names) if n not in self._art_tried]
-        splashes = [sel["splash"]] if sel and sel.get("splash") \
-            and not icons.path(panel_name(sel["splash"])).is_file() \
-            and panel_name(sel["splash"]) not in self._art_tried else []
+        # The selected character's baked card backdrop (their splash art is in `names`).
+        splashes = [sel] if sel and backdrop_of(sel) \
+            and not cardart.backdrop_path(backdrop_of(sel)).is_file() \
+            and backdrop_of(sel) not in self._art_tried else []
         if (missing or splashes) and not self._art_fetch:
             self._art_fetch = True
             self._art_tried.update(missing)
-            self._art_tried.update(panel_name(s) for s in splashes)
+            self._art_tried.update(backdrop_of(b) for b in splashes)
 
             def fetch() -> None:
                 icons.download(missing)
-                for s in splashes:
-                    if icons.path(s).is_file():
-                        make_panel(icons.path(s), icons.path(panel_name(s)))
+                for b in splashes:
+                    ensure_backdrop(b)
                 self._artArrived.emit()
             threading.Thread(target=fetch, daemon=True).start()
 

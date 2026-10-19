@@ -1084,6 +1084,7 @@ Item {
                         BuildCard {
                             id: resultCard
                             c: page.shownCard
+                            metric: cards.cardMetric
                             footer: page.showCurrent ? "Current build" : "Suggested by Lumenspar's optimizer"
                             transformOrigin: Item.TopLeft
                             scale: holder.fit

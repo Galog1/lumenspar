@@ -14,76 +14,59 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from PySide6.QtCore import Property, QObject, QRectF, Qt, QTimer, QUrl, Signal, Slot
-from PySide6.QtGui import QImage, QPainter, QPainterPath
+from PySide6.QtCore import Property, QObject, QTimer, QUrl, Signal, Slot
 
-from .. import akasha, builds, enka
+from .. import akasha, builds, cardart, enka
 from ..wishes import icons
 from .backend import _Worker
 
 
-# The card's splash-art panel, in pixels at 2x: 420x600 on the card, with the
-# art scaled to cover a 600px-wide area that starts 120px left of the panel
-# (the character sits right of centre in gacha art), and the card's 20px
-# corner radius on its left side.
-PANEL_W, PANEL_H, PANEL_SHIFT, AREA_W, RADIUS = 840, 1200, 240, 1200, 40
-
-
-def panel_name(splash: str) -> str:
-    return f"{splash}_card" if splash else ""
-
-
-def make_panel(src: Path, dst: Path) -> bool:
-    """Cut the card's left panel out of a splash art image, corners rounded.
-
-    Done once per character, so QML shows a plain image: rounding inside the
-    scene would need a shader effect, which not every graphics setup runs.
-    """
-    img = QImage(str(src))
-    if img.isNull():
-        return False
-    scale = max(AREA_W / img.width(), PANEL_H / img.height())
-    w, h = img.width() * scale, img.height() * scale
-    x0 = (w - AREA_W) / 2 + PANEL_SHIFT          # centred in the area, top-aligned
-    out = QImage(PANEL_W, PANEL_H, QImage.Format_ARGB32_Premultiplied)
-    out.fill(Qt.transparent)
-    p = QPainter(out)
-    p.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
-    clip = QPainterPath()
-    clip.addRoundedRect(QRectF(0, 0, PANEL_W + 2 * RADIUS, PANEL_H), RADIUS, RADIUS)
-    p.setClipPath(clip)
-    p.drawImage(QRectF(-x0, 0, w, h), img)
-    p.end()
-    tmp = dst.with_suffix(".part")
-    if not out.save(str(tmp), "PNG"):
-        return False
-    tmp.replace(dst)
-    return True
+def _file_url(path: Path) -> str:
+    return QUrl.fromLocalFile(str(path)).toString() if path.is_file() else ""
 
 
 def _url(asset: str) -> str:
     """A cached asset as a file URL, or "" until it has been downloaded."""
-    if not asset:
-        return ""
-    f = icons.path(asset)
-    return QUrl.fromLocalFile(str(f)).toString() if f.is_file() else ""
+    return _file_url(icons.path(asset)) if asset else ""
+
+
+def backdrop_of(b: dict) -> str:
+    """The name of a card's baked backdrop ("" for a character without splash art)."""
+    b = builds.fill_art(b)
+    return cardart.backdrop_name(b.get("splash", ""), b.get("element", ""))
+
+
+def ensure_backdrop(b: dict) -> bool:
+    """Bake a card's backdrop if its splash art is cached and it is not baked yet."""
+    b = builds.fill_art(b)
+    name = backdrop_of(b)
+    if not name:
+        return False
+    dst = cardart.backdrop_path(name)
+    if dst.is_file():
+        return True
+    src = icons.path(b["splash"])
+    return src.is_file() and cardart.bake(src, dst, b.get("element", ""))
 
 
 def decorate(b: dict) -> dict:
-    """A card with file URLs for the art already cached (QML shows placeholders until then)."""
-    card = dict(b)
-    card["iconUrl"] = _url(b.get("icon", ""))
-    card["splashUrl"] = _url(panel_name(b.get("splash", "")))
-    if b.get("weapon"):
-        card["weapon"] = {**b["weapon"], "iconUrl": _url(b["weapon"].get("icon", ""))}
+    """A card with roll values worked out and file URLs for the art already cached
+    (QML shows placeholders until the rest arrives)."""
+    card = builds.with_roll_values(builds.fill_art(b))
+    card["iconUrl"] = _url(card.get("icon", ""))
+    name = backdrop_of(card)
+    card["bgUrl"] = _file_url(cardart.backdrop_path(name)) if name else ""
+    if card.get("weapon"):
+        card["weapon"] = {**card["weapon"], "iconUrl": _url(card["weapon"].get("icon", ""))}
     card["artifacts"] = [{**a, "iconUrl": _url(a.get("icon", ""))}
-                         for a in b.get("artifacts", [])]
-    card["fetched"] = datetime.fromtimestamp(b.get("fetchedAt", 0)).strftime("%Y-%m-%d %H:%M")
+                         for a in card.get("artifacts", [])]
+    card["fetched"] = datetime.fromtimestamp(card.get("fetchedAt", 0)).strftime("%Y-%m-%d %H:%M")
     return card
 
 
 def art_names(b: dict) -> list[str]:
     """The asset names a card's art needs (icon, splash, weapon, artifacts)."""
+    b = builds.fill_art(b)
     names = [b.get("icon", ""), b.get("splash", "")]
     if b.get("weapon"):
         names.append(b["weapon"].get("icon", ""))
@@ -98,6 +81,7 @@ class BuildsBackend(QObject):
     waitChanged = Signal()
     collected = Signal()          # a fetch added or changed cards (for the Drive backup)
     akashaChanged = Signal()
+    metricChanged = Signal()
     _artArrived = Signal()
     _akashaArrived = Signal(object)    # (calcs by avatar id, status text)
 
@@ -111,8 +95,11 @@ class BuildsBackend(QObject):
         self._status = ""
         self._worker: _Worker | None = None
         self._on_done = None          # what to run, on the GUI thread, when the job ends
-        self._art_fetch = False
-        self._art_tried: set[str] = set()
+        self._art_lock = threading.Lock()
+        self._art_running = False
+        self._art_icons: set[str] = set()         # small icons waiting to be downloaded
+        self._art_queue: list[dict] = []          # cards waiting for their backdrop
+        self._art_tried: set[str] = set()         # asset / backdrop names already attempted
         self._akasha: dict = {}            # Akasha.cv calculations by avatar id
         self._akasha_status = ""
         self._akasha_loading = False
@@ -213,6 +200,26 @@ class BuildsBackend(QObject):
         self._worker = w
         w.start()
 
+    @Slot(str, object, object)
+    def addHoyolab(self, uid: str, cards: list, problems: list) -> None:
+        """Store the characters read from HoYoLAB (see HoyolabBackend)."""
+        collection = self._collection if self._collection and self._collection.uid == uid \
+            else builds.Collection(uid)
+        new, updated = collection.merge_cards(cards)
+        self._collection = collection
+        self._publish()
+        self._load_akasha()
+        parts = [f"{len(cards)} characters from HoYoLAB"]
+        if new:
+            parts.append(f"{len(new)} new")
+        if updated:
+            parts.append(f"{len(updated)} updated")
+        if problems:
+            parts.append(f"{len(problems)} skipped: {problems[0]}")
+        self._set_status(" · ".join(parts) + f" · {len(collection.builds)} collected")
+        if new or updated:
+            self.collected.emit()
+
     @Slot(bool, str)
     def _job_done(self, ok: bool, err: str) -> None:
         done, self._on_done = self._on_done, None
@@ -278,24 +285,81 @@ class BuildsBackend(QObject):
         self.waitChanged.emit()
         if c and c.wait_remaining() > 0 and not self._tick.isActive():
             self._tick.start()
-        missing = [n for n in icons.missing_assets(wanted) if n not in self._art_tried]
-        splashes = [b["splash"] for b in cards if b.get("splash")
-                    and not icons.path(panel_name(b["splash"])).is_file()
-                    and panel_name(b["splash"]) not in self._art_tried]
-        if (missing or splashes) and not self._art_fetch:
-            self._art_fetch = True
-            self._art_tried.update(missing)
-            self._art_tried.update(panel_name(s) for s in splashes)
-            # Small icons first, so the grid fills in before the large splash art.
-            missing.sort(key=lambda n: n.startswith("UI_Gacha_AvatarImg_"))
+        self._want_art(cards, [n for n in wanted if n and not n.startswith("UI_Gacha_")])
 
-            def fetch() -> None:
-                icons.download(missing)
-                for s in splashes:
-                    if icons.path(s).is_file():
-                        make_panel(icons.path(s), icons.path(panel_name(s)))
+    # -- art ---------------------------------------------------------------------
+
+    def _want_art(self, cards: list[dict], icon_names: list[str], first: bool = False) -> None:
+        """Queue what the cards still lack: small icons, then splash art and the baked
+        backdrop, one card at a time so the card on screen fills in without waiting
+        for the whole collection (`first` jumps the queue)."""
+        missing = [n for n in icons.missing_assets(icon_names) if n not in self._art_tried]
+        todo = []
+        for b in cards:
+            name = backdrop_of(b)
+            if name and name not in self._art_tried and not cardart.backdrop_path(name).is_file():
+                todo.append(builds.fill_art(b))
+        with self._art_lock:
+            self._art_tried.update(missing)
+            self._art_icons.update(missing)
+            queued = {backdrop_of(q) for q in self._art_queue}
+            fresh = [b for b in todo if backdrop_of(b) not in queued]
+            if first:
+                keep = {backdrop_of(b) for b in todo}
+                self._art_queue = todo + [q for q in self._art_queue if backdrop_of(q) not in keep]
+            else:
+                self._art_queue += fresh
+            if self._art_running or not (self._art_icons or self._art_queue):
+                return
+            self._art_running = True
+        threading.Thread(target=self._art_worker, daemon=True).start()
+
+    def _art_worker(self) -> None:
+        last = time.monotonic()
+        while True:
+            with self._art_lock:
+                batch, self._art_icons = sorted(self._art_icons), set()
+            if batch:
+                icons.download(batch)
                 self._artArrived.emit()
-            threading.Thread(target=fetch, daemon=True).start()
+            with self._art_lock:
+                card = self._art_queue.pop(0) if self._art_queue else None
+                if card is None and not self._art_icons:
+                    self._art_running = False
+                    break
+            if card is None:
+                continue
+            name = backdrop_of(card)
+            self._art_tried.add(name)
+            if not icons.path(card["splash"]).is_file():
+                icons.download([card["splash"]])
+            ensure_backdrop(card)
+            # Republishing rebuilds the page's character grid, so not for every card.
+            if time.monotonic() - last > 2.5 or not self._art_queue:
+                last = time.monotonic()
+                self._artArrived.emit()
+
+    @Slot(str)
+    def prefer(self, avatar_id: str) -> None:
+        """The card on screen: its art goes to the front of the line."""
+        c = self._collection
+        card = c.builds.get(avatar_id) if c else None
+        if card is not None:
+            self._want_art([card], [], first=True)
+
+    # -- card display -------------------------------------------------------------
+
+    @Property(str, notify=metricChanged)
+    def cardMetric(self) -> str:
+        """"cv" or "rv": the figure the cards show for artifacts."""
+        return self._settings.card_metric if self._settings.card_metric in ("cv", "rv") else "cv"
+
+    @Slot(str)
+    def setCardMetric(self, metric: str) -> None:
+        if metric in ("cv", "rv") and metric != self._settings.card_metric:
+            self._settings.card_metric = metric
+            self._settings.save()
+            self.metricChanged.emit()
 
     def _load_akasha(self) -> None:
         """Fetch the Akasha.cv ranks for the collection's UID on a worker thread."""
@@ -332,7 +396,6 @@ class BuildsBackend(QObject):
         self._publish()
 
     def _on_art(self) -> None:
-        self._art_fetch = False
         self._publish()
 
     def _on_tick(self) -> None:

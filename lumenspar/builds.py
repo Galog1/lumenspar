@@ -171,6 +171,104 @@ def _weapon(equip: dict) -> dict:
     }
 
 
+def sets_of(artifacts: list[dict]) -> list[dict]:
+    """The active set bonuses (2 or 4 pieces) of a list of artifact dicts."""
+    sets_info = _items("artifact_sets.json", "id")
+    out = []
+    for sid, n in Counter(r["setId"] for r in artifacts if r["setId"]).most_common():
+        if n < 2:
+            continue
+        s = sets_info.get(sid, {})
+        bonuses = [_clean(t) for t in s.get("bonuses", [])]
+        out.append({"name": s.get("name", f"Set {sid}"), "count": n,
+                    "bonuses": bonuses[: 2 if n >= 4 else 1]})
+    return out
+
+
+# -- roll value ------------------------------------------------------------------
+#
+# CV (crit value) weighs only the two crit stats. RV (roll value) measures every
+# substat the build can use in "rolls": its value as a percentage of the best
+# single roll that stat can get on a 5-star artifact, so 100% is one perfect
+# roll, 250% is two and a half, whatever the stat. The build's own stats decide
+# what counts: crit always, the scaling stat its sands, goblet and circlet point
+# at (ATK%, HP%, DEF% or EM, ATK% by default) and Energy Recharge when a main
+# stat asks for it. Flat stats and the rest are shown but not counted.
+
+_SCALING = ("atk_", "hp_", "def_", "eleMas")
+_LABELS = {key: label for key, label in STATS.values()}
+_SHORT = {"enerRech_": "ER", "eleMas": "EM"}      # for the card's one-line summary
+
+
+@lru_cache(maxsize=None)
+def _max_rolls() -> dict[str, float]:
+    """The best single roll of each substat on a 5-star artifact."""
+    try:
+        tiers = json.loads((_GAMEDATA / "artifact_stats.json").read_text(
+            encoding="utf-8"))["substat_rolls"]["5"]
+    except (OSError, ValueError, KeyError):
+        return {}
+    return {key: max(values) for key, values in tiers.items() if values}
+
+
+def roll_value(key: str, value: float) -> float:
+    """A substat as a percentage of the best single roll of that stat (0 if unknown)."""
+    top = _max_rolls().get(key)
+    return value / top * 100 if top and value > 0 else 0.0
+
+
+def counted_stats(artifacts: list[dict]) -> list[str]:
+    """The substat keys Roll Value counts for a build (see the notes above)."""
+    votes = Counter(a["main"]["key"] for a in artifacts
+                    if a.get("slot") in ("sands", "goblet", "circlet")
+                    and a["main"]["key"] in _SCALING)
+    scaling = max(_SCALING, key=lambda k: (votes[k], -_SCALING.index(k)))
+    keys = ["critRate_", "critDMG_", scaling]
+    if any(a["main"]["key"] == "enerRech_" for a in artifacts):
+        keys.append("enerRech_")
+    return keys
+
+
+def with_roll_values(card: dict) -> dict:
+    """The card with RV and CV worked out and formatted for display: per substat
+    (rv, rvText, counted), per artifact (rollValue, rollText, cvText) and for the
+    card (the same, plus rvLabels naming what counts). Pure; the input is untouched."""
+    arts = card.get("artifacts") or []
+    counted = counted_stats(arts)
+    out_arts = []
+    for a in arts:
+        subs = []
+        for s in a.get("subs", []):
+            rv = roll_value(s.get("key", ""), float(s.get("value", 0)))
+            subs.append({**s, "rv": round(rv, 1), "rvText": f"{rv:.0f}%",
+                         "counted": s.get("key") in counted})
+        total = sum(s["rv"] for s in subs if s["counted"])
+        cv = float(a.get("critValue", 0))
+        out_arts.append({**a, "subs": subs, "rollValue": round(total, 1),
+                         "rollText": f"{total:,.0f}%", "cvText": f"{cv:.1f}"})
+    total = sum(a["rollValue"] for a in out_arts)
+    cv = sum(float(a.get("critValue", 0)) for a in arts)
+    return {**card, "artifacts": out_arts, "rollValue": round(total, 1),
+            "rollText": f"{total:,.0f}%", "cvText": f"{cv:.1f}",
+            "rvLabels": ", ".join(_SHORT.get(k) or _LABELS.get(k, k) for k in counted)}
+
+
+# The Traveler has no icon in the game data (their art depends on the chosen gender,
+# which the character id tells: 10000005 is Aether, 10000007 Lumine).
+_TRAVELER_ICON = {"10000005": "UI_AvatarIcon_PlayerBoy", "10000007": "UI_AvatarIcon_PlayerGirl"}
+
+
+def fill_art(card: dict) -> dict:
+    """The card with icon and splash names filled in where the game data lacks them."""
+    if card.get("icon"):
+        return card
+    icon = _TRAVELER_ICON.get(str(card.get("avatarId")), "")
+    if not icon:
+        return card
+    return {**card, "icon": icon,
+            "splash": icon.replace("UI_AvatarIcon_", "UI_Gacha_AvatarImg_")}
+
+
 def parse(data: dict) -> tuple[dict, list[dict], list[str]]:
     """Return (player, builds, problems) for a showcase response."""
     info = data.get("playerInfo") or {}
@@ -234,16 +332,7 @@ def parse(data: dict) -> tuple[dict, list[dict], list[str]]:
                 if art:
                     artifacts.append(art)
         artifacts.sort(key=lambda r: SLOT_ORDER.index(r["slot"]))
-        set_counts = Counter(r["setId"] for r in artifacts if r["setId"])
-        sets_info = _items("artifact_sets.json", "id")
-        sets = []
-        for sid, n in set_counts.most_common():
-            if n < 2:
-                continue
-            s = sets_info.get(sid, {})
-            bonuses = [_clean(t) for t in s.get("bonuses", [])]
-            sets.append({"name": s.get("name", f"Set {sid}"), "count": n,
-                         "bonuses": bonuses[: 2 if n >= 4 else 1]})
+        sets = sets_of(artifacts)
 
         builds.append({
             "avatarId": str(aid), "key": key,
@@ -266,8 +355,51 @@ def parse(data: dict) -> tuple[dict, list[dict], list[str]]:
     return player, builds, problems
 
 
+def gear_signature(card: dict) -> tuple:
+    """What a character wears, comparable across sources (weapon and artifacts)."""
+    w = card.get("weapon") or {}
+    arts = tuple(sorted(
+        (a["slot"], a.get("setKey") or a.get("setName"), a["main"]["key"],
+         round(float(a["main"]["value"]), 1), a.get("level", 0),
+         tuple(sorted((x["key"], round(float(x["value"]), 1)) for x in a.get("subs", []))))
+        for a in card.get("artifacts") or []))
+    return (w.get("key") or w.get("name"), w.get("level"), w.get("refinement"), arts)
+
+
+def _has_base(card: dict) -> bool:
+    t = card.get("talents") or []
+    return bool(t) and all(x.get("base") is not None for x in t)
+
+
+def reconcile(old: dict | None, new: dict) -> dict:
+    """The card to store when `new` is read and `old` is already stored.
+
+    A different build simply is the newer reading. The same build read from
+    both sources keeps HoYoLAB's fuller card (every character, any time) and
+    Enka's exact extras that HoYoLAB lacks: the raw stat panel the optimizer
+    needs, the base talent levels and the friendship level.
+    """
+    if old is None or old.get("constellation") != new.get("constellation") \
+            or gear_signature(old) != gear_signature(new):
+        return new
+    cards = [c for c in (new, old) if c.get("source") == "hoyolab"]
+    if not cards or all(c.get("source") == "hoyolab" for c in (old, new)):
+        out = dict(new)
+    else:
+        out = dict(cards[0])
+    for c in sorted((old, new), key=lambda c: c.get("source") == "hoyolab"):   # Enka first
+        if "fight" in c and "fight" not in out:
+            out["fight"] = c["fight"]
+        if not _has_base(out) and _has_base(c):
+            out["talents"] = c["talents"]
+        if not out.get("friendship") and c.get("friendship"):
+            out["friendship"] = c["friendship"]
+    out["fetchedAt"] = max(old.get("fetchedAt", 0), new.get("fetchedAt", 0))
+    return out
+
+
 class Collection:
-    """Build cards gathered across showcase fetches, for one UID at a time."""
+    """Build cards gathered across showcase and HoYoLAB fetches, for one UID at a time."""
 
     def __init__(self, uid: str, root: Path = BUILD_DIR) -> None:
         self.uid = uid.strip()
@@ -290,23 +422,39 @@ class Collection:
     def wait_remaining(self) -> float:
         return max(0.0, self.next_fetch - time.time())
 
+    def _put(self, b: dict) -> str | None:
+        """Store a card read just now; "new", "updated" or None when nothing changed."""
+        old = self.builds.get(b["avatarId"])
+        b = reconcile(old, b)
+        same = old is not None and {k: v for k, v in old.items() if k != "fetchedAt"} == \
+            {k: v for k, v in b.items() if k != "fetchedAt"}
+        if not same:
+            self.builds[b["avatarId"]] = b
+        self.removed.pop(b["avatarId"], None)
+        return "new" if old is None else (None if same else "updated")
+
     def merge(self, player: dict, builds: list[dict], ttl: int) -> tuple[list[str], list[str]]:
-        """Add a fetch's builds; return (new names, updated names)."""
+        """Add a showcase fetch's builds; return (new names, updated names)."""
         self.player = player or self.player
         self.next_fetch = time.time() + max(ttl, enka.DEFAULT_TTL)
-        new, updated = [], []
-        for b in builds:
-            old = self.builds.get(b["avatarId"])
-            same = old is not None and {k: v for k, v in old.items() if k != "fetchedAt"} == \
-                {k: v for k, v in b.items() if k != "fetchedAt"}
-            if old is None:
-                new.append(b["name"])
-            elif not same:
-                updated.append(b["name"])
-            if not same:
-                self.builds[b["avatarId"]] = b
-            self.removed.pop(b["avatarId"], None)
+        new, updated = self._add(builds)
         self.save()
+        return new, updated
+
+    def merge_cards(self, cards: list[dict]) -> tuple[list[str], list[str]]:
+        """Add cards read from HoYoLAB; return (new names, updated names)."""
+        new, updated = self._add(cards)
+        self.save()
+        return new, updated
+
+    def _add(self, cards: list[dict]) -> tuple[list[str], list[str]]:
+        new, updated = [], []
+        for b in cards:
+            status = self._put(b)
+            if status == "new":
+                new.append(b["name"])
+            elif status == "updated":
+                updated.append(b["name"])
         return new, updated
 
     def ordered(self, showcase_first: list[str] | None = None) -> list[dict]:

@@ -23,8 +23,8 @@ CAPTURE_ELEMENTS = ("pipewiresrc", "videoconvert", "capsfilter", "appsink")
 def bundle_checks() -> list[Check]:
     """What the build needs beyond the window."""
     if hostos.is_windows():
-        return _tls()
-    return [*_tls(), *_tesseract(), *_gstreamer(), *_dbus()]
+        return [*_tls(), *_webengine(), *_jpeg(), *_font()]
+    return [*_tls(), *_tesseract(), *_gstreamer(), *_dbus(), *_webengine(), *_jpeg(), *_font()]
 
 
 def _tls() -> list[Check]:
@@ -46,6 +46,72 @@ def _tls() -> list[Check]:
                  f"{loaded} loaded" + (f", directory {capath}" if lazy else ""))]
     except Exception as exc:
         return [("trusted HTTPS certificates", False, f"{type(exc).__name__}: {exc}")]
+
+
+def _webengine() -> list[Check]:
+    """Qt WebEngine and its QML module are in the bundle (the HoYoLAB sign-in window).
+
+    Without them the feature quietly turns itself off, so a release that lost
+    them must fail here instead. Only resolves the QML module; no browser starts.
+    """
+    name = "embedded browser (Qt WebEngine)"
+    try:
+        from PySide6 import QtWebEngineQuick  # noqa: F401
+        from PySide6.QtCore import QUrl
+        from PySide6.QtQml import QQmlComponent, QQmlEngine
+
+        engine = QQmlEngine()
+        component = QQmlComponent(engine)
+        component.setData(b"import QtQml\nimport QtWebEngine\n"
+                          b"QtObject { property var p: WebEngineProfile {} }", QUrl())
+        ready = component.status() == QQmlComponent.Status.Ready
+        return [(name, ready, "" if ready else component.errorString().strip()[:160])]
+    except Exception as exc:
+        return [(name, False, f"{type(exc).__name__}: {exc}")]
+
+
+def _jpeg() -> list[Check]:
+    """Qt can write and read JPEG, which the build cards' baked backdrops are.
+
+    A bundle without the image-format plugin would show every card on a plain
+    gradient, so a release that lost it must fail here.
+    """
+    name = "JPEG images (card backdrops)"
+    try:
+        from PySide6.QtGui import QImage, QImageReader, QImageWriter
+        from tempfile import TemporaryDirectory
+
+        if b"jpg" not in QImageWriter.supportedImageFormats():
+            return [(name, False, "no JPEG writer")]
+        with TemporaryDirectory() as tmp:
+            path = f"{tmp}/probe.jpg"
+            image = QImage(8, 8, QImage.Format_RGB32)
+            image.fill(0x336699)
+            ok = image.save(path, "JPG", 88) and not QImageReader(path).read().isNull()
+        return [(name, ok, "" if ok else "could not round-trip an image")]
+    except Exception as exc:
+        return [(name, False, f"{type(exc).__name__}: {exc}")]
+
+
+def _font() -> list[Check]:
+    """The bundled interface font is in the bundle and registered (see ui/fonts.py).
+
+    Without it the build cards fall back to the system font and their layout,
+    which is measured against Inter, can truncate or gap.
+    """
+    name = "interface font (Inter)"
+    try:
+        from PySide6.QtGui import QFontDatabase
+
+        from .ui import fonts
+
+        missing = [f for f in fonts.FILES if not (fonts.FONT_DIR / f).is_file()]
+        if missing:
+            return [(name, False, "missing " + ", ".join(missing))]
+        ok = fonts.FAMILY in QFontDatabase.families()
+        return [(name, ok, "" if ok else "the files are there but Qt did not register them")]
+    except Exception as exc:
+        return [(name, False, f"{type(exc).__name__}: {exc}")]
 
 
 def _tesseract() -> list[Check]:

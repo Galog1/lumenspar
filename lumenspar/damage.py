@@ -68,6 +68,11 @@ def member_from_card(card: dict) -> dict:
     w = card.get("weapon")
     if not w:
         raise ValueError("the build has no weapon")
+    if any(t.get("base") is None for t in card.get("talents", [])):
+        # Cards from HoYoLAB show in-game talent levels, bonuses included; the
+        # engine needs the base levels, which only the showcase reads.
+        raise ValueError("the build's base talent levels are unknown (read it from the "
+                         "showcase too)")
     talents = {t["slot"]: t["base"] for t in card.get("talents", [])}
     arts = []
     for a in card.get("artifacts", []):

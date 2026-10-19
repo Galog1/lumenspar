@@ -33,7 +33,7 @@ build-backend = "setuptools.build_meta"
 include = ["lumenspar*"]
 
 [tool.setuptools.package-data]
-lumenspar = ["gamedata/*.json", "ui/qml/**/*.qml", "ui/qml/**/qmldir"]
+lumenspar = ["gamedata/*.json", "fonts/*.ttf", "fonts/OFL.txt", "ui/qml/**/*.qml", "ui/qml/**/qmldir"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

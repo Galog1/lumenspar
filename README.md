@@ -12,8 +12,8 @@ main menu:
   [SEELIE.me](https://seelie.me) and Aspirine's calculator can import.
 - **Build Cards** -- [Akasha](https://akasha.cv)-style cards for the characters
   in your profile showcase, read through [Enka.Network](https://enka.network):
-  talents, weapon, artifacts with exact roll counts, crit value and final
-  stats, saved as images if you like.
+  talents, weapon, artifacts with exact roll counts, crit value or roll value
+  and final stats, saved as images if you like.
 - **Optimizer** -- a simpler [Genshin Optimizer](https://frzyc.github.io/genshin-optimizer/):
   the best artifacts from your scan for any character, by a damage estimate,
   stat weights, target values or a stat ratio.
@@ -266,16 +266,70 @@ Details** in your profile) and draws a card for each:
 - the weapon with its level, refinement and stats;
 - every artifact with its main stat, substats and **how many times each
   substat rolled** -- exact, because the showcase lists every roll an
-  artifact received -- plus each artifact's crit value;
-- the character's final stats as the game reports them, total crit value
-  (2 × CRIT Rate + CRIT DMG from substats) and active set bonuses.
+  artifact received -- plus each artifact's score (see below);
+- the character's final stats as the game reports them, the build's total
+  score and active set bonuses.
+
+The card is drawn on the character's own splash art, with a halo and rings in
+the element's colour. Switch the artifact score with **CV / RV** under the card:
+
+- **CV**, crit value: 2 × CRIT Rate + CRIT DMG from substats;
+- **RV**, roll value: every substat the build uses as a percentage of the best
+  single roll that stat can get on a 5-star artifact, so 100% is one perfect
+  roll and 250% two and a half. What counts follows the build: CRIT Rate and
+  CRIT DMG always, the scaling stat its sands, goblet and circlet point at
+  (ATK%, HP%, DEF% or Elemental Mastery; ATK% if they say nothing), and Energy
+  Recharge when a main stat asks for it. Flat stats and the rest are listed
+  with their own roll value but left out of the totals; the card names what it
+  counted.
+
+The art is downloaded the first time a character is shown (the one on screen
+first), and the card's backdrop is composed from it once and kept next to the
+other cached images, about 200 KB per character.
 
 The showcase holds a limited number of characters, so Lumenspar keeps every
 character it has seen for that UID: swap others in, let the game publish the
 showcase (going to the title screen and back is quickest), and fetch again.
 Enka.Network caches a showcase for a short while; the button counts down until
-a fresh one is available. **Save card as image** writes a 2320×1200 PNG to
+a fresh one is available. **Save card as image** writes a 2400×1280 PNG to
 `cards/` in the export folder.
+
+### Every character, through HoYoLAB
+
+The showcase shows only a few characters. **Sign in to HoYoLAB** (on the *All
+characters* card) reads **every** character on the account from HoYoLAB's
+battle chronicle -- the same data its own character pages show: weapon,
+artifacts with how many times each substat rolled, constellations, talent
+levels and the stats panel -- and makes a card for each. It covers global
+accounts (UIDs starting with 6, 7, 8 or 9); characters without artifacts get a
+card without them.
+
+HoYoLAB answers these requests only to a signed-in account, so Lumenspar opens
+a window with HoYoLAB's own sign-in page. There you sign in, press **Fetch my
+characters**, and the window reads the list and closes. About your sign-in:
+
+- your password is typed into HoYoLAB's page; Lumenspar's code never reads
+  form fields, cookies or page storage, and sends nothing anywhere but HoYoLAB;
+- the window uses an off-the-record browser profile: its cookies and other
+  site data exist in memory only and are gone when the window closes, so
+  nothing about the sign-in is written to disk, and you sign in again next
+  time. (Chromium keeps its usual, empty certificate store in your home
+  folder.) The tests check that the window's profile can never be a
+  persistent one;
+- only the parsed build cards are stored, in the same collection as the
+  showcase's.
+
+When a character has the same build in both sources, the card keeps HoYoLAB's
+data and Enka's exact extras (the raw stat panel the optimizer needs, base
+talent levels); a character whose build differs takes the newer reading. HoYoLAB
+shows talent levels as in-game, with constellation bonuses included and not
+marked, and does not give the optimizer's raw stats, so HoYoLAB-only characters
+are not offered to the optimizer or in Team & damage until the showcase has
+read them. The endpoints are unofficial and may change; Lumenspar reads them
+defensively and says what it could not use. Embedded-browser caveat: some
+"Continue with Google/Apple" HoYoLAB sign-ins refuse embedded browsers; email
+and password works. Qt WebEngine adds roughly 150-250 MB to the app and is
+optional when running from source (the button then says it is unavailable).
 
 Art (portraits, splash art, weapon and artifact icons) comes from Project Amber
 and is downloaded once, when first needed. Unlike Akasha, there are no
@@ -522,3 +576,6 @@ to license:
   `tools/build_go_engine.py` from [Genshin Optimizer](https://github.com/frzyc/genshin-optimizer)'s
   formula engine, game data and English text: Copyright (c) frzyc and the
   Genshin Optimizer contributors, MIT License (`lumenspar/gamedata/GO_LICENSE.txt`).
+- `lumenspar/fonts/` is [Inter](https://github.com/rsms/inter) 4.1 (Regular,
+  SemiBold and Bold), Copyright (c) 2016 The Inter Project Authors, under the
+  SIL Open Font License 1.1 (`lumenspar/fonts/OFL.txt`).

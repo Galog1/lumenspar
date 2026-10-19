@@ -99,6 +99,8 @@ class Settings:
     # showcase is read. Optional -- blank means characters come only from
     # the screen scan.
     uid: str = ""
+    # What the build cards show per artifact: "cv" (crit value) or "rv" (roll value).
+    card_metric: str = "cv"
 
     # capture
     restore_token: str = ""
