@@ -40,6 +40,7 @@ API = f"https://api.github.com/repos/{REPO}/releases?per_page=15"
 RELEASE_PAGE = f"https://github.com/{REPO}/releases"
 USER_AGENT = f"Lumenspar/{__version__} (+https://github.com/{REPO})"
 _TRUSTED_PREFIX = f"https://github.com/{REPO}/releases/download/"
+BAD_NAME_CHARS = "/\\:" + chr(0)           # separators, drive colon, NUL
 MAX_BYTES = 600 * 1024 * 1024          # far above any real build; a runaway stop
 
 
@@ -173,8 +174,10 @@ def download(asset: Asset, dest_dir: Path,
     """
     if not _trusted_url(asset.url):
         raise UpdateError("The release file is not hosted where Lumenspar expects.")
-    name = Path(asset.name).name
-    if not name or name != asset.name:
+    name = asset.name
+    # Checked by hand: a backslash is a path separator only on Windows, so
+    # Path(...).name would let a name like ..\evil.exe through on Linux.
+    if not name or name in (".", "..") or any(c in name for c in BAD_NAME_CHARS):
         raise UpdateError("The release file has an unusable name.")
     dest_dir.mkdir(parents=True, exist_ok=True)
     final, part = dest_dir / name, dest_dir / (name + ".part")
