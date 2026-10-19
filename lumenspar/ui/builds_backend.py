@@ -30,6 +30,10 @@ def _url(asset: str) -> str:
     return _file_url(icons.path(asset)) if asset else ""
 
 
+_CHIP_KEYS = ("avatarId", "name", "element", "rarity", "iconUrl", "inShowcase",
+              "constellation", "fetched")
+
+
 def backdrop_of(b: dict) -> str:
     """The name of a card's baked backdrop ("" for a character without splash art)."""
     b = builds.fill_art(b)
@@ -76,6 +80,7 @@ def art_names(b: dict) -> list[str]:
 
 class BuildsBackend(QObject):
     changed = Signal()
+    chipsChanged = Signal()
     busyChanged = Signal()
     statusChanged = Signal()
     waitChanged = Signal()
@@ -91,6 +96,8 @@ class BuildsBackend(QObject):
         self._collection = builds.latest()
         self._showcase: list[str] = []     # avatar ids in the latest fetch's order
         self._cards: list[dict] = []
+        self._chips: list[dict] = []
+        self._revision = 0
         self._busy = False
         self._status = ""
         self._worker: _Worker | None = None
@@ -113,9 +120,24 @@ class BuildsBackend(QObject):
 
     # -- what the page shows ----------------------------------------------
 
-    @Property("QVariantList", notify=changed)
-    def cards(self) -> list:
-        return self._cards
+    # QML reads a QVariantList property by converting the whole list, so the page
+    # gets a slim list for the chip grid (re-sent only when it really differs) and
+    # one full card at a time through cardAt().
+    @Property("QVariantList", notify=chipsChanged)
+    def chips(self) -> list:
+        return self._chips
+
+    @Property(int, notify=changed)
+    def count(self) -> int:
+        return len(self._cards)
+
+    @Property(int, notify=changed)
+    def revision(self) -> int:
+        return self._revision
+
+    @Slot(int, result="QVariantMap")
+    def cardAt(self, index: int) -> dict:
+        return self._cards[index] if 0 <= index < len(self._cards) else {}
 
     @Property("QVariantMap", notify=changed)
     def player(self) -> dict:
@@ -281,6 +303,11 @@ class BuildsBackend(QObject):
                 }
             out.append(card)
         self._cards = out
+        chips = [{k: card.get(k) for k in _CHIP_KEYS} for card in out]
+        self._revision += 1
+        if chips != self._chips:
+            self._chips = chips
+            self.chipsChanged.emit()
         self.changed.emit()
         self.waitChanged.emit()
         if c and c.wait_remaining() > 0 and not self._tick.isActive():

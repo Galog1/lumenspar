@@ -146,6 +146,7 @@ ColumnLayout {
             anchors.fill: parent
             anchors.margins: 3
             source: portrait.iconUrl
+            sourceSize: Qt.size(160, 160)
             visible: status === Image.Ready
             fillMode: Image.PreserveAspectFit
             asynchronous: true

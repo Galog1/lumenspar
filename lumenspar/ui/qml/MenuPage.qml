@@ -170,7 +170,7 @@ Item {
             glyph: "✦"
             title: "Build Cards"
             blurb: "Akasha-style cards for every character in your profile showcase: talents, weapon, artifacts with roll counts, crit value and final stats."
-            detail: cards.cards.length > 0 ? cards.cards.length + " characters collected" : ""
+            detail: cards.count > 0 ? cards.count + " characters collected" : ""
             target: "cards"
         }
         Tile {

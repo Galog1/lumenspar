@@ -47,6 +47,7 @@ Rectangle {
             anchors.fill: parent
             anchors.margins: 3
             source: parent.source
+            sourceSize: Qt.size(256, 256)
             visible: status === Image.Ready
             fillMode: Image.PreserveAspectFit
             asynchronous: true

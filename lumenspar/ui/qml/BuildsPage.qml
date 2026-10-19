@@ -12,8 +12,10 @@ Item {
 
     property int selected: 0
     signal openOptimizer(string avatarId)
-    readonly property var card: cards.cards.length > 0
-                                ? cards.cards[Math.min(selected, cards.cards.length - 1)] : null
+    readonly property var card: {
+        const rev = cards.revision          // re-read when the cards change
+        return cards.count > 0 ? cards.cardAt(Math.min(selected, cards.count - 1)) : null
+    }
     // The card on screen gets its art first, ahead of the rest of the collection.
     onCardChanged: if (card) cards.prefer(card.avatarId)
 
@@ -144,7 +146,7 @@ Item {
             Text {
                 Layout.fillWidth: true
                 Layout.topMargin: 40
-                visible: cards.cards.length === 0
+                visible: cards.count === 0
                 horizontalAlignment: Text.AlignHCenter
                 text: "No builds yet. Enter your UID and fetch your showcase."
                 color: Theme.textDim
@@ -155,7 +157,7 @@ Item {
                 id: strip
                 Layout.fillWidth: true
                 Layout.preferredHeight: Math.min(chips.height, 236)
-                visible: cards.cards.length > 0
+                visible: cards.count > 0
                 contentWidth: width
                 contentHeight: chips.height
                 clip: true
@@ -178,12 +180,12 @@ Item {
                     width: strip.width - 14
                     spacing: 10
                     Repeater {
-                        model: cards.cards
+                        model: cards.chips
                         delegate: Rectangle {
                             id: chip
                             required property var modelData
                             required property int index
-                            readonly property bool current: index === Math.min(page.selected, cards.cards.length - 1)
+                            readonly property bool current: index === Math.min(page.selected, cards.count - 1)
                             readonly property color tint: Theme.element(modelData.element)
                             width: 78; height: 96
                             radius: 14
@@ -213,6 +215,7 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 3
                                     source: chip.modelData.iconUrl
+                                    sourceSize: Qt.size(116, 116)
                                     visible: status === Image.Ready
                                     fillMode: Image.PreserveAspectFit
                                     asynchronous: true
