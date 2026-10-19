@@ -164,4 +164,6 @@ ApplicationWindow {
         name: "optimizer"
         OptimizerPage { anchors.fill: parent }
     }
+
+    UpdateBanner { }
 }

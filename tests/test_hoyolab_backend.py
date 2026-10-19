@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from lumenspar import builds
+from lumenspar import builds, hoyolab
 from lumenspar.ui.hoyolab_backend import HoyolabBackend
 
 from .test_hoyolab import _raw
@@ -25,12 +25,48 @@ def test_begin_validates(app):
     b = HoyolabBackend(available=False)
     assert "not available" in b.begin("700000000")
     b = _backend()
-    assert "UID" in b.begin("")
     assert "UID" in b.begin("112345678")          # a China server
     assert not b.open
     assert b.begin("700000000") == "" and b.open
     assert b.step == "login" and "Sign in" in b.status
     assert "os_euro" in b.actUrl and "700000000" in b.fetchScript
+
+
+def test_begin_without_a_uid_finds_the_account_after_sign_in(app):
+    b = _backend()
+    assert b.begin("") == "" and b.open
+    assert "role_id" not in b.actUrl and b.actUrl.startswith("https://act.hoyolab.com/")
+    assert 'role_id = ""' in b.fetchScript
+
+
+def test_finish_uses_the_account_the_page_found(app):
+    b = _backend()
+    got = []
+    b.cardsReady.connect(lambda uid, cards, problems: got.append(uid))
+    b.begin("")
+    raw = _raw()
+    raw["account"] = {"uid": "700000123", "server": "os_euro"}
+    b.finish(json.dumps(raw))
+    assert got == ["700000123"] and not b.open
+
+
+def test_finish_ignores_a_malformed_found_account(app):
+    b = _backend()
+    got = []
+    b.cardsReady.connect(lambda uid, cards, problems: got.append(uid))
+    b.begin("700000000")
+    raw = _raw()
+    raw["account"] = {"uid": "1; alert(1)"}
+    b.finish(json.dumps(raw))
+    assert got == ["700000000"]
+
+
+def test_no_account_failure_says_to_enter_the_uid(app):
+    b = _backend()
+    b.begin("")
+    b.failed("Several accounts found (700000001, 800000002)", hoyolab.NO_ACCOUNT)
+    assert "enter your UID" in b.status and "700000001" in b.status
+    assert b.step == "login"
 
 
 def test_cancel_closes_and_forgets(app):

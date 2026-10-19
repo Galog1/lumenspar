@@ -74,11 +74,11 @@ class HoyolabBackend(QObject):
 
     @Property(str, notify=changed)
     def actUrl(self) -> str:
-        return hoyolab.page_url(self._uid, self._server) if self._server else ""
+        return hoyolab.page_url(self._uid, self._server)
 
     @Property(str, notify=changed)
     def fetchScript(self) -> str:
-        return hoyolab.fetch_script(self._uid, self._server) if self._server else ""
+        return hoyolab.fetch_script(self._uid, self._server)
 
     @Property(str, constant=True)
     def progressJs(self) -> str:
@@ -92,14 +92,19 @@ class HoyolabBackend(QObject):
 
     @Slot(str, result=str)
     def begin(self, uid: str) -> str:
-        """Open the sign-in window for a UID; returns "" or why it cannot."""
+        """Open the sign-in window; returns "" or why it cannot.
+
+        A UID is optional: without one the account is found after sign-in. A
+        UID that is typed must be a global one, since HoYoLAB's records cover
+        only those.
+        """
         uid = uid.strip()
         if not self._available:
             return "The embedded browser (Qt WebEngine) is not available in this install."
-        server = hoyolab.server_for(uid)
+        server = hoyolab.server_for(uid) if uid else ""
         if server is None:
-            return ("Enter your UID first. HoYoLAB covers global accounts "
-                    "(UIDs starting with 6, 7, 8 or 9).")
+            return ("HoYoLAB covers global accounts (UIDs starting with 6, 7, 8 or 9). "
+                    "Check the UID, or clear it to have it found after sign-in.")
         if self._open:
             return ""
         self._uid, self._server = uid, server
@@ -141,6 +146,9 @@ class HoyolabBackend(QObject):
         if retcode == hoyolab.NOT_SIGNED_IN:
             self._status = ("HoYoLAB did not accept the session: sign in first, then press "
                             "\"Fetch my characters\" again.")
+        elif retcode == hoyolab.NO_ACCOUNT:
+            self._status = (f"{message}. Close this window, enter your UID on the Build "
+                            "Cards page and sign in again.")
         else:
             self._status = f"HoYoLAB refused the request ({message})."
         self._step = "login"
@@ -161,7 +169,10 @@ class HoyolabBackend(QObject):
         except (ValueError, TypeError, AttributeError):
             self.failed("the answer was not in the expected format", 0)
             return
-        uid = self._uid
+        # The account the page used: the typed UID, or the one it found itself.
+        account = raw.get("account") if isinstance(raw, dict) else None
+        found = str(account.get("uid") or "") if isinstance(account, dict) else ""
+        uid = found if hoyolab.server_for(found) else self._uid
         self._open = False
         self._step = "login"
         self._status = ""

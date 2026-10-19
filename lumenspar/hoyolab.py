@@ -27,6 +27,9 @@ LOGIN_URL = "https://www.hoyolab.com/home"
 # Requests from this origin are allowed by the API's CORS rules.
 ACT_ORIGIN = "https://act.hoyolab.com"
 NOT_SIGNED_IN = 10001
+# Raised by the page script itself (not HoYoLAB) when the UID was not typed and
+# the signed-in account's game accounts could not be read, or are ambiguous.
+NO_ACCOUNT = -2
 
 # The first digit of a UID says which server its account lives on.
 SERVERS = {"6": "os_usa", "7": "os_euro", "8": "os_asia", "9": "os_cht"}
@@ -46,14 +49,55 @@ def server_for(uid: str) -> str | None:
     return SERVERS.get(uid[:1]) if uid.isdigit() and len(uid) >= 9 else None
 
 
-def page_url(uid: str, server: str) -> str:
-    """A page on the API's own origin to run the requests from."""
-    return (f"{ACT_ORIGIN}/app/community-game-records-sea/index.html"
-            f"#/ys/role/all?role_id={uid}&server={server}")
+def page_url(uid: str = "", server: str = "") -> str:
+    """A page on the API's own origin to run the requests from.
+
+    Without a UID it is the same page minus the account: the requests only
+    need its origin, and the script finds the account itself.
+    """
+    page = f"{ACT_ORIGIN}/app/community-game-records-sea/index.html"
+    if not uid:
+        return f"{page}#/ys/role/all"
+    return f"{page}#/ys/role/all?role_id={uid}&server={server}"
 
 
-def fetch_script(uid: str, server: str) -> str:
+# Where the signed-in account's game accounts can be read when no UID was typed.
+# Unofficial, like the rest; tried in order, the first that lists one wins.
+ACCOUNT_URLS = (
+    "https://api-account-os.hoyolab.com/account/binding/api/getUserGameRolesByLtoken"
+    "?game_biz=hk4e_global",
+    "https://sg-public-api.hoyolab.com/binding/api/getUserGameRolesByCookie"
+    "?game_biz=hk4e_global",
+)
+
+
+def pick_account(entries: list) -> tuple[str, str] | str:
+    """(uid, server) of the one Genshin account in a game-account list, else a reason.
+
+    Mirrors the script's choice, so it is testable: with several accounts
+    nothing is guessed (a wrong pick would build someone else's cards).
+    """
+    found = []
+    for e in entries if isinstance(entries, list) else []:
+        if not isinstance(e, dict):
+            continue
+        uid = str(e.get("game_uid") or e.get("uid") or "")
+        biz = str(e.get("game_biz") or "")
+        server = str(e.get("region") or "") or (server_for(uid) or "")
+        if (biz == "hk4e_global" or (not biz and server.startswith("os_")))                 and server_for(uid):
+            found.append((uid, server))
+    if len(found) == 1:
+        return found[0]
+    if not found:
+        return "no Genshin Impact account found on this HoYoLAB sign-in"
+    return "several Genshin accounts found (" + ", ".join(u for u, _ in found) + ")"
+
+
+def fetch_script(uid: str = "", server: str = "") -> str:
     """JavaScript that reads the character list and every character's detail.
+
+    With no `uid` it first looks up the signed-in account's own Genshin account
+    (ACCOUNT_URLS) and uses that; the choice is left in `window.__ls.account`.
 
     It returns at once; progress and the result are left in `window.__ls`,
     read back with PROGRESS_JS and RESULT_JS. Three requests run at a time.
@@ -63,8 +107,9 @@ def fetch_script(uid: str, server: str) -> str:
     return """
 (function () {
   const S = window.__ls = { done: 0, total: 0, finished: false, error: "", retcode: 0,
-                            list: null, details: {}, errors: {} };
-  const API = %(api)s, role_id = %(uid)s, server = %(server)s;
+                            list: null, details: {}, errors: {}, account: null };
+  const API = %(api)s, ACCOUNTS = %(accounts)s, SERVERS = %(servers)s;
+  let role_id = %(uid)s, server = %(server)s;
   const headers = {
     'content-type': 'application/json',
     'x-rpc-lang': 'en-us', 'x-rpc-language': 'en-us',
@@ -83,8 +128,37 @@ def fetch_script(uid: str, server: str) -> str:
     }
     return j;
   };
+  // The signed-in account's Genshin account, when no UID was typed.
+  const discover = async () => {
+    let found = [];
+    for (const url of ACCOUNTS) {
+      try {
+        const r = await fetch(url, { headers: { 'x-rpc-lang': 'en-us', 'x-rpc-language': 'en-us',
+                                                'x-rpc-client_type': '5', 'x-rpc-platform': '4' },
+                                     credentials: 'include' });
+        const j = await r.json();
+        if (j.retcode === 10001) { const e = new Error('not signed in'); e.retcode = 10001; throw e; }
+        const rows = (j.data && j.data.list) || [];
+        found = rows.filter(a => (a.game_biz === 'hk4e_global' || (!a.game_biz &&
+                    String(a.region || '').indexOf('os_') === 0)) && /^[6-9][0-9]{8,}$/.test(String(a.game_uid || a.uid || '')))
+                    .map(a => { const u = String(a.game_uid || a.uid); return { uid: u, server: a.region || SERVERS[u[0]] }; });
+        if (found.length) break;
+      } catch (e) {
+        if (e.retcode === 10001) throw e;
+      }
+    }
+    return found;
+  };
   (async () => {
     try {
+      if (!role_id) {
+        const found = await discover();
+        const fail = (m) => { const e = new Error(m); e.retcode = %(no_account)s; throw e; };
+        if (!found.length) fail('Could not find your game account automatically');
+        if (found.length > 1) fail('Several accounts found (' + found.map(a => a.uid).join(', ') + ')');
+        role_id = found[0].uid; server = found[0].server;
+      }
+      S.account = { uid: role_id, server: server };
       const list = await post('character/list', { role_id: role_id, server: server, sort_type: 1 });
       S.list = list;
       const chars = (list.data && (list.data.list || list.data.avatars)) || [];
@@ -113,14 +187,16 @@ def fetch_script(uid: str, server: str) -> str:
   })();
   return 'started';
 })()
-""" % {"api": json.dumps(API), "uid": json.dumps(str(uid)), "server": json.dumps(server)}
+""" % {"api": json.dumps(API), "accounts": json.dumps(list(ACCOUNT_URLS)), "servers": json.dumps(SERVERS),
+       "uid": json.dumps(str(uid)), "server": json.dumps(server), "no_account": NO_ACCOUNT}
 
 
 PROGRESS_JS = ("JSON.stringify(window.__ls ? { done: window.__ls.done, total: window.__ls.total,"
                " finished: window.__ls.finished, error: window.__ls.error,"
                " retcode: window.__ls.retcode } : null)")
 RESULT_JS = ("(function () { const s = window.__ls;"
-             " return JSON.stringify({ list: s.list, details: s.details, errors: s.errors }); })()")
+             " return JSON.stringify({ list: s.list, details: s.details, errors: s.errors,"
+             " account: s.account }); })()")
 
 
 # -- parsing ---------------------------------------------------------------------

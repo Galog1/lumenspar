@@ -194,3 +194,27 @@ def test_no_other_qml_creates_a_web_profile():
         if f.name != "HoyolabWindow.qml":
             text = f.read_text(encoding="utf-8")
             assert "WebEngine" not in text and "QtWebEngine" not in text, f.name
+
+
+def test_fetch_script_without_a_uid_discovers_the_account():
+    js = hoyolab.fetch_script()
+    assert 'role_id = ""' in js and "getUserGameRolesByLtoken" in js
+    assert "window.__ls" in js and "account" in js
+    assert hoyolab.page_url() == "https://act.hoyolab.com/app/community-game-records-sea/index.html#/ys/role/all"
+    assert "account" in hoyolab.RESULT_JS
+
+
+def test_pick_account():
+    one = [{"game_biz": "hk4e_global", "game_uid": "700000123", "region": "os_euro"},
+           {"game_biz": "bh3_global", "game_uid": "100000001", "region": "os_euro"}]
+    assert hoyolab.pick_account(one) == ("700000123", "os_euro")
+    # the server falls back to the UID's first digit
+    assert hoyolab.pick_account([{"game_biz": "hk4e_global", "game_uid": "812345678"}])         == ("812345678", "os_asia")
+    # never guess between accounts
+    two = one + [{"game_biz": "hk4e_global", "game_uid": "800000456", "region": "os_asia"}]
+    assert "several" in hoyolab.pick_account(two) and "800000456" in hoyolab.pick_account(two)
+    assert "no Genshin" in hoyolab.pick_account([])
+    assert "no Genshin" in hoyolab.pick_account(None)
+    # a China-server UID is not usable here
+    assert "no Genshin" in hoyolab.pick_account(
+        [{"game_biz": "hk4e_cn", "game_uid": "112345678", "region": "cn_gf01"}])

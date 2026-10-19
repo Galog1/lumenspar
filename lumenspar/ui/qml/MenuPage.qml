@@ -81,9 +81,70 @@ Item {
         }
     }
 
+    // Version, manual update check and the automatic-check switch.
+    RowLayout {
+        id: footer
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: 16
+        spacing: 16
+
+        Text {
+            text: "Lumenspar " + updates.currentVersion
+            color: Theme.textDim
+            font.pixelSize: 12
+        }
+        GhostButton {
+            label: updates.state === "checking" ? "Checking…" : "Check for updates"
+            enabledState: !updates.busy
+            onClicked: updates.checkNow()
+        }
+        AccentButton {
+            visible: updates.available && updates.state === "idle"
+            label: updates.canInstall ? "Update to " + updates.latestVersion : "Get " + updates.latestVersion
+            onClicked: updates.install()
+        }
+        Text {
+            visible: text !== ""
+            text: updates.status
+            color: updates.available ? Theme.accent : Theme.textDim
+            font.pixelSize: 12
+            elide: Text.ElideRight
+            Layout.maximumWidth: 360
+        }
+        Row {
+            spacing: 8
+            Layout.alignment: Qt.AlignVCenter
+            Rectangle {
+                width: 18; height: 18; radius: 5
+                anchors.verticalCenter: parent.verticalCenter
+                color: updates.autoCheck ? Theme.accent : "transparent"
+                border.width: 1
+                border.color: updates.autoCheck ? Theme.accent : Theme.border
+                Text {
+                    anchors.centerIn: parent
+                    visible: updates.autoCheck
+                    text: "✓"
+                    color: "#08121A"
+                    font.pixelSize: 13
+                    font.weight: Font.Bold
+                }
+            }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Check automatically"
+                color: Theme.textDim
+                font.pixelSize: 12
+            }
+            TapHandler { onTapped: updates.autoCheck = !updates.autoCheck }
+            HoverHandler { cursorShape: Qt.PointingHandCursor }
+        }
+    }
+
     GridLayout {
         id: grid
         anchors.centerIn: parent
+        anchors.verticalCenterOffset: -18
         columns: menu.width >= 1480 ? 4 : 2
         columnSpacing: 28
         rowSpacing: 28
