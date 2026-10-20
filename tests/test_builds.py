@@ -317,3 +317,60 @@ def test_enka_merge_does_not_downgrade_a_hoyolab_card(tmp_path):
     stored = c.builds["10000120"]
     assert stored["source"] == "hoyolab" and stored["level"] == 95
     assert stored["fight"] == {"2000": 5.0} and (new, updated) == ([], ["Flins"])
+
+
+# -- per-character roll value table ------------------------------------------------
+
+def _rv_card(key):
+    arts = [{"slot": "sands", "setId": "", "main": {"key": "atk_"},
+             "subs": [{"key": "eleMas", "value": 40.0}, {"key": "atk_", "value": 5.0}]}]
+    return {"key": key, "artifacts": arts}
+
+
+def test_rv_table_overrides_rule():
+    assert builds.counted_stats([], "Odette") == ["critRate_", "critDMG_", "atk_", "eleMas"]
+    card = builds.with_roll_values(_rv_card("Odette"))
+    assert card["artifacts"][0]["subs"][0]["counted"]
+    assert "Elemental Mastery" in card["rvLabels"] or "EM" in card["rvLabels"]
+    plain = builds.with_roll_values(_rv_card("NoSuchCharacter"))
+    assert not plain["artifacts"][0]["subs"][0]["counted"]
+    assert "EM" not in plain["rvLabels"]
+
+
+def test_rv_unknown_key_falls_back():
+    assert builds.counted_stats([], "Nobody") == builds.counted_stats([]) \
+        == ["critRate_", "critDMG_", "atk_"]
+
+
+def test_rv_table_dict_entry(monkeypatch):
+    monkeypatch.setattr(builds, "_rv_table", lambda: {"X": {"stats": ["critRate_", "hp_"], "auto": True}})
+    assert builds.counted_stats([], "X") == ["critRate_", "hp_"]
+
+
+def test_rv_table_valid():
+    table = json.loads((builds._GAMEDATA / "rv_stats.json").read_text(encoding="utf-8"))["characters"]
+    keys = {c["key"] for c in json.loads(
+        (builds._GAMEDATA / "characters.json").read_text(encoding="utf-8"))["items"]}
+    allowed = {"hp_", "atk_", "def_", "eleMas", "enerRech_", "critRate_", "critDMG_"}
+    assert table
+    for key, entry in table.items():
+        assert key in keys
+        stats = entry["stats"] if isinstance(entry, dict) else entry
+        assert stats and set(stats) <= allowed
+
+
+def test_update_rv_stats_thresholds():
+    import importlib.util
+    from pathlib import Path
+    spec = importlib.util.spec_from_file_location(
+        "update_rv_stats", Path(builds.__file__).resolve().parent.parent / "tools" / "update_rv_stats.py")
+    tool = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tool)
+    crit = ["critRate_", "critDMG_"]
+    assert tool.derive({"atk": 2000}) == crit + ["atk_"]
+    assert tool.derive({"atk": 2000, "eleMas": 79}) == crit + ["atk_"]
+    assert tool.derive({"atk": 2000, "eleMas": 80, "enerRech_": 125}) == crit + ["atk_", "eleMas", "enerRech_"]
+    assert tool.derive({"atk": 900, "hp": 32000}) == crit + ["hp_"]
+    assert tool.derive({"atk": 900, "def": 1600}) == crit + ["def_"]
+    assert tool.derive({"atk": 1700, "hp": 32000}) == crit + ["atk_"]
+    assert tool.derive({}, {"sands": "hp_", "goblet": "hp_", "circlet": "critRate_"}) == crit + ["hp_"]

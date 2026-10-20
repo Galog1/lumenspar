@@ -289,7 +289,9 @@ the element's colour. Switch the artifact score with **CV / RV** under the card:
   roll and 250% two and a half. What counts follows the build: CRIT Rate and
   CRIT DMG always, the scaling stat its sands, goblet and circlet point at
   (ATK%, HP%, DEF% or Elemental Mastery; ATK% if they say nothing), and Energy
-  Recharge when a main stat asks for it. Flat stats and the rest are listed
+  Recharge when a main stat asks for it. Counted stats follow a per-character table
+  (`gamedata/rv_stats.json`, refreshed with `tools/update_rv_stats.py`) and fall
+  back to this rule. Flat stats and the rest are listed
   with their own roll value but left out of the totals; the card names what it
   counted.
 

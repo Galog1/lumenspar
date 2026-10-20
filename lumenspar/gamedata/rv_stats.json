@@ -1,0 +1,431 @@
+{
+ "_comment": "Substats Roll Value counts per character, GOOD keys (like akasha.cv's per-character list). Absent characters use the generic rule in builds.counted_stats. An entry is a list, or {\"stats\": [...], \"auto\": true} when tools/update_rv_stats.py derived it from Akasha's top builds.",
+ "characters": {
+  "Albedo": [
+   "critRate_",
+   "critDMG_",
+   "def_"
+  ],
+  "Alhaitham": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "eleMas"
+  ],
+  "AratakiItto": [
+   "critRate_",
+   "critDMG_",
+   "def_",
+   "enerRech_"
+  ],
+  "Arlecchino": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Baizhu": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Barbara": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Beidou": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Bennett": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "Chevreuse": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Citlali": [
+   "critRate_",
+   "critDMG_",
+   "eleMas",
+   "enerRech_"
+  ],
+  "Columbina": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "hp_",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Dehya": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Diluc": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Diona": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Escoffier": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Eula": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Fischl": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Flins": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Furina": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Ganyu": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Gorou": [
+   "critRate_",
+   "critDMG_",
+   "def_",
+   "enerRech_"
+  ],
+  "HuTao": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "eleMas"
+  ],
+  "Ineffa": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Jean": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "KaedeharaKazuha": [
+   "critRate_",
+   "critDMG_",
+   "eleMas",
+   "enerRech_"
+  ],
+  "KamisatoAyaka": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Kaveh": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "eleMas"
+  ],
+  "Keqing": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Kirara": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Layla": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Linnea": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "def_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Lisa": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Mavuika": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "Nahida": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "eleMas"
+  ],
+  "Nefer": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Neuvillette": [
+   "critRate_",
+   "critDMG_",
+   "hp_"
+  ],
+  "Nilou": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "hp_"
+   ],
+   "auto": true
+  },
+  "Noelle": [
+   "critRate_",
+   "critDMG_",
+   "def_",
+   "enerRech_"
+  ],
+  "Odette": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "eleMas"
+  ],
+  "Qiqi": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "RaidenShogun": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "Sandrone": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "SangonomiyaKokomi": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Shenhe": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "Sigewinne": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Skirk": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_"
+   ],
+   "auto": true
+  },
+  "Sucrose": [
+   "critRate_",
+   "critDMG_",
+   "eleMas",
+   "enerRech_"
+  ],
+  "Tighnari": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "eleMas"
+  ],
+  "Venti": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas",
+    "enerRech_"
+   ],
+   "auto": true
+  },
+  "Wanderer": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_"
+   ],
+   "auto": true
+  },
+  "Xiangling": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_",
+   "eleMas"
+  ],
+  "Xilonen": [
+   "critRate_",
+   "critDMG_",
+   "def_",
+   "enerRech_"
+  ],
+  "Xingqiu": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "enerRech_"
+  ],
+  "YaeMiko": [
+   "critRate_",
+   "critDMG_",
+   "atk_",
+   "eleMas"
+  ],
+  "Yanfei": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "Yelan": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Yoimiya": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "atk_",
+    "eleMas"
+   ],
+   "auto": true
+  },
+  "YunJin": [
+   "critRate_",
+   "critDMG_",
+   "def_",
+   "enerRech_"
+  ],
+  "Zhongli": [
+   "critRate_",
+   "critDMG_",
+   "hp_",
+   "enerRech_"
+  ],
+  "Zibai": {
+   "stats": [
+    "critRate_",
+    "critDMG_",
+    "def_",
+    "eleMas"
+   ],
+   "auto": true
+  }
+ }
+}

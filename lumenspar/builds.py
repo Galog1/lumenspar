@@ -191,7 +191,8 @@ def sets_of(artifacts: list[dict]) -> list[dict]:
 # substat the build can use in "rolls": its value as a percentage of the best
 # single roll that stat can get on a 5-star artifact, so 100% is one perfect
 # roll, 250% is two and a half, whatever the stat. The build's own stats decide
-# what counts: crit always, the scaling stat its sands, goblet and circlet point
+# what counts: the character's own list when gamedata/rv_stats.json has one,
+# else crit always, the scaling stat its sands, goblet and circlet point
 # at (ATK%, HP%, DEF% or EM, ATK% by default) and Energy Recharge when a main
 # stat asks for it. Flat stats and the rest are shown but not counted.
 
@@ -217,8 +218,24 @@ def roll_value(key: str, value: float) -> float:
     return value / top * 100 if top and value > 0 else 0.0
 
 
-def counted_stats(artifacts: list[dict]) -> list[str]:
-    """The substat keys Roll Value counts for a build (see the notes above)."""
+@lru_cache(maxsize=None)
+def _rv_table() -> dict:
+    """Per-character counted stats (gamedata/rv_stats.json): a list, or {"stats": [...]}."""
+    try:
+        table = json.loads((_GAMEDATA / "rv_stats.json").read_text(
+            encoding="utf-8"))["characters"]
+    except (OSError, ValueError, KeyError):
+        return {}
+    return table if isinstance(table, dict) else {}
+
+
+def counted_stats(artifacts: list[dict], key: str = "") -> list[str]:
+    """The substat keys Roll Value counts for a build: the character's own list when
+    the table has one (as akasha.cv does), else the generic rule in the notes above."""
+    entry = _rv_table().get(key)
+    stats = entry.get("stats") if isinstance(entry, dict) else entry
+    if stats:
+        return list(stats)
     votes = Counter(a["main"]["key"] for a in artifacts
                     if a.get("slot") in ("sands", "goblet", "circlet")
                     and a["main"]["key"] in _SCALING)
@@ -234,7 +251,7 @@ def with_roll_values(card: dict) -> dict:
     (rv, rvText, counted), per artifact (rollValue, rollText, cvText) and for the
     card (the same, plus rvLabels naming what counts). Pure; the input is untouched."""
     arts = card.get("artifacts") or []
-    counted = counted_stats(arts)
+    counted = counted_stats(arts, card.get("key", ""))
     out_arts = []
     for a in arts:
         subs = []
